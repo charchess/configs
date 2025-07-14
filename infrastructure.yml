@@ -47,17 +47,17 @@ services:
       # Utilisation du secret via un fichier pour Traefik
       - GANDIV5_PERSONAL_ACCESS_TOKEN_FILE=/run/secrets/traefik_gandi_api_token
     networks:
-      - infrastructure_network # Réseau interne à la stack infrastructure
-      # Réseaux externes des stacks dont Traefik doit exposer les services
-      - tools_network
-      - media_management_network
-      - logs_network # Traefik est bien connecté à ce réseau
-      - monitoring_network
-      - experimentation_network
-      - media_download_network # Si des services à l'intérieur nécessitent une exposition
-      - nordvpn_ch_network     # Le réseau VPN existant
-      - divertissement_network
       - ai_network
+      - databases_network
+      - divertissement_network
+      - experimentation_network
+      - infrastructure_network # Réseau interne à la stack infrastructure
+      - logs_network # Traefik est bien connecté à ce réseau
+      - media_download_network # Si des services à l'intérieur nécessitent une exposition
+      - media_management_network
+      - monitoring_network
+      - nordvpn_ch_network     # Le réseau VPN existant
+      - tools_network
     logging: # Configuration du logging vers Graylog
       driver: gelf
       options:
