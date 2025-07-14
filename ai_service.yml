@@ -23,7 +23,7 @@ services:
         - "traefik.http.routers.chat-ui-https.entrypoints=websecure" # On utilise l'entrypoint public
         - "traefik.http.routers.chat-ui-https.tls=true"
         - "traefik.http.routers.chat-ui-https.tls.certresolver=gandi"
-
+        - "traefik.http.services.chat-ui-https.loadbalancer.server.port=80"
   intent-router:
     image: charchess/intent-router:latest # L'image que nous venons de pousser
     networks:
