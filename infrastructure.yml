@@ -57,6 +57,7 @@ services:
       - media_download_network # Si des services à l'intérieur nécessitent une exposition
       - nordvpn_ch_network     # Le réseau VPN existant
       - divertissement_network
+      - ai_network
     logging: # Configuration du logging vers Graylog
       driver: gelf
       options:
