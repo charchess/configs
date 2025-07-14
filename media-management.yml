@@ -30,7 +30,6 @@ services:
           - node.role == worker
       labels: # Labels Traefik pour exposer Radarr
         - "traefik.enable=true"
-        - "traefik.docker.network=media_management_network"
         - "traefik.docker.network=media-management_network"
         - "traefik.http.routers.radarr-https.rule=Host(`radarr.truxonline.com`)"
         - "traefik.http.routers.radarr-https.entrypoints=internal-secure"
