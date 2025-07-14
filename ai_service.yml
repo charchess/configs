@@ -4,8 +4,6 @@ version: '3.8'
 services:
   chat-ui:
     image: nginx:alpine
-    container_name: chat-ui
-    restart: unless-stopped
     volumes:
       # Assurez-vous que ce chemin NFS existe !
       - /data/nfs/containers/ai_services/chat-ui:/usr/share/nginx/html:ro 
