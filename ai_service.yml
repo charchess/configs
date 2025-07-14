@@ -2,6 +2,30 @@
 version: '3.8'
 
 services:
+  chat-ui:
+    image: nginx:alpine
+    container_name: chat-ui
+    restart: unless-stopped
+    volumes:
+      # Assurez-vous que ce chemin NFS existe !
+      - /data/nfs/containers/ai_services/chat-ui:/usr/share/nginx/html:ro 
+    networks:
+      - proxy_network
+      - logs_network
+      - ai_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.chat-ui-https.rule=Host(`lisa.truxonline.com`)"
+        - "traefik.http.routers.chat-ui-https.entrypoints=websecure" # On utilise l'entrypoint public
+        - "traefik.http.routers.chat-ui-https.tls=true"
+        - "traefik.http.routers.chat-ui-https.tls.certresolver=gandi"
+
   intent-router:
     image: charchess/intent-router:latest # L'image que nous venons de pousser
     networks:
