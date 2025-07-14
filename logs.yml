@@ -1,0 +1,133 @@
+# logs.yml
+version: '3' # Version 3 comme spécifié
+
+services:
+  opensearch: # OpenSearch pour Graylog
+    image: "opensearchproject/opensearch:2.15.0" # Version spécifiée pour la compatibilité
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "bootstrap.memory_lock=true"
+      - "discovery.type=single-node"
+      - "action.auto_create_index=false"
+      - "plugins.security.ssl.http.enabled=false" # Désactive SSL pour la sécurité du plugin
+      - "plugins.security.disabled=true" # Désactive le plugin de sécurité
+      # Le mot de passe admin initial pour OpenSearch (en clair - VÉRIFIEZ QUE C'EST LE VOTRE)
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=+_8r#wliY3Pv5-HMIf4qzXImYzZf-M=M"
+      - "OPENSEARCH_USERNAME=admin" # Utilisateur par défaut pour OpenSearch
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+      nofile: # Indispensable pour OpenSearch
+        soft: 65536
+        hard: 65536
+#    ports:
+#      - "9203:9200" # Port exposé pour accès direct à OpenSearch
+#      - "9303:9300" # Port exposé pour communications entre nœuds OpenSearch (si cluster)
+    restart: "on-failure"
+    networks:
+      - logs_network # Réseau de cette stack
+    volumes:
+      # Nouveau chemin de volume standardisé
+      - "/data/nfs/containers/logs/opensearch/data:/usr/share/opensearch/data"
+
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  graylog:
+    hostname: "server"
+    image: "graylog/graylog:6.2.4-1" # Mise à jour de l'image Graylog
+    depends_on:
+      - mongodb # Dépend de MongoDB (dans la stack databases)
+      - opensearch
+    # ATTENTION : wait-for-it mongodb:27017 est crucial pour la dépendance inter-stack
+    entrypoint: "/usr/bin/tini -- wait-for-it mongodb:27017 -- wait-for-it opensearch:9200 -- /docker-entrypoint.sh"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris # Garde cette variable
+      - GRAYLOG_NODE_ID_FILE=/usr/share/graylog/data/config/node-id # Fichier pour l'ID du nœud Graylog
+      - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:10001
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200 # Utilise ELASTICSEARCH_HOSTS
+      - GRAYLOG_MONGODB_URI=mongodb://mongodb:27017/graylog # Utilise le service 'mongodb' de la stack databases
+      - GRAYLOG_REPORT_DISABLE_SANDBOX=true # Pour le fonctionnement des rapports
+      # Mots de passe en clair (VÉRIFIEZ QUE CE SONT LES VÔTRES)
+      - GRAYLOG_PASSWORD_SECRET=2fA8sq9awQmfGQu2e8vd_4jw7UnFge0EEINyevn14CETJhpUHK81sJcvuoSCAgrRS3pzggOGW919wB7WimFv7wYhmvDjKssP
+      - GRAYLOG_ROOT_PASSWORD_SHA2=9ecd1097f7d400d1670164265794412ba6c02b498e690b262f25ae993842a265
+      
+      - GRAYLOG_MESSAGE_JOURNAL_MAX_SIZE=4gb # Taille du journal ajustée
+      - GRAYLOG_HTTP_EXTERNAL_URI=https://graylog.truxonline.com/ # URI externe de Graylog (pour Traefik)
+      - GRAYLOG_ROOT_TIMEZONE=Europe/Paris # Nouvelle variable
+      - GRAYLOG_WEB_LISTEN_URI=https://graylog.truxonline.com/ # Nouvelle variable
+      - GRAYLOG_WEB_ENDPOINT_URI=https://graylog.truxonline.com/api # Nouvelle variable
+      - GRAYLOG_HTTP_ENABLE_CORS=true # Nouvelle variable
+    ports: # Tous les ports pour les tests directs
+      # Graylog web interface and REST API
+      - "10001:10001/tcp"
+      # Beats
+      - "5044:5044/tcp"
+      # Syslog TCP
+      - "5140:5140/tcp"
+      # Syslog UDP
+      - "5140:5140/udp"
+      # GELF TCP
+      - "12201:12201/tcp"
+      # GELF UDP
+      - "12201:12201/udp"
+      # Forwarder data
+      - "13301:13301/tcp"
+      # Forwarder config
+      - "13302:13302/tcp"
+    restart: "on-failure"
+    networks:
+      - logs_network # Réseau de cette stack
+      - databases_network # Pour accéder à MongoDB qui est dans la stack 'databases'
+    volumes:
+      # Nouveau chemin de volume standardisé
+      - "/data/nfs/containers/logs/graylog/data:/usr/share/graylog/data"
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Graylog via HTTPS
+        - "traefik.enable=true"
+        - "traefik.docker.network=logs_network" # Indique à Traefik le réseau où trouver Graylog
+        
+        # Route HTTP vers HTTPS
+        - "traefik.http.routers.graylog-http.rule=Host(`graylog.truxonline.com`)"
+        - "traefik.http.routers.graylog-http.entrypoints=web"
+        - "traefik.http.routers.graylog-http.middlewares=graylog-redirect-to-https" # Utilise un middleware de redirection
+
+        # Route HTTPS principale
+        - "traefik.http.routers.graylog-https.rule=Host(`graylog.truxonline.com`)"
+        - "traefik.http.routers.graylog-https.entrypoints=internal-secure"
+        - "traefik.http.routers.graylog-https.tls=true"
+        - "traefik.http.routers.graylog-https.tls.certresolver=gandi"
+        - "traefik.http.services.graylog-https.loadbalancer.server.port=10001"
+        - "traefik.http.services.graylog-https.loadbalancer.server.scheme=http" # Graylog écoute en HTTP sur 10001 en interne
+
+        # Définition du middleware de redirection (si non défini ailleurs dans Traefik)
+        - "traefik.http.middlewares.graylog-redirect-to-https.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.graylog-redirect-to-https.redirectscheme.permanent=true"
+
+        # Labels pour le header X-Graylog-Server-URL
+        - "traefik.http.routers.graylog-https.middlewares=graylog-header" # Applique le middleware au routeur HTTPS
+        - "traefik.http.middlewares.graylog-header.headers.customrequestheaders.X-Graylog-Server-URL=https://graylog.truxonline.com/"
+  
+
+# Section secrets (maintenue vide car les secrets sont en clair dans l'environnement)
+secrets: {}
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  logs_network:
+    external: true # Réseau pour les services logs (OpenSearch, Graylog)
+  databases_network:
+    external: true # Réseau pour les bases de données (MongoDB, MariaDB, Postgres)
+
+# Définition des volumes utilisés par cette stack
+volumes:
+  opensearch: # Volume pour OpenSearch
+  graylog_data: # Volume pour Graylog

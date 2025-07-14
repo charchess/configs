@@ -1,0 +1,96 @@
+# divertissement.yml
+version: '3.8'
+
+services:
+  sillytavern:
+#    image: goolashe/sillytavern:latest # Nouvelle image SillyTavern
+    image: ghcr.io/sillytavern/sillytavern:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - NODE_ENV=production # Environnement de production
+      - FORCE_COLOR=1     # Force la couleur dans les logs de Node.js
+    volumes:
+      # Volume persistant pour les données de SillyTavern (chats, paramètres, etc.)
+      - /data/nfs/containers/divertissement/sillytavern/data:/home/node/app/data
+      # Volume persistant pour la configuration
+      - /data/nfs/containers/divertissement/sillytavern/config:/home/node/app/config
+      # Volume persistant pour les plugins
+      - /data/nfs/containers/divertissement/sillytavern/plugins:/home/node/app/plugins
+      # Volume persistant pour les extensions tierces (reste car c'est un chemin spécifique)
+      - /data/nfs/containers/divertissement/sillytavern/extensions:/home/node/app/public/scripts/extensions/third-party
+      # Cela permet à index.html et aux autres fichiers statiques de venir de l'image Docker
+      - /data/nfs/containers/divertissement/sillytavern/user-images:/home/node/app/public/user/images
+      - /data/nfs/containers/divertissement/sillytavern/backups:/home/node/app/backups
+    ports:
+      - 8888:8888
+    networks:
+      - divertissement_network # Réseau interne de cette stack
+      - logs_network           # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer SillyTavern UI
+        - "traefik.enable=true"
+        - "traefik.docker.network=divertissement_network"
+        - "traefik.http.routers.sillytavern-https.rule=Host(`sillytavern.truxonline.com`)"
+        - "traefik.http.routers.sillytavern-https.entrypoints=internal-secure" # Accessible uniquement en interne
+        - "traefik.http.routers.sillytavern-https.tls=true"
+        - "traefik.http.routers.sillytavern-https.tls.certresolver=gandi"
+        - "traefik.http.services.sillytavern-https.loadbalancer.server.port=8888" # Port interne de l'interface web (mis à jour)
+#    logging: # Configuration du logging vers Graylog
+#      driver: gelf
+#      options:
+#        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+#        tag: "sillytavern/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # Healthcheck pour l'interface web de SillyTavern (mis à jour pour le port 8000)
+#      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8888 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 60s # Donne du temps au service pour démarrer
+
+  free-games-claimer:
+    container_name: fgc # Nom du conteneur pour une meilleure identification dans les logs
+    image: ghcr.io/vogler/free-games-claimer:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Ajoutez ici les variables d'environnement spécifiques à FGC si vous en utilisez
+      # Ex: - EMAIL=votre@email.com
+      # Ex: - NOTIFY='tgram://...'
+    volumes:
+      # Volume persistant pour les données de Free Games Claimer
+      - /data/nfs/containers/divertissement/fgc/data:/fgc/data
+    networks:
+      - divertissement_network # Réseau interne de cette stack
+      - logs_network           # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "fgc/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # Healthcheck simple pour FGC (peut être ajusté si une API de santé existe)
+      test: ["CMD-SHELL", "exit 0"] # Vérifie juste que le conteneur démarre
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  divertissement_network:
+    external: true # Ce réseau sera créé lors du déploiement de cette stack
+  logs_network:
+    external: true # Réseau de la stack logs (Graylog), doit être externalisé

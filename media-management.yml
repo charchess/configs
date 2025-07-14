@@ -1,0 +1,544 @@
+# media-management.yml
+version: '3.8'
+
+services:
+  radarr:
+    image: linuxserver/radarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/radarr/config:/config
+      - /data/nfs/downloads/movies:/downloads
+      - /data/nfs/content/movies:/movies
+    networks:
+      - media_management_network # Son propre réseau
+      - databases_network        # Maintenu pour d'autres communications si nécessaire (non lié à la DB interne de Radarr)
+      - media_download_network   # Pour communiquer avec SABnzbd
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Radarr lui-même
+    #   - doplarr_radarr_api_key # Ce secret est pour Doplarr, pas Radarr lui-même
+    ports:
+      - 7878:7878
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Radarr
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.docker.network=media-management_network"
+        - "traefik.http.routers.radarr-https.rule=Host(`radarr.truxonline.com`)"
+        - "traefik.http.routers.radarr-https.entrypoints=internal-secure"
+        - "traefik.http.routers.radarr-https.tls=true"
+        - "traefik.http.routers.radarr-https.tls.certresolver=gandi"
+        - "traefik.http.services.radarr-https.loadbalancer.server.port=7878" # Port interne de Radarr
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "radarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Radarr
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:7878/ping || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  lidarr:
+    image: linuxserver/lidarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/lidarr/config:/config
+      - /data/nfs/downloads/music:/downloads
+      - /data/nfs/content/music:/music
+    networks:
+      - media_management_network
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Lidarr lui-même
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      mode: replicated
+      replicas: 1
+      labels: # Labels Traefik pour exposer Lidarr
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.lidarr-https.rule=Host(`lidarr.truxonline.com`)"
+        - "traefik.http.routers.lidarr-https.entrypoints=internal-secure"
+        - "traefik.http.routers.lidarr-https.tls=true"
+        - "traefik.http.routers.lidarr-https.tls.certresolver=gandi"
+        - "traefik.http.services.lidarr-https.loadbalancer.server.port=8686" # Port interne de Lidarr
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "lidarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Lidarr
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8686/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  sonarr:
+    image: linuxserver/sonarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/sonarr/config:/config
+      - /data/nfs/downloads/TV Show:/downloads
+      - /data/nfs/content/TV Show:/tv
+    networks:
+      - media_management_network
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Sonarr lui-même
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Sonarr
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.sonarr-https.rule=Host(`sonarr.truxonline.com`)"
+        - "traefik.http.routers.sonarr-https.entrypoints=internal-secure"
+        - "traefik.http.routers.sonarr-https.tls=true"
+        - "traefik.http.routers.sonarr-https.tls.certresolver=gandi"
+        - "traefik.http.services.sonarr-https.loadbalancer.server.port=8989" # Port interne de Sonarr
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "sonarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Sonarr
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8989/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:nightly
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/readarr/config:/config
+      - /data/nfs/downloads/ebooks:/downloads
+      - /data/nfs/content/ebooks:/books
+    networks:
+      - media_management_network
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Readarr lui-même
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+#          - node.arch == x86_64
+      labels: # Labels Traefik pour exposer Readarr
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.readarr-https.rule=Host(`readarr.truxonline.com`)"
+        - "traefik.http.routers.readarr-https.entrypoints=internal-secure"
+        - "traefik.http.routers.readarr-https.tls=true"
+        - "traefik.http.routers.readarr-https.tls.certresolver=gandi"
+        - "traefik.http.services.readarr-https.loadbalancer.server.port=8787" # Port interne de Readarr
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "readarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Readarr
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8787/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/prowlarr/config:/config
+    networks:
+      - media_management_network # Prowlarr expose une API pour les autres Arr*
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network # Pour communiquer avec SABnzbd/qBittorrent
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Prowlarr lui-même
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Prowlarr
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.prowlarr-https.rule=Host(`prowlarr.truxonline.com`)"
+        - "traefik.http.routers.prowlarr-https.entrypoints=internal-secure"
+        - "traefik.http.routers.prowlarr-https.tls=true"
+        - "traefik.http.routers.prowlarr-https.tls.certresolver=gandi"
+        - "traefik.http.services.prowlarr-https.loadbalancer.server.port=9696" # Port interne de Prowlarr
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "prowlarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Prowlarr
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:9696/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  whisparr:
+    image: hotio/whisparr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/whisparr/config:/config
+      - /data/nfs/downloads/xxx:/downloads
+      - /data/nfs/content/xxx:/xxx
+    networks:
+      - media_management_network
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Whisparr lui-même
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Whisparr
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.whisparr-https.rule=Host(`whisparr.truxonline.com`)"
+        - "traefik.http.routers.whisparr-https.entrypoints=internal-secure"
+        - "traefik.http.routers.whisparr-https.tls=true"
+        - "traefik.http.routers.whisparr-https.tls.certresolver=gandi"
+        - "traefik.http.services.whisparr-https.loadbalancer.server.port=6969" # Port interne de Whisparr
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "whisparr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Whisparr
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:6969/ping || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  doplarr:
+    image: linuxserver/doplarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - DISCORD__TOKEN=MTA3NjQ4NTUwMjQyMjc1MzMxMg.GaaQtm._-UDkidAL_6UPJzyYF6LGrar__oJiwmCJcCV-M
+      - OVERSEERR__API=ceci_est_une_fake_key
+      - RADARR__API=3eded71320744d058fc3627c827c02b9 # CONSERVÉ : Nom de secret d'origine
+      - SONARR__API=3ad81b9fbb744acebe705ebe3af53c73 # CONSERVÉ : Nom de secret d'origine
+      - OVERSEERR__URL=http://overseer:5055 # Assurez-vous que 'overseer' est joignable via le bon réseau
+      - RADARR__URL=http://radarr:7878     # 'radarr' est dans cette même stack
+      - SONARR__URL=http://sonarr:8989     # 'sonarr' est dans cette même stack
+    secrets:
+      - media_doplarr_discord_token
+      - media_doplarr_overseerr_api
+      - radarr_api_key # CONSERVÉ : Nom de secret d'origine
+      - sonarr_api_key # CONSERVÉ : Nom de secret d'origine
+    networks:
+      - media_management_network # Pour communiquer avec Radarr/Sonarr de la même stack
+      - tools_network # Décommenté pour Overseerr
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "doplarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Doplarr (vérifiez le port si différent de 3000)
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  mylar3:
+    image: lscr.io/linuxserver/mylar3:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/mylar/config:/config
+      - /data/nfs/content/comics:/comics
+      - /data/nfs/downloads/comics:/downloads
+    networks:
+      - media_management_network
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Mylar3 lui-même
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Mylar3
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.mylar-https.rule=Host(`mylar.truxonline.com`)"
+        - "traefik.http.routers.mylar-https.entrypoints=internal-secure"
+        - "traefik.http.routers.mylar-https.tls=true"
+        - "traefik.http.routers.mylar-https.tls.certresolver=gandi"
+        - "traefik.http.services.mylar-https.loadbalancer.server.port=8090" # Port interne de Mylar3
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "mylar3/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Mylar3
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8090 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  pyload-ng:
+    image: lscr.io/linuxserver/pyload-ng:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      # Les bases de données sont gérées en interne (SQLite par défaut)
+    volumes:
+      - /data/nfs/containers/media-management/pyload/config:/config
+      - /data/nfs/content/pyload:/downloads # Chemin de sortie de pyload
+      - /data/nfs/containers/media-management/pyload/tmp:/tmp/pyLoad # AJOUTÉ : Volume pour le répertoire temporaire, CHEMIN CORRIGÉ DÉFINITIVEMENT
+    networks:
+      - media_management_network
+      - databases_network # Maintenu pour d'autres communications si nécessaire
+      - media_download_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    # secrets: # Commenté car aucune DB externe n'est utilisée pour Pyload-NG lui-même
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Pyload-NG
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.pyload-https.rule=Host(`pyload.truxonline.com`)"
+        - "traefik.http.routers.pyload-https.entrypoints=internal-secure"
+        - "traefik.http.routers.pyload-https.tls=true"
+        - "traefik.http.routers.pyload-https.tls.certresolver=gandi"
+        - "traefik.http.services.pyload-https.loadbalancer.server.port=8000" # Port interne de Pyload-NG
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "pyload-ng/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Pyload-NG
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  ubooquity:
+    image: lscr.io/linuxserver/ubooquity:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /data/nfs/containers/media-management/ubooquity/config:/config
+      - /data/nfs/containers/media-management/ubooquity/tmp:/tmp/JarClassLoader
+      - /data/nfs/content/ebooks:/books
+      - /data/nfs/content/comics:/comics
+    networks:
+      - media_management_network
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Ubooquity
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.ubooquity-https.rule=Host(`ubooquity.truxonline.com`)"
+        - "traefik.http.routers.ubooquity-https.entrypoints=internal-secure"
+        - "traefik.http.routers.ubooquity-https.tls=true"
+        - "traefik.http.routers.ubooquity-https.tls.certresolver=gandi"
+        - "traefik.http.services.ubooquity-https.loadbalancer.server.port=2202" # Port interne de Ubooquity
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.200.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "ubooquity/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Ubooquity
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:2202 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  hydrusclient:
+    image: ghcr.io/hydrusnetwork/hydrus:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /data/nfs/containers/media-management/hydrus/db:/opt/hydrus/db
+      - /data/nfs/content/pictures/hentai/client_files:/opt/hydrus/client_files
+      - /data/nfs/content/pictures/hentai/server_files:/opt/hydrus/server_files
+    networks:
+      - media_management_network
+      - databases_network # Gardé au cas où, mais Hydrus utilise sa propre DB interne
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    ports:
+      - 45869:45869
+    deploy:
+      mode: replicated
+      # Labels Traefik si vous souhaitez exposer Hydrus Client (attention à la sécurité)
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer Hydrus Client
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_management_network"
+        - "traefik.http.routers.hydrusclient-https.rule=Host(`hydrus.truxonline.com`)" # Utilisation de 'hydrus.truxonline.com'
+        - "traefik.http.routers.hydrusclient-https.entrypoints=internal-secure"
+        - "traefik.http.routers.hydrusclient-https.tls=true"
+        - "traefik.http.routers.hydrusclient-https.tls.certresolver=gandi"
+        - "traefik.http.services.hydrusclient-https.loadbalancer.server.port=5800" # Port interne de Hydrus Client
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "hydrusclient/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Hydrus Client (basé sur le port d'écoute)
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:45869 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s # AUGMENTÉ : Donner plus de temps à l'application pour démarrer
+
+  hydrusserver:
+    image: ghcr.io/hydrusnetwork/hydrus:server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /data/nfs/containers/media-management/hydrus/db:/opt/hydrus/db
+      - /data/nfs/content/pictures/hentai/server_files:/opt/hydrus/db/server_files
+    networks:
+      - media_management_network
+      - databases_network # Gardé au cas où, mais Hydrus utilise sa propre DB interne
+      - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      # Labels Traefik si vous souhaitez exposer Hydrus Server (attention à la sécurité)
+      # Il n'est généralement pas recommandé d'exposer le serveur Hydrus directement.
+      # labels:
+      #   - "traefik.enable=true"
+      #   - "traefik.docker.network=media_management_network"
+      #   - "traefik.http.routers.hydrusserver-https.rule=Host(`hydrusserver.truxonline.com`)"
+      #   - "traefik.http.routers.hydrusserver-https.entrypoints=web-secure"
+      #   - "traefik.http.routers.hydrusserver-https.tls=true"
+      #   - "traefik.http.routers.hydrusserver-https.tls.certresolver=gandi"
+      #   - "traefik.http.services.hydrusserver-https.loadbalancer.server.port=45870" # Port interne de Hydrus Server (port de management)
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "hydrusserver/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Hydrus Server (basé sur le port de management)
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:45870 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 90s # AUGMENTÉ : Donner plus de temps à l'application pour démarrer
+
+# Définition des secrets utilisés dans cette stack
+secrets:
+  media_doplarr_discord_token:
+    external: true
+  media_doplarr_overseerr_api:
+    external: true
+  radarr_api_key: # CONSERVÉ : Nom de secret d'origine
+    external: true
+  sonarr_api_key: # CONSERVÉ : Nom de secret d'origine
+    external: true
+  # Nouveaux secrets pour les bases de données externalisées - RETIRÉS
+  # media_radarr_db_user:
+  #   external: true
+  # media_radarr_db_password:
+  #   external: true
+  # ... et ainsi de suite pour tous les secrets de DB des applications Arr, Mylar3, Pyload-NG
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  media_management_network:
+    external: true # Ce réseau doit être external pour éviter les doublons
+  databases_network:
+    external: true # Réseau de la stack 'databases'
+  media_download_network:
+    external: true # Réseau de la stack 'media-download'
+  tools_network: # Si Doplarr doit communiquer avec Overseerr dans la stack tools
+    external: true
+  logs_network: # AJOUTÉ : Réseau de la stack logs (Graylog), doit être externe
+    external: true

@@ -1,0 +1,139 @@
+# media-download.yml
+version: '3.8'
+
+services:
+  sabnzbd:
+    image: linuxserver/sabnzbd:latest
+    environment:
+      - PUID=1000 # Example UID
+      - PGID=1000 # Example GID
+      - TZ=Europe/Paris # Adjust timezone
+    volumes:
+      - /data/nfs/containers/media-downloaders/sabnzbd/config:/config
+      - /data/nfs/downloads:/downloads # Chemin des téléchargements
+    networks:
+      - media_download_network # Réseau interne de cette stack
+      - logs_network           # AJOUTÉ : Pour envoyer les logs à Graylog
+      # Pas besoin d'accès direct à databases si SABnzbd ne communique pas directement avec elles
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer SABnzbd
+        - "traefik.enable=true"
+        - "traefik.docker.network=media_download_network"
+        - "traefik.http.routers.sabnzbd-https.rule=Host(`sabnzbd.truxonline.com`)"
+        - "traefik.http.routers.sabnzbd-https.entrypoints=internal-secure"
+        - "traefik.http.routers.sabnzbd-https.tls=true"
+        - "traefik.http.routers.sabnzbd-https.tls.certresolver=gandi"
+        - "traefik.http.services.sabnzbd-https.loadbalancer.server.port=8080" # Port interne par défaut de SABnzbd
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "sabnzbd/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour SABnzbd
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api?mode=version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  torrent: # qBittorrent
+    image: linuxserver/qbittorrent:latest
+    environment:
+      - PUID=1000 # Example UID
+      - PGID=1000 # Example GID
+      - TZ=Europe/Paris # Adjust timezone
+      # Autres variables d'environnement qBittorrent
+    volumes:
+      - /data/nfs/containers/media-downloaders/torrent/config:/config
+      - /data/nfs/downloads:/downloads
+    networks:
+      # Attention: Ce service doit passer par le VPN
+      - nordvpn_ch_network
+      - media_download_network # Pour communication interne avec SABnzbd, si nécessaire
+      - logs_network           # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer qBittorrent
+        - "traefik.enable=true"
+        - "traefik.docker.network=nordvpn_ch_network"
+        - "traefik.http.routers.qbittorrent-https.rule=Host(`torrents.truxonline.com`)"
+        - "traefik.http.routers.qbittorrent-https.entrypoints=internal-secure"
+        - "traefik.http.routers.qbittorrent-https.tls=true"
+        - "traefik.http.routers.qbittorrent-https.tls.certresolver=gandi"
+        - "traefik.http.services.qbittorrent-https.loadbalancer.server.port=8080" # Port interne par défaut de qBittorrent WebUI
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "qbittorrent/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour qBittorrent
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/v2/app/version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+#  amule: # Maintenu commenté comme dans ta version
+#    image: ngosang/amule
+#    environment:
+#      - PUID=1000 # Example UID
+#      - PGID=1000 # Example GID
+#      - TZ=Europe/Paris # Adjust timezone
+#      - WEBUIPASS_FILE=/run/secrets/media_amule_webui_password # Utilisation du secret
+#      - GUIPASS_FILE=/run/secrets/media_amule_gui_password # Utilisation du secret
+#    volumes:
+#      - /data/nfs/containers/media-downloaders/amule/config:/home/amule/.aMule
+#      - /data/nfs/downloads/amule:/incoming
+#      - /data/nfs/downloads/incomplete:/temp
+#    secrets:
+#      - media_amule_webui_password
+#      - media_amule_gui_password
+#    networks:
+#      # Attention: Ce service doit passer par le VPN
+#      - nordvpn_ch_network
+#      - media_download_network # Pour communication interne si nécessaire
+#      - logs_network           # AJOUTÉ : Pour envoyer les logs à Graylog (si décommenté)
+#    deploy:
+#      mode: replicated
+#      replicas: 1
+#      placement:
+#        constraints:
+#          - node.role == worker
+#      labels: # Labels Traefik pour exposer aMule WebUI
+#        - "traefik.enable=true"
+#        - "traefik.docker.network=media_download_network"
+#        - "traefik.http.routers.amule-https.rule=Host(`amule.truxonline.com`)"
+#        - "traefik.http.routers.amule-https.entrypoints=internal-secure"
+#        - "traefik.http.routers.amule-https.tls=true"
+#        - "traefik.http.routers.amule-https.tls.certresolver=gandi"
+#        - "traefik.http.services.amule-https.loadbalancer.server.port=4711" # Port interne par défaut de aMule WebUI (ED2K)
+#    logging: # AJOUTÉ : Configuration du logging vers Graylog (si décommenté)
+#      driver: gelf
+#      options:
+#        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+#        tag: "amule/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+
+# Définition des secrets utilisés dans cette stack
+secrets:
+  media_amule_webui_password:
+    external: true
+  media_amule_gui_password:
+    external: true
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  media_download_network:
+    external: true # Ce réseau doit être external pour éviter les doublons
+  nordvpn_ch_network: # Le réseau VPN existant
+    external: true
+  logs_network: # AJOUTÉ : Réseau de la stack logs (Graylog), doit être externe
+    external: true

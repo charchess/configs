@@ -1,0 +1,112 @@
+# monitoring.yml
+version: '3.8'
+
+services:
+  zabbix-server:
+    image: zabbix/zabbix-server-mysql:ubuntu-latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - DB_SERVER_HOST=mariadb # 'mariadb' est le nom du service dans la stack 'databases'
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/core_mariadb_root_password # Mot de passe root de la DB MariaDB principale
+    volumes:
+#      - /data/nfs/containers/zabbix/zabbix-server/etc/zabbix_server.conf:/etc/zabbix/zabbix_server.conf:rw # Maintenu commenté
+      - /data/nfs/containers/monitoring/zabbix-server/alertscripts:/usr/lib/zabbix/alertscripts:ro
+      - /data/nfs/containers/monitoring/zabbix-server/externalscripts:/usr/lib/zabbix/externalscripts:ro
+      - /data/nfs/containers/monitoring/zabbix-server/snmptraps:/var/lib/zabbix/snmptraps:ro
+      - /data/nfs/containers/monitoring/zabbix-server/mibs:/var/lib/zabbix/mibs:ro
+    secrets:
+      - monito_zabbixdb_mysql_user
+      - monito_zabbixdb_mysql_password
+      - core_mariadb_root_password
+    networks:
+      - monitoring_network
+      - databases_network # Pour accéder au service 'mariadb'
+      - logs_network      # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "zabbix-server/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Zabbix Server (vérifie l'écoute du port 10051)
+      test: ["CMD-SHELL", "pgrep -f zabbix_server || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s # Peut prendre un peu de temps pour démarrer et se connecter à la DB
+
+  zabbix-web:
+    image: zabbix/zabbix-web-apache-mysql:ubuntu-latest # CHANGÉ : Utilise l'image Apache
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - DB_SERVER_HOST=mariadb # 'mariadb' est le nom du service dans la stack 'databases'
+      - MYSQL_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password
+    ports:
+      - 8087:8080 # CHANGÉ : Exposition du port 8087 de l'hôte vers 8080 du conteneur
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # Ligne supprimée : - /data/nfs/containers/monitoring/zabbix-web/nginx:/etc/nginx/conf.d:ro
+      - /data/nfs/containers/monitoring/zabbix-web/modules:/usr/lib/zabbix/modules:ro
+    secrets:
+      - monito_zabbixdb_mysql_user
+      - monito_zabbixdb_mysql_password
+    networks:
+      - monitoring_network
+      - databases_network # Pour accéder au service 'mariadb'
+      - logs_network      # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik si exposé
+        - "traefik.enable=true"
+        - "traefik.docker.network=monitoring_network"
+        - "traefik.http.routers.zabbix-https.rule=Host(`zabbix.truxonline.com`)"
+        - "traefik.http.routers.zabbix-https.entrypoints=internal-secure"
+        - "traefik.http.routers.zabbix-https.tls=true"
+        - "traefik.http.routers.zabbix-https.tls.certresolver=gandi"
+        - "traefik.http.services.zabbix-https.loadbalancer.server.port=8080" # Port interne de Zabbix Web
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "zabbix-web/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Zabbix Web
+#      test: ["CMD-SHELL", "curl -sSf http://localhost:8080 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 60s # Peut prendre un peu de temps pour démarrer
+
+# Définition des secrets utilisés dans cette stack
+secrets:
+  monito_zabbixdb_mysql_user:
+    external: true
+  monito_zabbixdb_mysql_password:
+    external: true
+  core_mariadb_root_password: # Utilisé par zabbix-server
+    external: true
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  monitoring_network:
+    external: true # Ce réseau sera créé avec le déploiement de cette stack
+  databases_network:
+    external: true # Réseau de la stack 'databases'
+  logs_network: # AJOUTÉ : Réseau de la stack logs (Graylog), doit être externe
+    external: true

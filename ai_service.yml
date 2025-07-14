@@ -1,0 +1,139 @@
+# ai_services.yml
+version: '3.8'
+
+services:
+  intent-router:
+    image: charchess/intent-router:latest # L'image que nous venons de pousser
+    networks:
+      - ai_network
+      - logs_network
+    environment:
+      # C'est ici que nous configurons le service !
+      - OOBABOOGA_API_URL=http://192.168.199.78:5000/v1
+      - N8N_MEMORY_WEBHOOK_URL=https://n8n.truxonline.com/webhook/52328e0f-d35f-4982-8467-cf883eaf840c
+      - N8N_ACTION_WEBHOOK_URL=https://n8n.truxonline.com/webhook/36dd058c-de30-4dd4-bb17-cd1340fb914b
+      - VERBOSE=true
+    ports:
+      - 8002:8002
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.docker.network=ai_network"
+        # Est-ce que Traefik est bien activé pour ce service ?
+        - "traefik.enable=true"
+        
+        # Le nom du routeur doit être unique.
+        # La syntaxe est importante : traefik.http.routers.NOM_DU_ROUTEUR.rule
+        - "traefik.http.routers.intent-router-https.rule=Host(`intent-router.truxonline.com`)"
+        
+        # Le routeur est-il bien attaché au bon point d'entrée ?
+        - "traefik.http.routers.intent-router-https.entrypoints=internal-secure"
+        
+        # La configuration TLS est-elle correcte ?
+        - "traefik.http.routers.intent-router-https.tls=true"
+        - "traefik.http.routers.intent-router-https.tls.certresolver=gandi"
+        
+        # Est-ce que le service Traefik pointe vers le bon port interne du conteneur ?
+        # Notre intent-router tourne sur le port 8002.
+        - "traefik.http.services.intent-router-https.loadbalancer.server.port=8002"
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: "udp://192.168.201.66:12201"
+#        tag: "router/{{.Name}}/{{.ID}}"
+
+        
+  embedding-service:
+    image: charchess/embedding-service:latest # <-- Ligne modifiée
+    # La section 'build:' a été supprimée.
+    networks:
+      - databases_network
+      - logs_network
+      - ai_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      # La section 'placement:' a été supprimée.
+      placement:
+        constraints:
+          - node.role == worker
+    volumes:
+      - /data/nfs/containers/ai_services/embedding-service/models_cache:/models
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201"
+        tag: "embedding/{{.Name}}/{{.ID}}"
+        
+  sillytavern-gemini:
+#    image: goolashe/sillytavern:latest # Nouvelle image SillyTavern
+    image: ghcr.io/sillytavern/sillytavern:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - NODE_ENV=production # Environnement de production
+      - FORCE_COLOR=1     # Force la couleur dans les logs de Node.js
+    volumes:
+      # Volume persistant pour les données de SillyTavern (chats, paramètres, etc.)
+      - /data/nfs/containers/ai_services/sillytavern-gemini/data:/home/node/app/data
+      # Volume persistant pour la configuration
+      - /data/nfs/containers/ai_services/sillytavern-gemini/config:/home/node/app/config
+#      # Volume persistant pour les plugins
+#      - /data/nfs/containers/divertissement/sillytavern/plugins:/home/node/app/plugins
+#      # Volume persistant pour les extensions tierces (reste car c'est un chemin spécifique)
+#      - /data/nfs/containers/divertissement/sillytavern/extensions:/home/node/app/public/scripts/extensions/third-party
+#      # Cela permet à index.html et aux autres fichiers statiques de venir de l'image Docker
+#      - /data/nfs/containers/divertissement/sillytavern/user-images:/home/node/app/public/user/images
+#      - /data/nfs/containers/divertissement/sillytavern/backups:/home/node/app/backups
+    ports:
+      - 8889:8888
+    configs:
+      - source: experimentations_sillytavern-gemini_config.yaml # Nom de la config Swarm
+        target: /home/node/app/config.yaml # Chemin dans le conteneur
+    networks:
+      - ai_network # Réseau interne de cette stack
+      - logs_network           # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+#      labels: # Labels Traefik pour exposer SillyTavern UI
+#        - "traefik.enable=true"
+#        - "traefik.http.routers.sillytavern-https.rule=Host(`sillytavern.truxonline.com`)"
+#        - "traefik.http.routers.sillytavern-https.entrypoints=internal-secure" # Accessible uniquement en interne
+#        - "traefik.http.routers.sillytavern-https.tls=true"
+#        - "traefik.http.routers.sillytavern-https.tls.certresolver=gandi"
+#        - "traefik.http.services.sillytavern-https.loadbalancer.server.port=8888" # Port interne de l'interface web (mis à jour)
+      placement:
+        constraints:
+          - node.role == worker
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "sillytavern/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # Healthcheck pour l'interface web de SillyTavern (mis à jour pour le port 8000)
+#      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8888 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 60s # Donne du temps au service pour démarrer
+
+configs:
+  experimentations_sillytavern-gemini_config.yaml:
+    external: true
+
+
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  ai_network:
+    external: true # Ce réseau doit être external car il est créé manuellement
+  logs_network:
+    external: true # Réseau de la stack logs (Graylog), doit être externe
+  databases_network:
+    external: true # Réseau de la stack logs (Graylog), doit être externe

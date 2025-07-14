@@ -1,0 +1,180 @@
+# infrastructure.yml
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:latest
+    command:
+      # Arguments minimaux, la plupart de la configuration est maintenant dans traefik.yaml
+      - "--global.checknewversion=false"
+      - "--global.sendanonymoususage=false"
+      - "--api" # Active l'API et le dashboard
+      # - "--providers.docker" # Active le provider Docker (nécessaire pour les labels)
+      - "--providers.swarm" # Active le provider Swarm
+      - "--providers.file" # Active le provider File
+      - "--log.level=DEBUG" # Niveau de log, peut être défini ici ou dans traefik.yaml
+      - "--configfile=/etc/traefik/traefik.yaml" # Spécifie le fichier de configuration statique
+      # Les entrypoints et certificate resolvers ne sont plus nécessaires ici car ils sont dans traefik.yaml
+      # Les configurations de providers spécifiques (endpoint, exposedbydefault, etc.) sont AUSSI dans traefik.yaml
+    ports:
+      # Publie chaque port sur l'hôte, et Traefik gérera les IP spécifiques en interne via entryPoints.
+      - "80:80"     # Trafic HTTP (redirection)
+      - "443:443"   # Trafic HTTPS (pour interne)
+      - "10443:10443"   # Trafic HTTPS (pour externe)
+      - "192.168.200.66:8080:8080" # Dashboard Traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /data/nfs/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - /data/nfs/containers/infrastructure/traefik/config/external.yaml:/etc/traefik/external.yaml:ro
+      - /data/nfs/containers/infrastructure/traefik/certs:/var/traefik/certs/
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        # Labels pour le dashboard Traefik lui-même
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik-http.rule=Host(`traefik.truxonline.com`)"
+        - "traefik.http.routers.traefik-http.entrypoints=web"
+        - "traefik.http.services.traefik-http.loadbalancer.server.port=8080"
+        - "traefik.http.routers.traefik-https.rule=Host(`traefik.truxonline.com`)"
+        - "traefik.http.routers.traefik-https.entrypoints=internal-secure"
+        - "traefik.http.routers.traefik-https.tls=true"
+        - "traefik.http.routers.traefik-https.tls.certresolver=gandi"
+    secrets:
+      - traefik_gandi_api_token # Le secret pour l'API Gandi
+    environment:
+      # Utilisation du secret via un fichier pour Traefik
+      - GANDIV5_PERSONAL_ACCESS_TOKEN_FILE=/run/secrets/traefik_gandi_api_token
+    networks:
+      - infrastructure_network # Réseau interne à la stack infrastructure
+      # Réseaux externes des stacks dont Traefik doit exposer les services
+      - tools_network
+      - media_management_network
+      - logs_network # Traefik est bien connecté à ce réseau
+      - monitoring_network
+      - experimentation_network
+      - media_download_network # Si des services à l'intérieur nécessitent une exposition
+      - nordvpn_ch_network     # Le réseau VPN existant
+      - divertissement_network
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise le nom de service logs_graylog
+        tag: "traefik/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # Healthcheck pour Traefik (conservé de la version précédente)
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/dashboard || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  watchtower: # Service pour la mise à jour automatique des images Docker
+    image: containrrr/watchtower:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - WATCHTOWER_POLL_INTERVAL=3600 # Vérifie toutes les heures (en secondes)
+      - WATCHTOWER_CLEANUP=true # Nettoie les anciennes images et conteneurs
+      - WATCHTOWER_NOTIFICATION_URL=discord://frMVQgb8VrXhRUKC2biVclTdMDJ2pfTnOUuvI2d4N8-iuwjWznAVZQ2361Fg1mR6JNkf@1386139354526912674 # Notifications Discord
+      - WATCHTOWER_NOTIFICATION_TEMPLATE=discord
+      - WATCHTOWER_NOTIFICATION_REPORT_TYPE=full # ou full
+#      - WATCHTOWER_NOTIFICATION_TEMPLATE="{{range .}}{{.Time.Format \"2006-01-02 15:04:05\"}} ({{.Level}}): {{.Message}}{{println}}{{end}}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Accès au démon Docker
+    networks:
+      - infrastructure_network # Watchtower doit être sur un réseau accessible au démon Docker
+      - logs_network           # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise le nom de service logs_graylog
+        tag: "watchtower/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # Healthcheck pour Watchtower (vérifie juste le démarrage du conteneur)
+#      test: ["CMD-SHELL", "pgrep -f watchtower || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 10s
+
+  adguardhome: # Service AdGuard Home
+    image: adguard/adguardhome:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /data/nfs/containers/infrastructure/adguardhome/work:/opt/adguardhome/work # Chemin du volume ajusté
+      - /data/nfs/containers/infrastructure/adguardhome/conf:/opt/adguardhome/conf # Chemin du volume ajusté
+    ports: # Important: Expose DNS ports. Web UI peut être via Traefik.
+      - "53:53/tcp" # Standard DNS TCP
+      - "53:53/udp" # Standard DNS UDP
+      - "3000:3000/tcp" # Web UI, exposé directement pour le setup initial, peut être retiré si seul Traefik est utilisé
+    networks:
+      - infrastructure_network # Réseau interne de la stack infrastructure
+      - logs_network           # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels: # Labels Traefik pour exposer AdGuard Home Web UI
+        - "traefik.enable=true"
+        - "traefik.http.routers.adguard-https.rule=Host(`adguard.truxonline.com`)"
+        - "traefik.http.routers.adguard-https.entrypoints=internal-secure"
+        - "traefik.http.routers.adguard-https.tls=true"
+        - "traefik.http.routers.adguard-https.tls.certresolver=gandi"
+        - "traefik.http.services.adguard-https.loadbalancer.server.port=3000" # Port interne de l'interface web AdGuard Home
+        - "traefik.docker.network=infrastructure_network"
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise le nom de service logs_graylog
+        tag: "adguardhome/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # Healthcheck pour AdGuard Home (vérifie l'interface web)
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# Définition des secrets utilisés dans cette stack
+secrets:
+  traefik_gandi_api_token: # Le secret pour l'API Gandi
+    external: true
+  # Les secrets core_vpn_nordvpn_token et core_database_mariadb_root_password ont été retirés
+  # car les services VPN et MariaDB ne font plus partie de cette stack infrastructure.
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  infrastructure_network:
+    external: true # Ce réseau sera créé avec le déploiement de cette stack
+  # Réseaux externes des autres stacks avec lesquels les services de cette stack doivent communiquer
+  ai_network:
+    external: true
+  divertissement_network:
+    external: true
+  tools_network:
+    external: true
+  media_management_network:
+    external: true
+  logs_network:
+    external: true
+  monitoring_network:
+    external: true
+  experimentation_network:
+    external: true
+  media_download_network:
+    external: true
+  nordvpn_ch_network: # Le réseau VPN existant
+    external: true
+  databases_network: # Ce réseau est toujours nécessaire si Traefik doit router vers des services DB
+    external: true

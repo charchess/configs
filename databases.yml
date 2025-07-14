@@ -1,0 +1,172 @@
+# databases.yml
+version: '3.8'
+
+services:
+  mariadb:
+    image: docker.io/mariadb:11.5.2
+    environment:
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/core_mariadb_root_password
+      - MARIADB_DATABASE=zabbix # Exemple si Zabbix est la seule DB, sinon MariaDB gérera plusieurs DBs
+      - MARIADB_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user # Si vous avez un user zabbix
+      - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
+    volumes:
+      - /data/nfs/containers/databases/mariadb/database:/var/lib/mysql
+#      - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
+    secrets:
+      - core_mariadb_root_password
+      - monito_zabbixdb_mysql_user # Décommenter si utilisé
+      - monito_zabbixdb_mysql_password # Décommenter si utilisé
+    networks:
+      - databases_network # Réseau interne de la stack databases
+      - logs_network    # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      # Ajoutez des contraintes de placement si nécessaire, ex: sur le noeud 'ruby'
+      # placement:
+      #   constraints:
+      #     - node.hostname == ruby
+      placement:
+        constraints:
+          - node.role == worker
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # CHANGÉ : Utilise l'adresse IP statique de Graylog
+        tag: "mariadb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # Healthcheck pour MariaDB (officiel)
+      test:
+        - "CMD-SHELL"
+        - "mariadb-admin ping -h localhost -uroot --password=$$(cat /run/secrets/core_mariadb_root_password) || exit 1" # CORRIGÉ : Lecture du secret et passage direct du mot de passe
+      start_period: 10s # MODIFIÉ : Augmenté le temps de démarrage pour la base de données
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/databases_postgres_superuser_password # Nouveau secret pour le superuser
+    volumes:
+      - /data/nfs/containers/databases/postgres/data:/var/lib/postgresql/data
+    secrets:
+      - databases_postgres_superuser_password
+      - postgres_n8n_password
+    networks:
+      - databases_network # Réseau interne de la stack databases
+      - logs_network    # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      resources:
+        reservations:
+          memory: 512M # Réserve 512 Mo de RAM pour Postgres
+        limits:
+          memory: 2G   # Limite Postgres à 2 Go de RAM au maximum
+      placement:
+        constraints:
+          - node.role == worker
+          - node.hostname == emy
+    #   placement:
+    #     constraints:
+    #       - node.hostname == ruby
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.200.66:12201" # CHANGÉ : Utilise l'adresse IP statique de Graylog
+        tag: "postgres/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour PostgreSQL
+#      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 30s # Donne du temps à PostgreSQL pour démarrer
+
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongodb:
+    image: "mongo:6.0.18"
+    # ports: # PORT EXPOSÉ SUPPRIMÉ comme demandé
+    #   - "27017:27017"
+    restart: "on-failure"
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    networks:
+      - databases_network # Réseau interne de la stack databases
+      - logs_network # AJOUTÉ : Pour envoyer les logs à Graylog
+    volumes:
+      - "/data/nfs/containers/databases/mongodb/data:/data/db"
+      - "/data/nfs/containers/databases/mongodb/config:/data/configdb"
+    healthcheck: # AJOUTÉ : Healthcheck pour MongoDB
+      test: ["CMD-SHELL", "mongosh --eval 'db.adminCommand(\"ping\")' --quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s # Donne du temps à MongoDB pour démarrer
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.200.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "mongodb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest # Image officielle de ChromaDB
+    environment:
+      - PUID=1000 # Votre PUID
+      - PGID=1000 # Votre PGID
+      - TZ=Europe/Paris # Votre fuseau horaire
+      # ChromaDB peut être configuré avec des variables d'environnement si nécessaire
+      # Pour l'instant, nous utilisons la configuration par défaut qui est suffisante pour démarrer.
+    volumes:
+      # Volume persistant pour les données de ChromaDB
+      # Assurez-vous que ce chemin existe et que les permissions sont correctes sur votre NFS
+      - /data/nfs/containers/databases/chromadb/data:/app/chroma/chroma-data
+    networks:
+      - databases_network # Réseau interne de cette stack
+      - logs_network # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels: # Labels Traefik pour exposer ChromaDB (si vous voulez une UI ou API exposée)
+        - "traefik.docker.network=databases_network"
+        - "traefik.enable=true" # Active Traefik pour ce service
+        - "traefik.http.routers.chromadb-https.rule=Host(`chromadb.truxonline.com`)" # Nom de domaine pour ChromaDB
+        - "traefik.http.routers.chromadb-https.entrypoints=internal-secure" # Accès interne seulement (outil de backend)
+        - "traefik.http.routers.chromadb-https.tls=true"
+        - "traefik.http.routers.chromadb-https.tls.certresolver=gandi"
+        - "traefik.http.services.chromadb-https.loadbalancer.server.port=8000" # Port par défaut de l'API ChromaDB
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "chromadb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # Healthcheck pour ChromaDB (vérifie que l'API répond)
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/api/v1/heartbeat || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s # Donne du temps au service pour démarrer
+
+# Définition des secrets utilisés dans cette stack
+secrets:
+  core_mariadb_root_password:
+    external: true
+  monito_zabbixdb_mysql_user: # Décommenter si utilisé
+    external: true
+  monito_zabbixdb_mysql_password: # Décommenter si utilisé
+    external: true
+  postgres_n8n_password:
+    external: true
+  databases_postgres_superuser_password:
+    external: true
+    
+# Définition des réseaux utilisés par cette stack
+networks:
+  databases_network:
+    external: true # Ce réseau sera créé avec le déploiement de cette stack
+  logs_network: # AJOUTÉ : Réseau de la stack logs (Graylog), doit être externe
+    external: true

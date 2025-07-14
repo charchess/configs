@@ -1,0 +1,257 @@
+# tools.yml
+version: '3.8'
+
+services:
+  bitwarden: # Vaultwarden
+    image: docker.io/vaultwarden/server:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - ROCKET_ENV=staging # À revoir si passage en production
+      - "ROCKET_PORT=80"
+      - "ROCKET_WORKERS=10"
+      - "ROCKET_PROFILE=release"
+      - "ROCKET_ADDRESS=0.0.0.0"
+    volumes:
+      - /data/nfs/containers/tools/vaultwarden/data:/data
+    networks:
+      - tools_network # Réseau interne de la stack tools
+      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=tools_network"
+        - "traefik.http.services.bitwarden-service.loadbalancer.server.port=80" # Utilise un nom de service générique pour les deux routeurs
+        
+        # Routeur HTTPS pour l'accès EXTERNE (via web-secure)
+        - "traefik.http.routers.bitwarden-external-https.rule=Host(`bitwarden.truxonline.com`)"
+        - "traefik.http.routers.bitwarden-external-https.entrypoints=web-secure" # Entrypoint externe
+        - "traefik.http.routers.bitwarden-external-https.tls=true"
+        - "traefik.http.routers.bitwarden-external-https.tls.certresolver=gandi"
+
+        # Routeur HTTPS pour l'accès INTERNE (via internal-secure)
+        - "traefik.http.routers.bitwarden-internal-https.rule=Host(`bitwarden.truxonline.com`)"
+        - "traefik.http.routers.bitwarden-internal-https.entrypoints=internal-secure" # Entrypoint interne
+        - "traefik.http.routers.bitwarden-internal-https.tls=true"
+        - "traefik.http.routers.bitwarden-internal-https.tls.certresolver=gandi"
+
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "bitwarden/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Bitwarden (Vaultwarden)
+      test: ["CMD-SHELL", "curl -sSf http://localhost:80 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  changedetection:
+    image: dgtlmoon/changedetection.io
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - BASE_URL=https://change.truxonline.com # Mis à jour pour HTTPS, si c'est le cas
+    volumes:
+      - /data/nfs/containers/tools/changedetection.io/datastore:/datastore
+    networks:
+      - tools_network
+      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
+    depends_on:
+      - playwright-chrome # Dépendance au navigateur headless
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=tools_network"
+        - "traefik.http.routers.change-https.rule=Host(`change.truxonline.com`)"
+        - "traefik.http.routers.change-https.entrypoints=web-secure"
+        - "traefik.http.routers.change-https.tls=true"
+        - "traefik.http.routers.change-https.tls.certresolver=gandi"
+        - "traefik.http.services.change-https.loadbalancer.server.port=5000"
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "changedetection/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Changedetection.io
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:5000 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  playwright-chrome:
+    image: browserless/chrome
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    networks:
+      - tools_network # Doit être sur le même réseau que changedetection
+      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "playwright-chrome/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+    healthcheck: # AJOUTÉ : Healthcheck pour Playwright-Chrome (vérifie l'interface web par défaut)
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  paperless: # Paperless-NG
+    image: docker.io/linuxserver/paperless-ng:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /data/nfs/containers/tools/paperless/config:/config
+      - /data/nfs/containers/tools/paperless/data:/data
+    networks:
+      - tools_network
+      - databases_network # Pour accéder à la base de données (si Paperless utilise une DB externe à sa stack)
+      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=tools_network"
+        - "traefik.http.routers.paperless-https.rule=Host(`paperless.truxonline.com`)"
+        - "traefik.http.routers.paperless-https.entrypoints=web-secure"
+        - "traefik.http.routers.paperless-https.tls=true"
+        - "traefik.http.routers.paperless-https.tls.certresolver=gandi"
+        - "traefik.http.services.paperless-https.loadbalancer.server.port=8000"
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "paperless/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Paperless-NG
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8000 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+#  openproject: # Maintenu commenté comme dans ta version
+#    image: openproject/openproject:14
+#    environment:
+#      - PUID=1000 # Ajuster si nécessaire
+#      - PGID=1000 # Ajuster si nécessaire
+#      - TZ=Europe/Paris
+#      - OPENPROJECT_SECRET_KEY_BASE_FILE=/run/secrets/management_openproject_secret_key_base
+#      # L'URL de la base de données devra pointer vers le service 'postgres' dans la stack 'databases'
+#      - DATABASE_URL=postgres://openproject:TO_REPLACE_OPENPROJECT_DB_PASSWORD@postgres/openproject # Utilisation du secret
+#    volumes:
+#      - /data/nfs/containers/tools/openproject/data:/var/openproject/assets
+#      - /data/nfs/containers/tools/openproject/db:/var/openproject/pgdata
+#    secrets:
+#      - management_openproject_secret_key_base
+#      - management_openproject_db_password # Le secret pour le mot de passe de la DB
+#    networks:
+#      - tools_network
+#      - databases_network # Pour accéder au service 'postgres'
+#      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog (si décommenté)
+#    deploy:
+#      mode: replicated
+#      replicas: 1
+#      labels:
+#        - "traefik.enable=true"
+#        - "traefik.docker.network=tools_network"
+#        - "traefik.http.routers.project-https.rule=Host(`project.truxonline.com`)"
+#        - "traefik.http.routers.project-https.entrypoints=web-secure"
+#        - "traefik.http.routers.project-https.tls=true"
+#        - "traefik.http.routers.project-https.tls.certresolver=gandi"
+#        - "traefik.http.services.project-https.loadbalancer.server.port=80"
+#    logging: # AJOUTÉ : Configuration du logging vers Graylog (si décommenté)
+#      driver: gelf
+#      options:
+#        gelf-address: "udp://192.168.201.66:12201"
+#        tag: "openproject/{{.Name}}/{{.ID}}"
+#    healthcheck: # AJOUTÉ : Healthcheck pour OpenProject (si décommenté)
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:80 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    environment:
+      - PUID=100 # Remarque: PUID/PGID spécifiques pour Calibre
+      - PGID=1024
+      - TZ=Europe/Paris
+    volumes:
+      - /data/nfs/containers/tools/calibre/config:/config
+      - /data/nfs/content/ebooks:/books
+      - /data/nfs/content/incoming/ebooks:/input
+    networks:
+      - tools_network
+      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=tools_network"
+        - "traefik.http.routers.calibre-https.rule=Host(`calibre.truxonline.com`)"
+        - "traefik.http.routers.calibre-https.entrypoints=web-secure"
+        - "traefik.http.routers.calibre-https.tls=true"
+        - "traefik.http.routers.calibre-https.tls.certresolver=gandi"
+        - "traefik.http.services.calibre-https.loadbalancer.server.port=8080" # Port par défaut de Calibre WebUI
+    logging: # AJOUTÉ : Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
+        tag: "calibre/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
+#    healthcheck: # AJOUTÉ : Healthcheck pour Calibre
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
+
+# Définition des secrets utilisés dans cette stack
+secrets:
+  management_openproject_secret_key_base:
+    external: true
+  management_openproject_db_password:
+    external: true
+
+# Définition des réseaux utilisés par cette stack
+networks:
+  tools_network:
+    external: true # Ce réseau sera créé avec le déploiement de cette stack
+  databases_network:
+    external: true # Réseau de la stack 'databases'
+  logs_network: # AJOUTÉ : Réseau de la stack logs (Graylog), doit être externe
+    external: true
