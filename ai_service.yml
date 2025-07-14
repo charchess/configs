@@ -18,6 +18,7 @@ services:
           - node.role == worker
       labels:
         - "traefik.enable=true"
+        - "traefik.docker.network=ai_network"
         - "traefik.http.routers.chat-ui-https.rule=Host(`lisa.truxonline.com`)"
         - "traefik.http.routers.chat-ui-https.entrypoints=websecure" # On utilise l'entrypoint public
         - "traefik.http.routers.chat-ui-https.tls=true"
