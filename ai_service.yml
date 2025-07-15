@@ -21,7 +21,7 @@ services:
         - "traefik.docker.network=ai_network"
         - "traefik.http.routers.chat-ui-https.rule=Host(`lisa.truxonline.com`)"
         - "traefik.http.routers.chat-ui-https.entrypoints=internal-secure" # On utilise l'entrypoint public
-        - "traefik.http.routers.chat-ui-https.entrypoints=websecure" # On utilise l'entrypoint public
+        - "traefik.http.routers.chat-ui-https.entrypoints=web-secure" # On utilise l'entrypoint public
         - "traefik.http.routers.chat-ui-https.tls=true"
         - "traefik.http.routers.chat-ui-https.tls.certresolver=gandi"
         - "traefik.http.services.chat-ui-https.loadbalancer.server.port=80"
