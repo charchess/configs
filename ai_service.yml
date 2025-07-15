@@ -42,6 +42,7 @@ services:
       - N8N_MEMORY_WEBHOOK_URL=https://n8n.truxonline.com/webhook/52328e0f-d35f-4982-8467-cf883eaf840c
       - N8N_ACTION_WEBHOOK_URL=https://n8n.truxonline.com/webhook/36dd058c-de30-4dd4-bb17-cd1340fb914b
       - VERBOSE=true
+      - N8N_RETRIEVAL_WEBHOOK_URL=https://n8n.truxonline.com/webhook/5dd50a8d-4ddb-4c09-9e9e-a644dc54b0be
     ports:
       - 8002:8002
     deploy:
