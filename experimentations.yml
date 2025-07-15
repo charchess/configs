@@ -82,3 +82,5 @@ networks:
     external: true # Réseau de la stack 'databases'
   logs_network: # AJOUTÉ : Réseau de la stack logs (Graylog), doit être externe
     external: true
+  ai_network:
+    external: true # Réseau de la stack 'ai_services'
