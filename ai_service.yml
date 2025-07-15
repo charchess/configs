@@ -35,6 +35,8 @@ services:
       - logs_network
     environment:
       # C'est ici que nous configurons le service !
+      - LLM_BACKEND=gemini
+      - GEMINI_API_KEY=AIzaSyBTXF-L_pgkz6xxvordJkKvaXABsmVoSgQ
       - OOBABOOGA_API_URL=http://192.168.199.78:5000/v1
       - N8N_MEMORY_WEBHOOK_URL=https://n8n.truxonline.com/webhook/52328e0f-d35f-4982-8467-cf883eaf840c
       - N8N_ACTION_WEBHOOK_URL=https://n8n.truxonline.com/webhook/36dd058c-de30-4dd4-bb17-cd1340fb914b
