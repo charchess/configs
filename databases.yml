@@ -50,6 +50,7 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD_FILE=/run/secrets/databases_postgres_superuser_password # Nouveau secret pour le superuser
+    command: --innodb-force-recovery=6
     volumes:
       - /data/nfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
