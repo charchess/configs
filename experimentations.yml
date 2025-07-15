@@ -55,7 +55,6 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin4_container
     ports:
       - "8333:80"
     environment:
