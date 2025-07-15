@@ -9,6 +9,7 @@ services:
       - MARIADB_DATABASE=zabbix # Exemple si Zabbix est la seule DB, sinon MariaDB gérera plusieurs DBs
       - MARIADB_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user # Si vous avez un user zabbix
       - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
+      - MARIADB_innodb_force_recovery=5
     volumes:
       - /data/nfs/containers/databases/mariadb/database:/var/lib/mysql
 #      - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
