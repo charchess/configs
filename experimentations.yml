@@ -1,11 +1,8 @@
 # experimentation.yml
 version: '3.8'
 
-services:
+#services:
 
-configs:
-  experimentations_sillytavern-gemini_config.yaml:
-    external: true
 
 # Définition des réseaux utilisés par cette stack
 networks:

@@ -321,6 +321,8 @@ secrets:
     external: true
   management_openproject_db_password:
     external: true
+  postgres_n8n_password:
+    external: true # Le mot de passe pour la base de données n8n, défini dans la stack 'databases'
 
 # Définition des réseaux utilisés par cette stack
 networks:
