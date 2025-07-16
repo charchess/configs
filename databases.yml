@@ -11,8 +11,8 @@ services:
       - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
       - MARIADB_innodb_force_recovery=5
     volumes:
-      - /data/gluterfs/containers/databases/mariadb/database:/var/lib/mysql
-#      - /data/gluterfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
+      - /data/glusterfs/containers/databases/mariadb/database:/var/lib/mysql
+#      - /data/glusterfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
     secrets:
       - core_mariadb_root_password
       - monito_zabbixdb_mysql_user # Décommenter si utilisé
@@ -54,7 +54,7 @@ services:
       - innodb_flush_log_at_trx_commit = 1 
 #      - innodb-force-recovery=6
     volumes:
-      - /data/gluterfs/containers/databases/postgres/data:/var/lib/postgresql/data
+      - /data/glusterfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
       - databases_postgres_superuser_password
       - postgres_n8n_password
@@ -101,8 +101,8 @@ services:
       - databases_network # Réseau interne de la stack databases
       - logs_network # AJOUTÉ : Pour envoyer les logs à Graylog
     volumes:
-      - "/data/gluterfs/containers/databases/mongodb/data:/data/db"
-      - "/data/gluterfs/containers/databases/mongodb/config:/data/configdb"
+      - "/data/glusterfs/containers/databases/mongodb/data:/data/db"
+      - "/data/glusterfs/containers/databases/mongodb/config:/data/configdb"
     healthcheck: # AJOUTÉ : Healthcheck pour MongoDB
       test: ["CMD-SHELL", "mongosh --eval 'db.adminCommand(\"ping\")' --quiet"]
       interval: 10s
@@ -126,7 +126,7 @@ services:
     volumes:
       # Volume persistant pour les données de ChromaDB
       # Assurez-vous que ce chemin existe et que les permissions sont correctes sur votre NFS
-      - /data/gluterfs/containers/databases/chromadb/data:/app/chroma/chroma-data
+      - /data/glusterfs/containers/databases/chromadb/data:/app/chroma/chroma-data
     networks:
       - databases_network # Réseau interne de cette stack
       - logs_network # Pour envoyer les logs à Graylog
