@@ -326,6 +326,8 @@ secrets:
 
 # Définition des réseaux utilisés par cette stack
 networks:
+  ai_network:
+    external: true # Ce réseau sera créé avec le déploiement de cette stack
   tools_network:
     external: true # Ce réseau sera créé avec le déploiement de cette stack
   databases_network:
