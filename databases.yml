@@ -10,9 +10,10 @@ services:
       - MARIADB_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user # Si vous avez un user zabbix
       - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
       - MARIADB_innodb_force_recovery=5
-    command: 
-      - innodb_flush_log_at_trx_commit = 1 
-#      - innodb-force-recovery=6
+    command:
+      # Passe l'option de configuration directement au processus mysqld
+      # Note : les options de MariaDB/MySQL en ligne de commande utilisent des tirets (-) au lieu d'underscores (_)
+      - "--innodb-flush-log-at-trx-commit=1"
     volumes:
       - /data/glusterfs/containers/databases/mariadb/database:/var/lib/mysql
 #      - /data/glusterfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
