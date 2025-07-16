@@ -10,7 +10,7 @@ services:
       - TZ=Europe/Paris # Adjust timezone
     volumes:
       - /data/glusterfs/containers/media-downloaders/sabnzbd/config:/config
-      - /data/glusterfs/downloads:/downloads # Chemin des téléchargements
+      - /data/nfs/downloads:/downloads # Chemin des téléchargements
     networks:
       - media_download_network # Réseau interne de cette stack
       - logs_network           # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -92,8 +92,8 @@ services:
 #      - GUIPASS_FILE=/run/secrets/media_amule_gui_password # Utilisation du secret
 #    volumes:
 #      - /data/glusterfs/containers/media-downloaders/amule/config:/home/amule/.aMule
-#      - /data/glusterfs/downloads/amule:/incoming
-#      - /data/glusterfs/downloads/incomplete:/temp
+#      - /data/nfs/downloads/amule:/incoming
+#      - /data/nfs/downloads/incomplete:/temp
 #    secrets:
 #      - media_amule_webui_password
 #      - media_amule_gui_password
