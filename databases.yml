@@ -10,6 +10,9 @@ services:
       - MARIADB_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user # Si vous avez un user zabbix
       - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
       - MARIADB_innodb_force_recovery=5
+    command: 
+      - innodb_flush_log_at_trx_commit = 1 
+#      - innodb-force-recovery=6
     volumes:
       - /data/glusterfs/containers/databases/mariadb/database:/var/lib/mysql
 #      - /data/glusterfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
@@ -50,9 +53,6 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD_FILE=/run/secrets/databases_postgres_superuser_password # Nouveau secret pour le superuser
-    command: 
-      - innodb_flush_log_at_trx_commit = 1 
-#      - innodb-force-recovery=6
     volumes:
       - /data/glusterfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
