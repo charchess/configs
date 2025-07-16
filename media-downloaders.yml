@@ -50,7 +50,7 @@ services:
       # Autres variables d'environnement qBittorrent
     volumes:
       - /data/gluterfs/containers/media-downloaders/torrent/config:/config
-      - /data/gluterfs/downloads:/downloads
+      - /data/nfs/downloads:/downloads
     networks:
       # Attention: Ce service doit passer par le VPN
       - nordvpn_ch_network
