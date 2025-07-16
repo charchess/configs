@@ -12,7 +12,7 @@ services:
       - "plugins.security.ssl.http.enabled=false" # Désactive SSL pour la sécurité du plugin
       - "plugins.security.disabled=true" # Désactive le plugin de sécurité
       # Le mot de passe admin initial pour OpenSearch (en clair - VÉRIFIEZ QUE C'EST LE VOTRE)
-#      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=+_8r#wliY3Pv5-HMIf4qzXImYzZf-M=M"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=+_8r#wliY3Pv5-HMIf4qzXImYzZf-M=M"
       - "OPENSEARCH_USERNAME=admin" # Utilisateur par défaut pour OpenSearch
     deploy:
       placement:
