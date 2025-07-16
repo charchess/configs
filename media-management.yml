@@ -10,9 +10,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/radarr/config:/config
-      - /data/nfs/downloads/movies:/downloads
-      - /data/nfs/content/movies:/movies
+      - /data/gluterfs/containers/media-management/radarr/config:/config
+      - /data/gluterfs/downloads/movies:/downloads
+      - /data/gluterfs/content/movies:/movies
     networks:
       - media_management_network # Son propre réseau
       - databases_network        # Maintenu pour d'autres communications si nécessaire (non lié à la DB interne de Radarr)
@@ -56,9 +56,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/lidarr/config:/config
-      - /data/nfs/downloads/music:/downloads
-      - /data/nfs/content/music:/music
+      - /data/gluterfs/containers/media-management/lidarr/config:/config
+      - /data/gluterfs/downloads/music:/downloads
+      - /data/gluterfs/content/music:/music
     networks:
       - media_management_network
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -99,9 +99,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/sonarr/config:/config
-      - /data/nfs/downloads/TV Show:/downloads
-      - /data/nfs/content/TV Show:/tv
+      - /data/gluterfs/containers/media-management/sonarr/config:/config
+      - /data/gluterfs/downloads/TV Show:/downloads
+      - /data/gluterfs/content/TV Show:/tv
     networks:
       - media_management_network
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -142,9 +142,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/readarr/config:/config
-      - /data/nfs/downloads/ebooks:/downloads
-      - /data/nfs/content/ebooks:/books
+      - /data/gluterfs/containers/media-management/readarr/config:/config
+      - /data/gluterfs/downloads/ebooks:/downloads
+      - /data/gluterfs/content/ebooks:/books
     networks:
       - media_management_network
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -186,7 +186,7 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/prowlarr/config:/config
+      - /data/gluterfs/containers/media-management/prowlarr/config:/config
     networks:
       - media_management_network # Prowlarr expose une API pour les autres Arr*
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -227,9 +227,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/whisparr/config:/config
-      - /data/nfs/downloads/xxx:/downloads
-      - /data/nfs/content/xxx:/xxx
+      - /data/gluterfs/containers/media-management/whisparr/config:/config
+      - /data/gluterfs/downloads/xxx:/downloads
+      - /data/gluterfs/content/xxx:/xxx
     networks:
       - media_management_network
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -310,9 +310,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/mylar/config:/config
-      - /data/nfs/content/comics:/comics
-      - /data/nfs/downloads/comics:/downloads
+      - /data/gluterfs/containers/media-management/mylar/config:/config
+      - /data/gluterfs/content/comics:/comics
+      - /data/gluterfs/downloads/comics:/downloads
     networks:
       - media_management_network
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -353,9 +353,9 @@ services:
       - TZ=Europe/Paris
       # Les bases de données sont gérées en interne (SQLite par défaut)
     volumes:
-      - /data/nfs/containers/media-management/pyload/config:/config
-      - /data/nfs/content/pyload:/downloads # Chemin de sortie de pyload
-      - /data/nfs/containers/media-management/pyload/tmp:/tmp/pyLoad # AJOUTÉ : Volume pour le répertoire temporaire, CHEMIN CORRIGÉ DÉFINITIVEMENT
+      - /data/gluterfs/containers/media-management/pyload/config:/config
+      - /data/gluterfs/content/pyload:/downloads # Chemin de sortie de pyload
+      - /data/gluterfs/containers/media-management/pyload/tmp:/tmp/pyLoad # AJOUTÉ : Volume pour le répertoire temporaire, CHEMIN CORRIGÉ DÉFINITIVEMENT
     networks:
       - media_management_network
       - databases_network # Maintenu pour d'autres communications si nécessaire
@@ -395,10 +395,10 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /data/nfs/containers/media-management/ubooquity/config:/config
-      - /data/nfs/containers/media-management/ubooquity/tmp:/tmp/JarClassLoader
-      - /data/nfs/content/ebooks:/books
-      - /data/nfs/content/comics:/comics
+      - /data/gluterfs/containers/media-management/ubooquity/config:/config
+      - /data/gluterfs/containers/media-management/ubooquity/tmp:/tmp/JarClassLoader
+      - /data/gluterfs/content/ebooks:/books
+      - /data/gluterfs/content/comics:/comics
     networks:
       - media_management_network
       - logs_network             # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -435,9 +435,9 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /data/nfs/containers/media-management/hydrus/db:/opt/hydrus/db
-      - /data/nfs/content/pictures/hentai/client_files:/opt/hydrus/client_files
-      - /data/nfs/content/pictures/hentai/server_files:/opt/hydrus/server_files
+      - /data/gluterfs/containers/media-management/hydrus/db:/opt/hydrus/db
+      - /data/gluterfs/content/pictures/hentai/client_files:/opt/hydrus/client_files
+      - /data/gluterfs/content/pictures/hentai/server_files:/opt/hydrus/server_files
     networks:
       - media_management_network
       - databases_network # Gardé au cas où, mais Hydrus utilise sa propre DB interne
@@ -478,8 +478,8 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /data/nfs/containers/media-management/hydrus/db:/opt/hydrus/db
-      - /data/nfs/content/pictures/hentai/server_files:/opt/hydrus/db/server_files
+      - /data/gluterfs/containers/media-management/hydrus/db:/opt/hydrus/db
+      - /data/gluterfs/content/pictures/hentai/server_files:/opt/hydrus/db/server_files
     networks:
       - media_management_network
       - databases_network # Gardé au cas où, mais Hydrus utilise sa propre DB interne

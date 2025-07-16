@@ -9,8 +9,8 @@ services:
       - PGID=1000 # Example GID
       - TZ=Europe/Paris # Adjust timezone
     volumes:
-      - /data/nfs/containers/media-downloaders/sabnzbd/config:/config
-      - /data/nfs/downloads:/downloads # Chemin des téléchargements
+      - /data/gluterfs/containers/media-downloaders/sabnzbd/config:/config
+      - /data/gluterfs/downloads:/downloads # Chemin des téléchargements
     networks:
       - media_download_network # Réseau interne de cette stack
       - logs_network           # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -49,8 +49,8 @@ services:
       - TZ=Europe/Paris # Adjust timezone
       # Autres variables d'environnement qBittorrent
     volumes:
-      - /data/nfs/containers/media-downloaders/torrent/config:/config
-      - /data/nfs/downloads:/downloads
+      - /data/gluterfs/containers/media-downloaders/torrent/config:/config
+      - /data/gluterfs/downloads:/downloads
     networks:
       # Attention: Ce service doit passer par le VPN
       - nordvpn_ch_network
@@ -91,9 +91,9 @@ services:
 #      - WEBUIPASS_FILE=/run/secrets/media_amule_webui_password # Utilisation du secret
 #      - GUIPASS_FILE=/run/secrets/media_amule_gui_password # Utilisation du secret
 #    volumes:
-#      - /data/nfs/containers/media-downloaders/amule/config:/home/amule/.aMule
-#      - /data/nfs/downloads/amule:/incoming
-#      - /data/nfs/downloads/incomplete:/temp
+#      - /data/gluterfs/containers/media-downloaders/amule/config:/home/amule/.aMule
+#      - /data/gluterfs/downloads/amule:/incoming
+#      - /data/gluterfs/downloads/incomplete:/temp
 #    secrets:
 #      - media_amule_webui_password
 #      - media_amule_gui_password

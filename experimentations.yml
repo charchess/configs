@@ -22,7 +22,7 @@ services:
       - N8N_RUNNERS_ENABLED=true
       - N8N_SECURE_COOKIE=false # Garder à true pour le côté client/navigateur
     volumes:
-      - /data/nfs/containers/experimentations/n8n/data:/home/node/.n8n
+      - /data/gluterfs/containers/experimentations/n8n/data:/home/node/.n8n
     secrets:
       - postgres_n8n_password
     networks:

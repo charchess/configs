@@ -6,8 +6,8 @@ services:
     image: nginx:alpine
     volumes:
       # Assurez-vous que ce chemin NFS existe !
-      - /data/nfs/containers/ai_services/chat-ui/:/usr/share/nginx/html:ro 
-      - /data/nfs/containers/ai_services/chat-ui/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /data/gluterfs/containers/ai_services/chat-ui/:/usr/share/nginx/html:ro 
+      - /data/gluterfs/containers/ai_services/chat-ui/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - logs_network
       - ai_network
@@ -92,7 +92,7 @@ services:
         constraints:
           - node.role == worker
     volumes:
-      - /data/nfs/containers/ai_services/embedding-service/models_cache:/models
+      - /data/gluterfs/containers/ai_services/embedding-service/models_cache:/models
     logging:
       driver: gelf
       options:
@@ -110,16 +110,16 @@ services:
       - FORCE_COLOR=1     # Force la couleur dans les logs de Node.js
     volumes:
       # Volume persistant pour les données de SillyTavern (chats, paramètres, etc.)
-      - /data/nfs/containers/ai_services/sillytavern-gemini/data:/home/node/app/data
+      - /data/gluterfs/containers/ai_services/sillytavern-gemini/data:/home/node/app/data
       # Volume persistant pour la configuration
-      - /data/nfs/containers/ai_services/sillytavern-gemini/config:/home/node/app/config
+      - /data/gluterfs/containers/ai_services/sillytavern-gemini/config:/home/node/app/config
 #      # Volume persistant pour les plugins
-#      - /data/nfs/containers/divertissement/sillytavern/plugins:/home/node/app/plugins
+#      - /data/gluterfs/containers/divertissement/sillytavern/plugins:/home/node/app/plugins
 #      # Volume persistant pour les extensions tierces (reste car c'est un chemin spécifique)
-#      - /data/nfs/containers/divertissement/sillytavern/extensions:/home/node/app/public/scripts/extensions/third-party
+#      - /data/gluterfs/containers/divertissement/sillytavern/extensions:/home/node/app/public/scripts/extensions/third-party
 #      # Cela permet à index.html et aux autres fichiers statiques de venir de l'image Docker
-#      - /data/nfs/containers/divertissement/sillytavern/user-images:/home/node/app/public/user/images
-#      - /data/nfs/containers/divertissement/sillytavern/backups:/home/node/app/backups
+#      - /data/gluterfs/containers/divertissement/sillytavern/user-images:/home/node/app/public/user/images
+#      - /data/gluterfs/containers/divertissement/sillytavern/backups:/home/node/app/backups
     ports:
       - 8889:8888
     configs:

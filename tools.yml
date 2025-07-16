@@ -14,7 +14,7 @@ services:
       - "ROCKET_PROFILE=release"
       - "ROCKET_ADDRESS=0.0.0.0"
     volumes:
-      - /data/nfs/containers/tools/vaultwarden/data:/data
+      - /data/gluterfs/containers/tools/vaultwarden/data:/data
     networks:
       - tools_network # Réseau interne de la stack tools
       - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -61,7 +61,7 @@ services:
       - TZ=Europe/Paris
       - BASE_URL=https://change.truxonline.com # Mis à jour pour HTTPS, si c'est le cas
     volumes:
-      - /data/nfs/containers/tools/changedetection.io/datastore:/datastore
+      - /data/gluterfs/containers/tools/changedetection.io/datastore:/datastore
     networks:
       - tools_network
       - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -127,8 +127,8 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /data/nfs/containers/tools/paperless/config:/config
-      - /data/nfs/containers/tools/paperless/data:/data
+      - /data/gluterfs/containers/tools/paperless/config:/config
+      - /data/gluterfs/containers/tools/paperless/data:/data
     networks:
       - tools_network
       - databases_network # Pour accéder à la base de données (si Paperless utilise une DB externe à sa stack)
@@ -169,8 +169,8 @@ services:
 #      # L'URL de la base de données devra pointer vers le service 'postgres' dans la stack 'databases'
 #      - DATABASE_URL=postgres://openproject:TO_REPLACE_OPENPROJECT_DB_PASSWORD@postgres/openproject # Utilisation du secret
 #    volumes:
-#      - /data/nfs/containers/tools/openproject/data:/var/openproject/assets
-#      - /data/nfs/containers/tools/openproject/db:/var/openproject/pgdata
+#      - /data/gluterfs/containers/tools/openproject/data:/var/openproject/assets
+#      - /data/gluterfs/containers/tools/openproject/db:/var/openproject/pgdata
 #    secrets:
 #      - management_openproject_secret_key_base
 #      - management_openproject_db_password # Le secret pour le mot de passe de la DB
@@ -208,9 +208,9 @@ services:
       - PGID=1024
       - TZ=Europe/Paris
     volumes:
-      - /data/nfs/containers/tools/calibre/config:/config
-      - /data/nfs/content/ebooks:/books
-      - /data/nfs/content/incoming/ebooks:/input
+      - /data/gluterfs/containers/tools/calibre/config:/config
+      - /data/gluterfs/content/ebooks:/books
+      - /data/gluterfs/content/incoming/ebooks:/input
     networks:
       - tools_network
       - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog

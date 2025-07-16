@@ -33,7 +33,7 @@ services:
       - logs_network # Réseau de cette stack
     volumes:
       # Nouveau chemin de volume standardisé
-      - "/data/nfs/containers/logs/opensearch/data:/usr/share/opensearch/data"
+      - "/data/gluterfs/containers/logs/opensearch/data:/usr/share/opensearch/data"
 
   # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
@@ -86,7 +86,7 @@ services:
       - databases_network # Pour accéder à MongoDB qui est dans la stack 'databases'
     volumes:
       # Nouveau chemin de volume standardisé
-      - "/data/nfs/containers/logs/graylog/data:/usr/share/graylog/data"
+      - "/data/gluterfs/containers/logs/graylog/data:/usr/share/graylog/data"
     deploy:
       placement:
         constraints:

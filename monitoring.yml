@@ -14,11 +14,11 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/core_mariadb_root_password # Mot de passe root de la DB MariaDB principale
     volumes:
-#      - /data/nfs/containers/zabbix/zabbix-server/etc/zabbix_server.conf:/etc/zabbix/zabbix_server.conf:rw # Maintenu commenté
-      - /data/nfs/containers/monitoring/zabbix-server/alertscripts:/usr/lib/zabbix/alertscripts:ro
-      - /data/nfs/containers/monitoring/zabbix-server/externalscripts:/usr/lib/zabbix/externalscripts:ro
-      - /data/nfs/containers/monitoring/zabbix-server/snmptraps:/var/lib/zabbix/snmptraps:ro
-      - /data/nfs/containers/monitoring/zabbix-server/mibs:/var/lib/zabbix/mibs:ro
+#      - /data/gluterfs/containers/zabbix/zabbix-server/etc/zabbix_server.conf:/etc/zabbix/zabbix_server.conf:rw # Maintenu commenté
+      - /data/gluterfs/containers/monitoring/zabbix-server/alertscripts:/usr/lib/zabbix/alertscripts:ro
+      - /data/gluterfs/containers/monitoring/zabbix-server/externalscripts:/usr/lib/zabbix/externalscripts:ro
+      - /data/gluterfs/containers/monitoring/zabbix-server/snmptraps:/var/lib/zabbix/snmptraps:ro
+      - /data/gluterfs/containers/monitoring/zabbix-server/mibs:/var/lib/zabbix/mibs:ro
     secrets:
       - monito_zabbixdb_mysql_user
       - monito_zabbixdb_mysql_password
@@ -58,8 +58,8 @@ services:
       - 8087:8080 # CHANGÉ : Exposition du port 8087 de l'hôte vers 8080 du conteneur
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      # Ligne supprimée : - /data/nfs/containers/monitoring/zabbix-web/nginx:/etc/nginx/conf.d:ro
-      - /data/nfs/containers/monitoring/zabbix-web/modules:/usr/lib/zabbix/modules:ro
+      # Ligne supprimée : - /data/gluterfs/containers/monitoring/zabbix-web/nginx:/etc/nginx/conf.d:ro
+      - /data/gluterfs/containers/monitoring/zabbix-web/modules:/usr/lib/zabbix/modules:ro
     secrets:
       - monito_zabbixdb_mysql_user
       - monito_zabbixdb_mysql_password
