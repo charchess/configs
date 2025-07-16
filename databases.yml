@@ -31,6 +31,11 @@ services:
       # placement:
       #   constraints:
       #     - node.hostname == ruby
+      resources:
+        limits:
+          memory: 1G # Alloue 1 Go de RAM max à MariaDB. Ajustez si nécessaire.
+        reservations:
+          memory: 512M # Réserve 512 Mo de RAM pour MariaDB
       placement:
         constraints:
           - node.role == worker
