@@ -28,7 +28,6 @@ services:
 #    ports:
 #      - "9203:9200" # Port exposé pour accès direct à OpenSearch
 #      - "9303:9300" # Port exposé pour communications entre nœuds OpenSearch (si cluster)
-    restart: "on-failure"
     networks:
       - logs_network # Réseau de cette stack
     volumes:
@@ -76,7 +75,6 @@ services:
       - "12201:12201/tcp"
       # GELF UDP
       - "12201:12201/udp"
-      # Forwarder data
       - "13301:13301/tcp"
       # Forwarder config
       - "13302:13302/tcp"

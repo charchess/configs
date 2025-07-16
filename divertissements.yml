@@ -55,7 +55,6 @@ services:
 #      start_period: 60s # Donne du temps au service pour démarrer
 
   free-games-claimer:
-    container_name: fgc # Nom du conteneur pour une meilleure identification dans les logs
     image: ghcr.io/vogler/free-games-claimer:latest
     environment:
       - PUID=1000
