@@ -333,6 +333,7 @@ services:
           - node.role == worker
       labels: # Labels Traefik pour exposer phpMyAdmin via HTTPS
         - "traefik.enable=true"
+        - "traefik.docker.network=tools_network" # Indique explicitement le réseau à Traefik
         - "traefik.http.routers.phpmyadmin-https.rule=Host(`phpmyadmin.truxonline.com`)"
         - "traefik.http.routers.phpmyadmin-https.entrypoints=internal-secure" # Accès interne car c'est un outil de gestion
         - "traefik.http.routers.phpmyadmin-https.tls=true"
