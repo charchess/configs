@@ -24,9 +24,9 @@ services:
       - "192.168.200.66:8080:8080" # Dashboard Traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /data/glusterfs/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
-      - /data/glusterfs/containers/infrastructure/traefik/config/external.yaml:/etc/traefik/external.yaml:ro
-      - /data/glusterfs/containers/infrastructure/traefik/certs:/var/traefik/certs/
+      - /data/local/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - /data/local/containers/infrastructure/traefik/config/external.yaml:/etc/traefik/external.yaml:ro
+      - /data/local/containers/infrastructure/traefik/certs:/var/traefik/certs/
     deploy:
       placement:
         constraints:
@@ -112,8 +112,8 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /data/glusterfs/containers/infrastructure/adguardhome/work:/opt/adguardhome/work # Chemin du volume ajusté
-      - /data/glusterfs/containers/infrastructure/adguardhome/conf:/opt/adguardhome/conf # Chemin du volume ajusté
+      - /data/local/containers/infrastructure/adguardhome/work:/opt/adguardhome/work # Chemin du volume ajusté
+      - /data/local/containers/infrastructure/adguardhome/conf:/opt/adguardhome/conf # Chemin du volume ajusté
     ports: # Important: Expose DNS ports. Web UI peut être via Traefik.
       - "53:53/tcp" # Standard DNS TCP
       - "53:53/udp" # Standard DNS UDP
