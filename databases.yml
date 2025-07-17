@@ -45,8 +45,7 @@ services:
         gelf-address: "udp://192.168.201.66:12201" # CHANGÉ : Utilise l'adresse IP statique de Graylog
         tag: "mariadb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
     healthcheck: # Healthcheck pour ChromaDB (vérifie que l'API répond)
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 30s
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect"]      interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
