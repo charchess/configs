@@ -309,6 +309,45 @@ services:
         gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
         tag: "n8n/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
 
+  phpmyadmin: # NOUVEAU SERVICE : phpMyAdmin
+    image: phpmyadmin/phpmyadmin:latest # Utilise l'image officielle phpmyadmin
+    restart: always # Comme demandé
+    ports:
+      - 8080:80 # Publication de port directe sur l'hôte, comme demandé
+    environment:
+      - PMA_ARBITRARY=1 # Comme demandé, permet de se connecter à n'importe quel hôte
+      - PUID=1000 # Pour la cohérence avec vos autres services
+      - PGID=1000 # Pour la cohérence avec vos autres services
+      - TZ=Europe/Paris # Votre fuseau horaire
+      # PMA_HOST et PMA_PORT peuvent être définis ici pour une connexion par défaut
+      # Ex: - PMA_HOST=mariadb
+      # Ex: - PMA_PORT=3306
+    networks:
+      - tools_network      # Réseau interne de cette stack
+      - databases_network  # Pour accéder aux services de base de données (mariadb, postgres)
+      - logs_network       # Pour envoyer les logs à Graylog
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: # Labels Traefik pour exposer phpMyAdmin via HTTPS
+        - "traefik.enable=true"
+        - "traefik.http.routers.phpmyadmin-https.rule=Host(`phpmyadmin.truxonline.com`)"
+        - "traefik.http.routers.phpmyadmin-https.entrypoints=internal-secure" # Accès interne car c'est un outil de gestion
+        - "traefik.http.routers.phpmyadmin-https.tls=true"
+        - "traefik.http.routers.phpmyadmin-https.tls.certresolver=gandi"
+        - "traefik.http.services.phpmyadmin-https.loadbalancer.server.port=80" # Port interne de phpMyAdmin
+    logging: # Configuration du logging vers Graylog
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201"
+        tag: "phpmyadmin/{{.Name}}/{{.ID}}"
+    healthcheck: # Healthcheck pour phpMyAdmin (vérifie l'interface web)
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/index.php || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
 # Définition des secrets utilisés dans cette stack
 secrets:
   postgres_n8n_password:
