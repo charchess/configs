@@ -311,9 +311,8 @@ services:
 
   phpmyadmin: # NOUVEAU SERVICE : phpMyAdmin
     image: phpmyadmin/phpmyadmin:latest # Utilise l'image officielle phpmyadmin
-    restart: always # Comme demandé
     ports:
-      - 8080:80 # Publication de port directe sur l'hôte, comme demandé
+      - 8081:80 # Publication de port directe sur l'hôte, comme demandé
     environment:
       - PMA_ARBITRARY=1 # Comme demandé, permet de se connecter à n'importe quel hôte
       - PUID=1000 # Pour la cohérence avec vos autres services
