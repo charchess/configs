@@ -300,7 +300,6 @@ services:
         - "traefik.http.routers.n8n-https.tls=true"
         - "traefik.http.routers.n8n-https.tls.certresolver=gandi"
         - "traefik.http.services.n8n-https.loadbalancer.server.port=5678"
-        
         - "traefik.http.services.n8n-https.loadbalancer.server.scheme=http" # CHANGEMENT CLÉ : Traefik communique en HTTP avec le backend
                                                                           # Cela correspond à N8N_PROTOCOL=http
     logging: # AJOUTÉ : Configuration du logging vers Graylog
