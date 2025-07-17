@@ -44,14 +44,12 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201" # CHANGÉ : Utilise l'adresse IP statique de Graylog
         tag: "mariadb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-    healthcheck: # Healthcheck pour MariaDB (officiel)
-      test:
-        - "CMD-SHELL"
-        - "mariadb-admin ping -h localhost -uroot --password=$$(cat /run/secrets/core_mariadb_root_password) || exit 1" # CORRIGÉ : Lecture du secret et passage direct du mot de passe
-      start_period: 10s # MODIFIÉ : Augmenté le temps de démarrage pour la base de données
-      interval: 10s
-      timeout: 5s
+    healthcheck: # Healthcheck pour ChromaDB (vérifie que l'API répond)
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/api/v1/heartbeat || exit 1"]
+      interval: 30s
+      timeout: 10s
       retries: 3
+      start_period: 30s
 
   postgres:
     image: postgres:15
