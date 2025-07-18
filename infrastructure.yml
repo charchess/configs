@@ -149,7 +149,7 @@ services:
   # --- Composants AWX (Ansible Tower Open Source) ---
   # Service Web d'AWX (interface utilisateur et API)
   awx_web:
-    image: ansible/awx:latest
+    image: quay.io/ansible/awx:latest
     hostname: awx-web
     command: ["/usr/bin/dumb-init", "awx", "web"]
     environment:
@@ -170,6 +170,7 @@ services:
       - logs_network
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=infrastructure_network" # Indique à Traefik le réseau où trouver AWX
       - "traefik.http.routers.awx-web.rule=Host(`awx.truxonline.com`)"
       - "traefik.http.routers.awx-web.entrypoints=web-secure"
       - "traefik.http.routers.awx-web.tls=true"
@@ -196,7 +197,7 @@ services:
 
   # Service de Tâches d'AWX (exécute les playbooks Ansible)
   awx_task:
-    image: ansible/awx:latest
+    image: quay.io/ansible/awx:latest
     hostname: awx-task
     command: ["/usr/bin/dumb-init", "awx", "task"]
     environment:
