@@ -160,6 +160,34 @@ services:
 #      retries: 3
 #      start_period: 30s # Donne du temps au service pour démarrer
 
+  # Service Redis (général)
+  redis:
+    image: redis:6-alpine
+    hostname: redis
+    networks:
+      - databases_network
+      - logs_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker # Permet à Redis de flotter sur n'importe quel nœud worker
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://192.168.201.66:12201"
+        tag: "redis/{{.Name}}/{{.ID}}"
+
+
+
 # Définition des secrets utilisés dans cette stack
 secrets:
   core_mariadb_root_password:
