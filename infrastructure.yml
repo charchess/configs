@@ -182,8 +182,6 @@ services:
 #      placement:
 #        constraints:
 #          - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
-      restart_policy:
-        condition: on-failure
       resources:
         limits:
           memory: 2048M
@@ -232,8 +230,6 @@ services:
  #     placement:
  #       constraints:
  #         - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
-      restart_policy:
-        condition: on-failure
       resources:
         limits:
           memory: 2048M
