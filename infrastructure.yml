@@ -178,9 +178,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-      placement:
-        constraints:
-          - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
+#      placement:
+#        constraints:
+#          - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
       restart_policy:
         condition: on-failure
       resources:
@@ -228,9 +228,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-      placement:
-        constraints:
-          - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
+ #     placement:
+ #       constraints:
+ #         - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
       restart_policy:
         condition: on-failure
       resources:
