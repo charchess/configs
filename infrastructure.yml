@@ -9,7 +9,7 @@ services:
       - "--global.checknewversion=false"
       - "--global.sendanonymoususage=false"
       - "--api" # Active l'API et le dashboard
-      # - "--providers.docker" # Active le provider Docker (nécessaire pour les labels)
+      - "--providers.docker" # Active le provider Docker (nécessaire pour les labels)
       - "--providers.swarm" # Active le provider Swarm
       - "--providers.file" # Active le provider File
       - "--log.level=DEBUG" # Niveau de log, peut être défini ici ou dans traefik.yaml
