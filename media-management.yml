@@ -464,12 +464,12 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
         tag: "hydrusclient/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-    healthcheck: # AJOUTÉ : Healthcheck pour Hydrus Client (basé sur le port d'écoute)
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:45869 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 90s # AUGMENTÉ : Donner plus de temps à l'application pour démarrer
+#    healthcheck: # AJOUTÉ : Healthcheck pour Hydrus Client (basé sur le port d'écoute)
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:45869 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 90s # AUGMENTÉ : Donner plus de temps à l'application pour démarrer
 
   hydrusserver:
     image: ghcr.io/hydrusnetwork/hydrus:server
