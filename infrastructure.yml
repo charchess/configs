@@ -24,9 +24,9 @@ services:
       - "192.168.200.66:8080:8080" # Dashboard Traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /data/local/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
-      - /data/local/containers/infrastructure/traefik/config/external.yaml:/etc/traefik/external.yaml:ro
-      - /data/local/containers/infrastructure/traefik/certs:/var/traefik/certs/
+      - /data/nfs/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - /data/nfs/containers/infrastructure/traefik/config/external.yaml:/etc/traefik/external.yaml:ro
+      - /data/nfs/containers/infrastructure/traefik/certs:/var/traefik/certs/
     deploy:
       placement:
         constraints:
@@ -64,7 +64,7 @@ services:
         gelf-address: "udp://192.168.201.66:12201" # Utilise le nom de service logs_graylog
         tag: "traefik/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
     healthcheck: # Healthcheck pour Traefik (conservé de la version précédente)
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/dashboard || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://nfshost:8080/dashboard || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -112,8 +112,8 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
     volumes:
-      - /data/local/containers/infrastructure/adguardhome/work:/opt/adguardhome/work # Chemin du volume ajusté
-      - /data/local/containers/infrastructure/adguardhome/conf:/opt/adguardhome/conf # Chemin du volume ajusté
+      - /data/nfs/containers/infrastructure/adguardhome/work:/opt/adguardhome/work # Chemin du volume ajusté
+      - /data/nfs/containers/infrastructure/adguardhome/conf:/opt/adguardhome/conf # Chemin du volume ajusté
     ports: # Important: Expose DNS ports. Web UI peut être via Traefik.
       - "53:53/tcp" # Standard DNS TCP
       - "53:53/udp" # Standard DNS UDP
@@ -141,7 +141,7 @@ services:
         gelf-address: "udp://192.168.201.66:12201" # Utilise le nom de service logs_graylog
         tag: "adguardhome/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
     healthcheck: # Healthcheck pour AdGuard Home (vérifie l'interface web)
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://nfshost:3000 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
