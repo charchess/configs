@@ -146,112 +146,12 @@ services:
 #      timeout: 10s
 #      retries: 3
 #      start_period: 30s
-  # --- Composants AWX (Ansible Tower Open Source) ---
-  # Service Web d'AWX (interface utilisateur et API)
-  awx_web:
-    image: quay.io/ansible/awx:latest
-    hostname: awx-web
-    command: ["/usr/bin/dumb-init", "awx", "web"]
-    environment:
-      POSTGRES_HOST: postgres # Se connecte au service 'postgres' de la stack databases
-      POSTGRES_DB: awx # Nom de la base de données AWX (doit être créée dans le PostgreSQL partagé)
-      POSTGRES_USER: awx # Utilisateur AWX (doit être créé dans le PostgreSQL partagé)
-      POSTGRES_PASSWORD_FILE: /run/secrets/awx_postgres_password
-      REDIS_HOST: redis # Se connecte au service 'redis' de la stack databases
-      AWX_SECRET_KEY_FILE: /run/secrets/awx_secret_key
-      AWX_ADMIN_USER: admin
-      AWX_ADMIN_PASSWORD: password # Ceci est le mot de passe initial, CHANGEZ-LE IMMÉDIATEMENT APRÈS LE DÉPLOIEMENT
-    secrets:
-      - awx_postgres_password
-      - awx_secret_key
-    networks:
-      - infrastructure_network # Pour Traefik et la communication générale
-      - databases_network # Pour accéder aux services 'postgres' et 'redis'
-      - logs_network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=infrastructure_network" # Indique à Traefik le réseau où trouver AWX
-      - "traefik.http.routers.awx-web.rule=Host(`awx.truxonline.com`)"
-      - "traefik.http.routers.awx-web.entrypoints=web-secure"
-      - "traefik.http.routers.awx-web.tls=true"
-      - "traefik.http.routers.awx-web.tls.certresolver=le"
-      - "traefik.http.services.awx-web.loadbalancer.server.port=8052"
-    deploy:
-      mode: replicated
-      replicas: 1
-#      placement:
-#        constraints:
-#          - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
-      resources:
-        limits:
-          memory: 2048M
-        reservations:
-          memory: 1024M
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://192.168.201.66:12201"
-        tag: "awx_web/{{.Name}}/{{.ID}}"
-
-  # Service de Tâches d'AWX (exécute les playbooks Ansible)
-  awx_task:
-    image: quay.io/ansible/awx:latest
-    hostname: awx-task
-    command: ["/usr/bin/dumb-init", "awx", "task"]
-    environment:
-      POSTGRES_HOST: postgres # Se connecte au service 'postgres' de la stack databases
-      POSTGRES_DB: awx
-      POSTGRES_USER: awx
-      POSTGRES_PASSWORD_FILE: /run/secrets/awx_postgres_password
-      REDIS_HOST: redis # Se connecte au service 'redis' de la stack databases
-      AWX_SECRET_KEY_FILE: /run/secrets/awx_secret_key
-    secrets:
-      - awx_postgres_password
-      - awx_secret_key
-    networks:
-      - infrastructure_network
-      - databases_network # Pour accéder aux services 'postgres' et 'redis'
-      - logs_network
-      # Ajoutez ici tous les réseaux des autres stacks auxquels awx_task pourrait avoir besoin d'accéder
-      # pour gérer des services ou des nœuds (ex: ai_network, databases_network, tools_network, etc.)
-      - ai_network
-      - divertissement_network
-      - experimentation_network
-      - media_download_network
-      - media_management_network
-      - monitoring_network
-      - nordvpn_ch_network
-      - tools_network
-    volumes:
-      - /data/nfs/containers/infrastructure/awx_task/data:/var/lib/awx/projects # Volume pour les projets Ansible (git clones)
-    deploy:
-      mode: replicated
-      replicas: 1
- #     placement:
- #       constraints:
- #         - node.hostname == ruby # Contrainte pour déployer sur le nœud 'ruby'
-      resources:
-        limits:
-          memory: 2048M
-        reservations:
-          memory: 1024M
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://192.168.201.66:12201"
-        tag: "awx_task/{{.Name}}/{{.ID}}"
 
 
 
 # Définition des secrets utilisés dans cette stack
 secrets:
   traefik_gandi_api_token: # Le secret pour l'API Gandi
-    external: true
-  awx_postgres_password:
-    external: true
-  awx_db_password: # Ce secret est défini mais non directement utilisé par l'image ansible/awx, mais peut être utile pour des scripts personnalisés
-    external: true
-  awx_secret_key:
     external: true
 
 # Définition des réseaux utilisés par cette stack
