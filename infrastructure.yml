@@ -140,12 +140,12 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201" # Utilise le nom de service logs_graylog
         tag: "adguardhome/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-    healthcheck: # Healthcheck pour AdGuard Home (vérifie l'interface web)
-      test: ["CMD-SHELL", "wget -q --spider http://nfshost:3000 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+#    healthcheck: # Healthcheck pour AdGuard Home (vérifie l'interface web)
+#      test: ["CMD-SHELL", "wget -q --spider http://nfshost:3000 || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
   # --- Composants AWX (Ansible Tower Open Source) ---
   # Service Web d'AWX (interface utilisateur et API)
   awx_web:
