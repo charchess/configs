@@ -9,7 +9,7 @@ services:
       - PGID=1000 # Example GID
       - TZ=Europe/Paris # Adjust timezone
     volumes:
-      - /data/glusterfs/containers/media-downloaders/sabnzbd/config:/config
+      - /data/nfs/containers/media-downloaders/sabnzbd/config:/config
       - /data/nfs/downloads:/downloads # Chemin des téléchargements
     networks:
       - media_download_network # Réseau interne de cette stack
@@ -49,7 +49,7 @@ services:
       - TZ=Europe/Paris # Adjust timezone
       # Autres variables d'environnement qBittorrent
     volumes:
-      - /data/glusterfs/containers/media-downloaders/torrent/config:/config
+      - /data/nfs/containers/media-downloaders/torrent/config:/config
       - /data/nfs/downloads:/downloads
     networks:
       # Attention: Ce service doit passer par le VPN
@@ -91,7 +91,7 @@ services:
 #      - WEBUIPASS_FILE=/run/secrets/media_amule_webui_password # Utilisation du secret
 #      - GUIPASS_FILE=/run/secrets/media_amule_gui_password # Utilisation du secret
 #    volumes:
-#      - /data/glusterfs/containers/media-downloaders/amule/config:/home/amule/.aMule
+#      - /data/nfs/containers/media-downloaders/amule/config:/home/amule/.aMule
 #      - /data/nfs/downloads/amule:/incoming
 #      - /data/nfs/downloads/incomplete:/temp
 #    secrets:
