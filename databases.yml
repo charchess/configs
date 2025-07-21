@@ -15,7 +15,7 @@ services:
       # Note : les options de MariaDB/MySQL en ligne de commande utilisent des tirets (-) au lieu d'underscores (_)
       - "--innodb-flush-log-at-trx-commit=1"
     volumes:
-      - /data/nfs/containers/databases/mariadb/database:/var/lib/mysql
+      - /data/cephfs/containers/databases/mariadb/database:/var/lib/mysql
 #      - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
     secrets:
       - core_mariadb_root_password
@@ -58,7 +58,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD_FILE=/run/secrets/databases_postgres_superuser_password # Nouveau secret pour le superuser
     volumes:
-      - /data/nfs/containers/databases/postgres/data:/var/lib/postgresql/data
+      - /data/cephfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
       - databases_postgres_superuser_password
       - postgres_n8n_password
@@ -105,8 +105,8 @@ services:
       - databases_network # Réseau interne de la stack databases
       - logs_network # AJOUTÉ : Pour envoyer les logs à Graylog
     volumes:
-      - "/data/nfs/containers/databases/mongodb/data:/data/db"
-      - "/data/nfs/containers/databases/mongodb/config:/data/configdb"
+      - "/data/cephfs/containers/databases/mongodb/data:/data/db"
+      - "/data/cephfs/containers/databases/mongodb/config:/data/configdb"
     healthcheck: # AJOUTÉ : Healthcheck pour MongoDB
       test: ["CMD-SHELL", "mongosh --eval 'db.adminCommand(\"ping\")' --quiet"]
       interval: 10s
@@ -130,7 +130,7 @@ services:
     volumes:
       # Volume persistant pour les données de ChromaDB
       # Assurez-vous que ce chemin existe et que les permissions sont correctes sur votre NFS
-      - /data/nfs/containers/databases/chromadb/data:/app/chroma/chroma-data
+      - /data/cephfs/containers/databases/chromadb/data:/app/chroma/chroma-data
     networks:
       - databases_network # Réseau interne de cette stack
       - logs_network # Pour envoyer les logs à Graylog
