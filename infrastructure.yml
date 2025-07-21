@@ -147,6 +147,30 @@ services:
 #      retries: 3
 #      start_period: 30s
 
+  colmena-deployer:
+    # L'image Docker à utiliser. Portainer la tirera (pull) depuis Docker Hub si elle n'est pas locale.
+    image: charchess/colmena-deployer:latest
+    
+    # Un nom de conteneur fixe pour le retrouver facilement
+    container_name: colmena-deployer
+    
+    # --- IMPORTANT : Configurez les chemins sur votre machine HÔTE ici ---
+    volumes:
+      # Montez votre dépôt de configuration NixOS dans le répertoire de travail du conteneur (/app).
+      # REMPLACEZ '/path/on/your/host/to/nixos-config' par le vrai chemin sur la machine où Portainer est installé.
+      # Par exemple : '/srv/docker-data/nixos-config:/app'
+      # - /path/on/your/host/to/nixos-config:/app
+
+      # Montez votre clé SSH privée en lecture seule pour la sécurité.
+      # REMPLACEZ '/path/on/your/host/to/private_ssh_key' par le chemin exact de votre clé id_rsa.
+      # Par exemple : '/home/user/.ssh/id_rsa_nixos:/root/.ssh/id_rsa:ro'
+      # - /path/on/your/host/to/private_ssh_key:/root/.ssh/id_rsa:ro
+
+    # Garde le conteneur en attente et prêt pour une connexion interactive.
+    # C'est l'équivalent de `docker run -it`.
+    stdin_open: true # Équivalent de -i
+    tty: true        # Équivalent de -t
+
 
 
 # Définition des secrets utilisés dans cette stack
