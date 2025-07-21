@@ -155,7 +155,7 @@ services:
     container_name: colmena-deployer
     
     # --- IMPORTANT : Configurez les chemins sur votre machine HÔTE ici ---
-    volumes:
+#    volumes:
       # Montez votre dépôt de configuration NixOS dans le répertoire de travail du conteneur (/app).
       # REMPLACEZ '/path/on/your/host/to/nixos-config' par le vrai chemin sur la machine où Portainer est installé.
       # Par exemple : '/srv/docker-data/nixos-config:/app'
