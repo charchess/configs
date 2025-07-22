@@ -16,7 +16,7 @@ services:
       - "--innodb-flush-log-at-trx-commit=1"
     volumes:
       - /data/cephfs/containers/databases/mariadb/database:/var/lib/mysql
-#      - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
+#     - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
     secrets:
       - core_mariadb_root_password
       - monito_zabbixdb_mysql_user # Décommenter si utilisé
@@ -27,10 +27,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-      # Ajoutez des contraintes de placement si nécessaire, ex: sur le noeud 'ruby'
-      # placement:
-      #   constraints:
-      #     - node.hostname == ruby
       resources:
         limits:
           memory: 2G # Alloue 1 Go de RAM max à MariaDB. Ajustez si nécessaire.
@@ -39,6 +35,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+          # Contrainte ajoutée : MariaDB utilise un volume CephFS
+          - node.labels.disk.feature.ceph == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -60,6 +58,7 @@ services:
     volumes:
       - /data/cephfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
+      - databases_postgres_superuser_user # Décommenter si utilisé
       - databases_postgres_superuser_password
       - postgres_n8n_password
     networks:
@@ -74,10 +73,9 @@ services:
       placement:
         constraints:
           - node.role == worker
-          - node.hostname == emy
-    #   placement:
-    #     constraints:
-    #       - node.hostname == ruby
+          - node.hostname == emy # Conserve votre contrainte existante
+          # Contrainte ajoutée : Postgres utilise un volume CephFS
+          - node.labels.disk.feature.ceph == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -93,14 +91,15 @@ services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
     image: "mongo:6.0.18"
-    # ports: # PORT EXPOSÉ SUPPRIMÉ comme demandé
-    #   - "27017:27017"
     restart: "on-failure"
     deploy:
       placement:
         constraints:
           - node.role == worker
-          - "node.labels.cpu.feature.avx == true"
+          # Contrainte existante pour AVX
+          - node.labels.cpu.feature.avx == true
+          # Contrainte ajoutée : MongoDB utilise des volumes CephFS
+          - node.labels.disk.feature.ceph == true
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -125,8 +124,6 @@ services:
       - PUID=1000 # Votre PUID
       - PGID=1000 # Votre PGID
       - TZ=Europe/Paris # Votre fuseau horaire
-      # ChromaDB peut être configuré avec des variables d'environnement si nécessaire
-      # Pour l'instant, nous utilisons la configuration par défaut qui est suffisante pour démarrer.
     volumes:
       # Volume persistant pour les données de ChromaDB
       # Assurez-vous que ce chemin existe et que les permissions sont correctes sur votre NFS
@@ -140,6 +137,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+          # Contrainte ajoutée : ChromaDB utilise un volume CephFS
+          - node.labels.disk.feature.ceph == true
       labels: # Labels Traefik pour exposer ChromaDB (si vous voulez une UI ou API exposée)
         - "traefik.docker.network=databases_network"
         - "traefik.enable=true" # Active Traefik pour ce service
@@ -167,12 +166,17 @@ services:
     networks:
       - databases_network
       - logs_network
+    volumes:
+      # AJOUTÉ : Volume persistant pour les données de Redis
+      - /data/cephfs/containers/databases/redis/data:/data
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
           - node.role == worker # Permet à Redis de flotter sur n'importe quel nœud worker
+          # AJOUTÉ : Contrainte pour le volume CephFS
+          - node.labels.disk.feature.ceph == true
       restart_policy:
         condition: on-failure
       resources:
@@ -185,8 +189,6 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201"
         tag: "redis/{{.Name}}/{{.ID}}"
-
-
 
 # Définition des secrets utilisés dans cette stack
 secrets:
