@@ -31,6 +31,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+          - node.labels.disk.feature.nfs == true
       labels:
         # Labels pour le dashboard Traefik lui-même
         - "traefik.enable=true"
@@ -127,6 +128,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer AdGuard Home Web UI
         - "traefik.enable=true"
         - "traefik.http.routers.adguard-https.rule=Host(`adguard.truxonline.com`)"
