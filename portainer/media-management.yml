@@ -174,12 +174,12 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
         tag: "readarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-    healthcheck: # AJOUTÉ : Healthcheck pour Readarr
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8787/ping || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+#    healthcheck: # AJOUTÉ : Healthcheck pour Readarr
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8787/ping || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
 
   prowlarr:
     image: linuxserver/prowlarr:latest
