@@ -58,7 +58,6 @@ services:
     volumes:
       - /data/cephfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
-      - databases_postgres_superuser_user # Décommenter si utilisé
       - databases_postgres_superuser_password
       - postgres_n8n_password
     networks:
@@ -91,7 +90,6 @@ services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
     image: "mongo:6.0.18"
-    restart: "on-failure"
     deploy:
       placement:
         constraints:
@@ -177,8 +175,6 @@ services:
           - node.role == worker # Permet à Redis de flotter sur n'importe quel nœud worker
           # AJOUTÉ : Contrainte pour le volume CephFS
           - node.labels.disk.feature.ceph == true
-      restart_policy:
-        condition: on-failure
       resources:
         limits:
           memory: 256M
