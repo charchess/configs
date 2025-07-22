@@ -1,0 +1,19 @@
+○ node-status-reporter.service - DEBUG: Periodically reports this node's status to a JSON file
+     Loaded: loaded (]8;;file://jade/etc/systemd/system/node-status-reporter.service\/etc/systemd/system/node-status-reporter.service]8;;\; linked; preset: ignored)
+     Active: inactive (dead) since Tue 2025-07-22 16:24:10 CEST; 8s ago
+ Invocation: 2c8b9953ea4644c8b8708f77467588da
+TriggeredBy: [0;1;32m●[0m node-status-reporter.timer
+    Process: 436504 ExecStart=/nix/store/iisqyr97sb44yvwwaajg3s83s5m70hc0-unit-script-node-status-reporter-start/bin/node-status-reporter-start (code=exited, status=0/SUCCESS)
+   Main PID: 436504 (code=exited, status=0/SUCCESS)
+         IP: 0B in, 0B out
+         IO: 0B read, 0B written
+   Mem peak: 1.6M
+        CPU: 12ms
+
+juil. 22 16:24:10 jade systemd[1]: Starting DEBUG: Periodically reports this node's status to a JSON file...
+juil. 22 16:24:10 jade node-status-reporter-start[436504]: --- DEBUG SCRIPT RUNNING ---
+juil. 22 16:24:10 jade node-status-reporter-start[436504]: Hostname detected from NixOS config: jade
+juil. 22 16:24:10 jade node-status-reporter-start[436504]: Attempting to write to /data/nfs/content/swarm-status/jade.test.log
+juil. 22 16:24:10 jade node-status-reporter-start[436504]: DEBUG SCRIPT FINISHED SUCCESSFULLY
+juil. 22 16:24:10 jade systemd[1]: node-status-reporter.service: Deactivated successfully.
+juil. 22 16:24:10 jade systemd[1]: Finished DEBUG: Periodically reports this node's status to a JSON file.

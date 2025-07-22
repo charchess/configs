@@ -1,0 +1,6 @@
+{ config, pkgs, ... }:
+
+{
+  # configuration de keepalived
+  boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = 1;
+}
