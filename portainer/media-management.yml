@@ -138,7 +138,7 @@ services:
       start_period: 30s
 
   readarr:
-    image: linuxserver/readarr:amd64-nightly
+    image: linuxserver/readarr:0.4.19-nightly
     environment:
       - PUID=1000
       - PGID=1000
