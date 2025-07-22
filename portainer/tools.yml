@@ -24,6 +24,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -73,6 +74,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -108,6 +110,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -139,6 +142,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -220,6 +224,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -292,6 +297,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer n8n via HTTPS
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network" # AJOUT : Indique explicitement le réseau à Traefik

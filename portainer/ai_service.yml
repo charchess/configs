@@ -18,6 +18,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=ai_network"
@@ -92,6 +93,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     volumes:
       - /data/nfs/containers/ai_services/embedding-service/models_cache:/models
     logging:
@@ -142,6 +144,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # Configuration du logging vers Graylog
       driver: gelf
       options:

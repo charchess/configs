@@ -28,6 +28,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Radarr
         - "traefik.enable=true"
         - "traefik.docker.network=media-management_network"
@@ -69,6 +70,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       mode: replicated
       replicas: 1
       labels: # Labels Traefik pour exposer Lidarr
@@ -114,6 +116,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Sonarr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -157,7 +160,7 @@ services:
       placement:
         constraints:
           - node.role == worker
-#          - node.arch == x86_64
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Readarr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -199,6 +202,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Prowlarr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -242,6 +246,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Whisparr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -290,6 +295,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -325,6 +331,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Mylar3
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -368,6 +375,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Pyload-NG
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -408,6 +416,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Ubooquity
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -451,6 +460,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Hydrus Client
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -490,6 +500,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       # Labels Traefik si vous souhaitez exposer Hydrus Server (attention à la sécurité)
       # Il n'est généralement pas recommandé d'exposer le serveur Hydrus directement.
       # labels:

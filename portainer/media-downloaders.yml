@@ -21,6 +21,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer SABnzbd
         - "traefik.enable=true"
         - "traefik.docker.network=media_download_network"
@@ -62,6 +63,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer qBittorrent
         - "traefik.enable=true"
         - "traefik.docker.network=nordvpn_ch_network"
@@ -108,6 +110,7 @@ services:
 #      placement:
 #        constraints:
 #          - node.role == worker
+#          - node.labels.disk.feature.nfs == true
 #      labels: # Labels Traefik pour exposer aMule WebUI
 #        - "traefik.enable=true"
 #        - "traefik.docker.network=media_download_network"
