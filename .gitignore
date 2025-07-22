@@ -1,0 +1,17 @@
+# ===================================================================
+# Fichiers Généraux et Temporaires
+# ===================================================================
+
+# Fichiers temporaires des éditeurs
+*.swp
+*.swo
+*~
+
+# Fichiers de log
+*.log
+
+# Fichiers compilés
+*.pyc
+
+# Dépendances (exemple si vous aviez un projet Node.js)
+/node_modules/
