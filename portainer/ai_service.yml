@@ -160,7 +160,7 @@ services:
 #      start_period: 60s # Donne du temps au service pour démarrer
 
   zep:
-    image: getzep/zep-cloud:latest # Utilise l'image officielle de Zep
+    image: zepai/zep-cloud:latest # Utilise l'image officielle de Zep
     container_name: zep
     restart: unless-stopped
     environment:
