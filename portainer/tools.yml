@@ -173,7 +173,8 @@ services:
       # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
       # L'option ':ro' (read-only) garantit que le conteneur ne peut pas modifier les fichiers
       - /data/nfs/content/sources/:/usr/share/nginx/html:ro
-
+    networks:
+      - tools_network # Doit être sur le même réseau que changedetection
     deploy:
       mode: replicated
       replicas: 1
