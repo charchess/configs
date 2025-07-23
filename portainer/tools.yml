@@ -172,6 +172,9 @@ services:
       # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
       # L'option ':ro' (read-only) garantit que le conteneur ne peut pas modifier les fichiers
       - /data/nfs/content/sources/:/usr/share/nginx/html:ro
+    configs:
+      - source: partage-web_nginx_config
+        target: /etc/nginx/conf.d/default.conf
     networks:
       - tools_network # Doit être sur le même réseau que changedetection
     deploy:
@@ -383,6 +386,10 @@ services:
 #      timeout: 10s
 #      retries: 3
 #      start_period: 30s
+
+configs:
+  partage-web_nginx_config:
+    external: true
 
 
 # Définition des secrets utilisés dans cette stack
