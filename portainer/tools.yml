@@ -168,11 +168,6 @@ services:
     # Utilise l'image officielle de Nginx
     image: nginx:latest
     
-    # Mappage des ports : port_hôte:port_conteneur
-    # Accédez à vos fichiers via http://localhost:8080
-    ports:
-      - "8080:80"
-      
     # Montage des volumes : chemin_hôte:chemin_conteneur:options
     volumes:
       # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
