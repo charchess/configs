@@ -45,6 +45,8 @@ services:
       - N8N_ACTION_WEBHOOK_URL=https://n8n.truxonline.com/webhook/36dd058c-de30-4dd4-bb17-cd1340fb914b
       - VERBOSE=true
       - N8N_RETRIEVAL_WEBHOOK_URL=https://n8n.truxonline.com/webhook/5dd50a8d-4ddb-4c09-9e9e-a644dc54b0be
+      - ZEP_API_URL="http://zep:8000/api/v1" # URL de l'API Zep
+      - ZEP_API_KEY="ZePAPiSecretKeyRandomStringXyZ9aB2cD5eF8gH1iJ4kL7mN0pQ3rS6tU9vW" # Clé API pour Zep
     ports:
       - 8002:8002
     deploy:
@@ -156,6 +158,43 @@ services:
 #      timeout: 10s
 #      retries: 3
 #      start_period: 60s # Donne du temps au service pour démarrer
+
+  zep:
+    image: getzep/zep-cloud:latest # Utilise l'image officielle de Zep
+    container_name: zep
+    restart: unless-stopped
+    environment:
+      # Indique à Zep d'utiliser PostgreSQL
+      ZEP_STORE_TYPE: postgres
+      
+      # Chaîne de connexion à votre base de données existante
+      # Remplacez <ip_ou_nom_conteneur_postgres> par l'adresse de votre service PostgreSQL
+      # Par exemple : 'postgres' si c'est le nom de votre service dans le même réseau Docker
+      ZEP_STORE_POSTGRES_DSN: postgresql://zep_user:P0stGr3s_S3rv!c3_Acc0unt_StR0nG_p@$$w0rD_7yZ9xW1vU8tS2rQ6pL4kM5jN@postgres>:5432/zep_db
+      
+      # Nous désactivons l'enrichissement automatique pour l'instant
+      ZEP_DATA_EXTRACTOR_ENABLED: "false"
+      
+      # Clé API pour sécuriser Zep (facultatif mais recommandé)
+      ZEP_API_KEY: "ZePAPiSecretKeyRandomStringXyZ9aB2cD5eF8gH1iJ4kL7mN0pQ3rS6tU9vW"
+      
+    networks:
+      - databases_network # Le réseau où se trouve votre PostgreSQL
+      - ai_network        # Pour être accessible par l'intent-router
+      - default # Traefik
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=ai_network"
+      - "traefik.http.routers.zep.rule=Host(`zep.truxonline.com`)"
+      - "traefik.http.routers.zep.entrypoints=web-secure"
+      - "traefik.http.routers.zep.entrypoints=internal-secure" # Pour l'accès interne
+      - "traefik.http.routers.zep.tls=true"
+      - "traefik.http.routers.zep.tls.certresolver=gandi"
+      - "traefik.http.services.zep.loadbalancer.server.port=8000"
+      - "traefik.http.routers.zep.middlewares=zep-auth"
+      - "traefik.http.middlewares.zep-auth.headers.customrequestheaders.Authorization=Bearer ${ZEP_API_KEY}" # Utiliser la clé API comme un Bearer Token
+
 
 configs:
   experimentations_sillytavern-gemini_config.yaml:
