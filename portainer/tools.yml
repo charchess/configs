@@ -172,7 +172,7 @@ services:
     volumes:
       # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
       # L'option ':ro' (read-only) garantit que le conteneur ne peut pas modifier les fichiers
-      - /data/nfs/containers/content/sources:/usr/share/nginx/html:ro
+      - /data/nfs/content/sources/:/usr/share/nginx/html:ro
 
     deploy:
       mode: replicated
