@@ -43,10 +43,10 @@ services:
         - "traefik.http.routers.traefik-https.tls=true"
         - "traefik.http.routers.traefik-https.tls.certresolver=gandi"
     secrets:
-      - traefik_gandi_api_token # Le secret pour l'API Gandi
+      - GANDI_API_KEY # Le secret pour l'API Gandi
     environment:
       # Utilisation du secret via un fichier pour Traefik
-      - GANDIV5_PERSONAL_ACCESS_TOKEN_FILE=/run/secrets/traefik_gandi_api_token
+      - GANDIV5_PERSONAL_ACCESS_TOKEN_FILE=/run/secrets/GANDI_API_KEY
     networks:
       - ai_network
       - databases_network
@@ -175,7 +175,7 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  traefik_gandi_api_token: # Le secret pour l'API Gandi
+  GANDI_API_KEY: # Le secret pour l'API Gandi
     external: true
 
 # Définition des réseaux utilisés par cette stack
