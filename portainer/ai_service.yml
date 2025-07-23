@@ -32,9 +32,6 @@ services:
 
   intent-router:
     image: charchess/intent-router:latest # L'image que nous venons de pousser
-    networks:
-      - ai_network
-      - logs_network
     environment:
       # C'est ici que nous configurons le service !
       - DEBUG=true
@@ -57,7 +54,11 @@ services:
       placement:
         constraints:
           - node.role == worker
-      labels:
+    networks:
+      - ai_network
+      - logs_network
+      - databases_network
+    labels:
         - "traefik.docker.network=ai_network"
         # Est-ce que Traefik est bien activé pour ce service ?
         - "traefik.enable=true"
