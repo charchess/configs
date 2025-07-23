@@ -186,6 +186,21 @@ services:
         gelf-address: "udp://192.168.201.66:12201"
         tag: "redis/{{.Name}}/{{.ID}}"
 
+  neo4j:
+    image: neo4j:5-enterprise # L'édition Enterprise est gratuite pour le développement solo
+    ports:
+      - "7474:7474" # Interface Web de Neo4j
+      - "7687:7687" # Port pour la connexion des pilotes (Bolt)
+    volumes:
+      - /data/nfs/containers/volumes/neo4j/data:/data
+    environment:
+      # Accepte la licence et définit un mot de passe
+      NEO4J_AUTH: neo4j/CHANGEME_UN_MOT_DE_PASSE_TRES_SOLIDE
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    networks:
+      - databases_network # Pour que l'intent-router puisse s'y connecter
+
+
 # Définition des secrets utilisés dans cette stack
 secrets:
   core_mariadb_root_password:
