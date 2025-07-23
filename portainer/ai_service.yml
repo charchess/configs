@@ -31,7 +31,7 @@ services:
 
 
   intent-router:
-    image: charchess/intent-router:latest # L'image que nous venons de pousser
+    image: charchess/intent-router:13.9 # L'image que nous venons de pousser
     environment:
       # C'est ici que nous configurons le service !
       - DEBUG=true
