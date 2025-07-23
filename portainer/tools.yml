@@ -166,8 +166,7 @@ services:
 
   partage-web:
     # Utilise l'image officielle de Nginx
-    image: nginx:latest
-    
+    image: nginx:latest    
     # Montage des volumes : chemin_hôte:chemin_conteneur:options
     volumes:
       # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
@@ -185,11 +184,11 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
-        - "traefik.http.routers.paperless-https.rule=Host(`code.truxonline.com`)"
-        - "traefik.http.routers.paperless-https.entrypoints=web-secure"
-        - "traefik.http.routers.paperless-https.tls=true"
-        - "traefik.http.routers.paperless-https.tls.certresolver=gandi"
-        - "traefik.http.services.paperless-https.loadbalancer.server.port=80"
+        - "traefik.http.routers.partage-web-https.rule=Host(`code.truxonline.com`)"
+        - "traefik.http.routers.partage-web-https.entrypoints=web-secure"
+        - "traefik.http.routers.partage-web-https.tls=true"
+        - "traefik.http.routers.partage-web-https.tls.certresolver=gandi"
+        - "traefik.http.services.partage-web-https.loadbalancer.server.port=80"
 
 
 #  openproject: # Maintenu commenté comme dans ta version
