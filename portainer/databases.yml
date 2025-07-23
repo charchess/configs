@@ -192,7 +192,12 @@ services:
       - "7474:7474" # Interface Web de Neo4j
       - "7687:7687" # Port pour la connexion des pilotes (Bolt)
     volumes:
-      - /data/nfs/containers/volumes/neo4j/data:/data
+      - /data/cephfs/containers/databases/neo4j/data:/data
+    placement:
+      constraints:
+        - node.role == worker # Permet à Neo4j de flotter sur n'importe quel nœud worker
+        # Contrainte ajoutée : Neo4j utilise un volume CephFS
+        - node.labels.disk.feature.ceph == true
     environment:
       # Accepte la licence et définit un mot de passe
       NEO4J_AUTH: neo4j/CHANGEME_UN_MOT_DE_PASSE_TRES_SOLIDE
