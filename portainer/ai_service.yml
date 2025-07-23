@@ -160,9 +160,7 @@ services:
 #      start_period: 60s # Donne du temps au service pour démarrer
 
   zep:
-    image: zepai/zep-cloud:latest # Utilise l'image officielle de Zep
-    container_name: zep
-    restart: unless-stopped
+    image: zepai/zep:latest # Utilise l'image officielle de Zep
     environment:
       # Indique à Zep d'utiliser PostgreSQL
       ZEP_STORE_TYPE: postgres
