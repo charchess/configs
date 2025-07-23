@@ -5,10 +5,10 @@ services:
   mariadb:
     image: docker.io/mariadb:11.5.2
     environment:
-      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/core_mariadb_root_password
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/MARIADB_ROOT_PASSWORD
       - MARIADB_DATABASE=zabbix # Exemple si Zabbix est la seule DB, sinon MariaDB gérera plusieurs DBs
-      - MARIADB_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user # Si vous avez un user zabbix
-      - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
+      - MARIADB_USER_FILE=/run/secrets/ZABBIX_MYSQL_USER # Si vous avez un user zabbix
+      - MARIADB_PASSWORD_FILE=/run/secrets/ZABBIX_MYSQL_PASSWORD # Si vous avez un pass zabbix
       - MARIADB_innodb_force_recovery=5
     command:
       # Passe l'option de configuration directement au processus mysqld
@@ -18,9 +18,9 @@ services:
       - /data/cephfs/containers/databases/mariadb/database:/var/lib/mysql
 #     - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
     secrets:
-      - core_mariadb_root_password
-      - monito_zabbixdb_mysql_user # Décommenter si utilisé
-      - monito_zabbixdb_mysql_password # Décommenter si utilisé
+      - MARIADB_ROOT_PASSWORD
+      - ZABBIX_MYSQL_USER # Décommenter si utilisé
+      - ZABBIX_MYSQL_PASSWORD # Décommenter si utilisé
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network    # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -54,12 +54,11 @@ services:
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD_FILE=/run/secrets/databases_postgres_superuser_password # Nouveau secret pour le superuser
+      - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_ROOT_PASSWORD # Nouveau secret pour le superuser
     volumes:
       - /data/cephfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
-      - databases_postgres_superuser_password
-      - postgres_n8n_password
+      - POSTGRES_ROOT_PASSWORD
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network    # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -212,15 +211,13 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  core_mariadb_root_password:
+  MARIADB_ROOT_PASSWORD:
     external: true
-  monito_zabbixdb_mysql_user: # Décommenter si utilisé
+  ZABBIX_MYSQL_USER: # Décommenter si utilisé
     external: true
-  monito_zabbixdb_mysql_password: # Décommenter si utilisé
+  ZABBIX_MYSQL_PASSWORD: # Décommenter si utilisé
     external: true
-  postgres_n8n_password:
-    external: true
-  databases_postgres_superuser_password:
+  POSTGRES_ROOT_PASSWORD:
     external: true
     
 # Définition des réseaux utilisés par cette stack

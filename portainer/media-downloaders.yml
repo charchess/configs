@@ -97,8 +97,8 @@ services:
 #      - /data/nfs/downloads/amule:/incoming
 #      - /data/nfs/downloads/incomplete:/temp
 #    secrets:
-#      - media_amule_webui_password
-#      - media_amule_gui_password
+#      - AMULE_WEBUI_PASSWORD
+#      - AMULE_GUI_PASSWORD
 #    networks:
 #      # Attention: Ce service doit passer par le VPN
 #      - nordvpn_ch_network
@@ -127,9 +127,9 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  media_amule_webui_password:
+  AMULE_WEBUI_PASSWORD:
     external: true
-  media_amule_gui_password:
+  AMULE_GUI_PASSWORD:
     external: true
 
 # Définition des réseaux utilisés par cette stack
