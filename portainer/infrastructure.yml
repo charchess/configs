@@ -153,9 +153,7 @@ services:
     # L'image Docker à utiliser. Portainer la tirera (pull) depuis Docker Hub si elle n'est pas locale.
     image: charchess/colmena-deployer:latest
     
-    # Un nom de conteneur fixe pour le retrouver facilement
-    container_name: colmena-deployer
-    
+   
     # --- IMPORTANT : Configurez les chemins sur votre machine HÔTE ici ---
 #    volumes:
       # Montez votre dépôt de configuration NixOS dans le répertoire de travail du conteneur (/app).
