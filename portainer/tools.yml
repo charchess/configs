@@ -163,6 +163,39 @@ services:
 #      retries: 3
 #      start_period: 30s
 
+
+  partage-web:
+    # Utilise l'image officielle de Nginx
+    image: nginx:latest
+    
+    # Mappage des ports : port_hôte:port_conteneur
+    # Accédez à vos fichiers via http://localhost:8080
+    ports:
+      - "8080:80"
+      
+    # Montage des volumes : chemin_hôte:chemin_conteneur:options
+    volumes:
+      # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
+      # L'option ':ro' (read-only) garantit que le conteneur ne peut pas modifier les fichiers
+      - ./data:/usr/share/nginx/html:ro
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+          - node.labels.disk.feature.nfs == true
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=tools_network"
+        - "traefik.http.routers.paperless-https.rule=Host(`files.truxonline.com`)"
+        - "traefik.http.routers.paperless-https.entrypoints=web-secure"
+        - "traefik.http.routers.paperless-https.tls=true"
+        - "traefik.http.routers.paperless-https.tls.certresolver=gandi"
+        - "traefik.http.services.paperless-https.loadbalancer.server.port=80"
+
+
 #  openproject: # Maintenu commenté comme dans ta version
 #    image: openproject/openproject:14
 #    environment:
