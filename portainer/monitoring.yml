@@ -21,7 +21,7 @@ services:
       - /data/nfs/containers/monitoring/zabbix-server/mibs:/var/lib/zabbix/mibs:ro
     secrets:
       - ZABBIX_MYSQL_USER
-      - MARIADB_ROOT_PASSWORD
+      - MARIADB_MYSQL_PASSWORD
       - MARIADB_ROOT_PASSWORD
     networks:
       - monitoring_network
