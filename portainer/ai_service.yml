@@ -37,6 +37,7 @@ services:
       - logs_network
     environment:
       # C'est ici que nous configurons le service !
+      - DEBUG=true
       - LLM_BACKEND=gemini
       - GEMINI_API_KEY=AIzaSyBTXF-L_pgkz6xxvordJkKvaXABsmVoSgQ
       - GEMINI_MODEL_NAME=gemini-2.5-flash
