@@ -207,6 +207,7 @@ services:
       NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
     networks:
       - databases_network # Pour que l'intent-router puisse s'y connecter
+      - logs_network # Pour envoyer les logs à Graylog
 
 
 # Définition des secrets utilisés dans cette stack
