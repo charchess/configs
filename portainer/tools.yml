@@ -184,7 +184,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
-        - "traefik.http.routers.paperless-https.rule=Host(`files.truxonline.com`)"
+        - "traefik.http.routers.paperless-https.rule=Host(`code.truxonline.com`)"
         - "traefik.http.routers.paperless-https.entrypoints=web-secure"
         - "traefik.http.routers.paperless-https.tls=true"
         - "traefik.http.routers.paperless-https.tls.certresolver=gandi"
