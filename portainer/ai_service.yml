@@ -54,7 +54,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.role == worker
+#          - node.role == worker
           - "node.hostname == grenat"
     networks:
       - ai_network
@@ -89,7 +89,7 @@ services:
       # La section 'placement:' a été supprimée.
       placement:
         constraints:
-          - node.role == worker
+#          - node.role == worker
           - node.labels.disk.feature.nfs == true
           - "node.hostname == grenat"
     volumes:
@@ -141,7 +141,7 @@ services:
 #        - "traefik.http.services.sillytavern-https.loadbalancer.server.port=8888" # Port interne de l'interface web (mis à jour)
       placement:
         constraints:
-          - node.role == worker
+#          - node.role == worker
           - node.labels.disk.feature.nfs == true
     logging: # Configuration du logging vers Graylog
       driver: gelf
