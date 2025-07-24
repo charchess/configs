@@ -1,0 +1,682 @@
+Table of Contents
+Présentation du Projet : Votre HomeLab Intelligent	2
+Objectifs Clés :	2
+Pourquoi cette Architecture ? (Les Bénéfices)	2
+Comment ça marche ? (Aperçu Rapide)	2
+Les "Personnalités" de l'IA :	3
+Architecture Détaillée de l'Infrastructure d'IA pour HomeLab	4
+I. Vue d'Ensemble des Composants Clés	4
+II. Flux de Données et Interactions (Diagramme Conceptuel)	5
+III. Détail des Composants et leurs Rôles	6
+IV. L'IA "Cheffe" : Rôle et Mécanismes	8
+V. Configuration des Endpoints LLM (Gemini, Oobabooga, Claude)	8
+VI. Considérations sur les Ressources	10
+Découpage par Phases du Projet d'Infrastructure d'IA	11
+Introduction : L'Approche Itérative	11
+Phase 0 : Préparation & Fondations (Vérification et Consolidation)	11
+Phase 1 : Cœur de l'IA (Interaction Textuelle & Mémoire Sémantique Initiale)	11
+Phase 2 : Mémoire Conversationnelle & Personnalisation	12
+Phase 3 : Actions & Outils (Home Assistant & API Externes)	12
+Phase 4 : Gestion Avancée des Connaissances (RAG Image/PDF & Fichiers Externes)	13
+Phase 5 : Interaction Vocale & Voix Personnalisées	13
+Phase 6 : IA Cheffe Avancée & Surveillance Intégrée	13
+Phase 7 : Multi-Utilisateurs & Affinements	14
+Plan de Gestion des Données et Stratégie RAG (Récupération Augmentée de Génération)	15
+I. Cycle de Vie des Données	15
+II. Sources de Données et Méthodes d'Acquisition	15
+III. Stratégie de Traitement et d'Ingestion (RAG)	16
+IV. Stratégie de Récupération (RAG)	17
+V. Gouvernance des Données & Maintenance	17
+Spécification des APIs et Contrats de Service de l'Infrastructure d'IA	19
+I. Conventions Générales	19
+II. Spécifications des APIs par Service	19
+1. API du LLM Engine (Oobabooga Text Generation Web UI)	19
+2. API du Service d'Embedding (truxonline/embedding-service)	21
+3. API de la Base de Données Vectorielle (ChromaDB)	21
+4. API de Gestion de la Mémoire Conversationnelle (Zep)	22
+5. API de l'Orchestrateur d'Outils (n8n)	23
+6. API des Services Vocaux (STT/TTS)	24
+III. Contrats de Service et Dépendances	24
+Plan de Sécurité de l'Infrastructure d'IA	26
+I. Principes Fondamentaux	26
+II. Sécurité Réseau	26
+III. Sécurité des Applications et des Données	27
+IV. Surveillance et Réponse aux Incidents	28
+V. Plan de Sauvegarde et de Reprise d'Activité	28
+Directives Éthiques et Garde-fous (Guardrails) pour l'IA	30
+I. Principes Éthiques Fondamentaux	30
+II. Garde-fous (Guardrails) Opérationnels	30
+III. Responsabilités	32
+
+Présentation du Projet : Votre HomeLab Intelligent
+Vision : Transformer votre HomeLab en un écosystème intelligent et autonome, où des intelligences artificielles spécialisées collaborent pour vous assister dans la gestion quotidienne, la domotique, le jardinage, les finances, et bien plus encore. Un HomeLab qui non seulement répond à vos commandes, mais anticipe vos besoins et gère proactivement son environnement.
+Objectifs Clés :
+    • Interaction Naturelle : Dialoguez avec vos IA par chat ou par la voix, de manière fluide et intuitive, via une interface de développement personnalisée.
+    • IA Spécialisées : Bénéficiez de l'expertise de plusieurs "interlocutrices" (Domotique, Jardin, Organisation, Finances, etc.), chacune avec sa propre personnalité et son domaine de compétence.
+    • Mémoire Persistante : Chaque IA se souvient de vos conversations et des informations que vous lui confiez, y compris des documents complexes (PDFs, images) et des fichiers externes.
+    • Actions Autonomes : Vos IA peuvent interagir avec votre Home Assistant, gérer vos mails et agendas, et même analyser les données de surveillance (Zabbix, Graylog) pour la maintenance prédictive.
+    • L'IA "Cheffe" : Une intelligence supérieure qui coordonne les autres, gère vos projets, génère des rapports périodiques et peut même "déléguer" des tâches aux IA spécialisées.
+    • Approche Itérative : Construction progressive et fonctionnelle, garantissant la stabilité à chaque étape.
+Pourquoi cette Architecture ? (Les Bénéfices)
+    • Personnalisation Ultime : Des IA qui vous connaissent, adaptent leur style et leur expertise à vos besoins spécifiques.
+    • Autonomie Accrue : Libérez-vous des tâches répétitives en confiant la gestion de votre HomeLab à des agents intelligents.
+    • Efficacité Optimale : Des systèmes spécialisés pour chaque tâche, garantissant des réponses rapides et précises.
+    • Base de Connaissances Enrichie : Vos IA apprendront de vos documents et de vos interactions, créant une mémoire collective pour votre HomeLab.
+    • Sécurité et Contrôle : Une architecture modulaire permet un contrôle granulaire sur les données et les actions de chaque IA.
+Comment ça marche ? (Aperçu Rapide)
+Lorsque vous interagissez (par la voix ou le texte) via l'interface web personnalisée, votre requête est traitée par un moteur de reconnaissance vocale/texte. Elle est ensuite envoyée à une "IA passerelle" qui identifie l'IA spécialisée ou la "Cheffe" à solliciter.
+L'IA pertinente utilise sa mémoire conversationnelle (Zep) pour le contexte, et sa mémoire sémantique (ChromaDB) pour récupérer des informations pertinentes de vos documents. Le tout est ensuite envoyé à un Grand Modèle de Langage (LLM - initialement Gemini, puis Oobabooga sur votre umi) qui génère une réponse intelligente.
+Si une action est requise, l'IA utilise n8n comme un "orchestrateur" pour interagir avec Home Assistant, vos fichiers, ou d'autres services.
+Les "Personnalités" de l'IA :
+Chaque IA sera dotée d'une personnalité unique et d'une expertise spécifique :
+    • L'IA Domotique : Votre experte en automatisation de la maison.
+    • L'IA Jardin : Votre conseillère pour l'entretien de votre jardin.
+    • L'IA Organisation : Votre assistante pour la gestion de vos tâches et de votre temps.
+    • L'IA Finances : Votre gestionnaire pour les questions financières.
+    • L'IA Maintenance : Votre experte en diagnostic et résolution de problèmes techniques.
+    • L'IA "Cheffe" : La coordinatrice de toutes ces intelligences, votre point de contact principal pour la vision d'ensemble et la gestion de projet.
+Ce que vous pourrez faire :
+    • "IA Domotique, allume les lumières du salon et mets la musique d'ambiance."
+    • "IA Jardin, quelle est la température du sol et faut-il arroser les tomates ?"
+    • "IA Organisation, ajoute 'Préparer la présentation pour la réunion de lundi' à ma liste de tâches."
+    • "IA Finances, quel est le solde de mon compte d'épargne ?"
+    • "IA Cheffe, génère un rapport hebdomadaire sur la consommation énergétique de la maison."
+    • "IA Maintenance, analyse les logs de Zabbix et dis-moi pourquoi le service X est en alerte."
+    • "IA Cheffe, lis le document 'Manuel_Pommiers.pdf' et dis-moi comment traiter la maladie des taches noires."
+Prochaines Étapes : Nous allons maintenant détailler les phases de mise en œuvre pour construire cette infrastructure brique par brique.
+
+Architecture Détaillée de l'Infrastructure d'IA pour HomeLab
+Cette architecture est conçue pour supporter un système d'IA modulaire, capable d'interagir vocalement et textuellement, de gérer des personnalités spécialisées, de maintenir une mémoire persistante, d'accéder à des connaissances diverses (y compris images et PDFs), d'agir sur votre environnement HomeLab, et de coordonner ses actions via une IA "cheffe".
+I. Vue d'Ensemble des Composants Clés
+L'infrastructure repose sur plusieurs piliers, chacun ayant un rôle spécialisé :
+    1. Moteur de Langage (LLM Engine) : Le cerveau de l'IA, capable de comprendre et de générer du texte.
+    2. Base de Données Vectorielle (Vector Database) : Pour le stockage et la recherche sémantique d'informations (RAG).
+    3. Gestion de la Mémoire Conversationnelle (Memory Store) : Pour maintenir le contexte des discussions.
+    4. Orchestrateur d'Outils (Tool Orchestrator) : Pour connecter l'IA au monde réel et aux autres services.
+    5. Traitement Vocal (STT/TTS) : Pour la conversion parole-texte et texte-parole.
+    6. Interface Utilisateur (UI) : Le point d'interaction avec les utilisateurs humains.
+    7. Bases de Données Classiques (Classical DBs) : Pour les données structurées et l'authentification.
+
+II. Flux de Données et Interactions (Diagramme Conceptuel)
++-------------------+        +---------------------+        +---------------------+
+|   VOUS (Le Roi)   | <----> | Interface Web       | <----> |  LLM Engine(Oba     |
+| (Vocal & Textuel) |        | Personnalisée / UI  |        |  sur "umi"/Gemini/  |
++-------------------+        | (Développement      |        |  Claude...)         |
+                             |  Spécifique)        |        +---------------------+
+                             | +-----------------+ |                   ^
+                             | | STT/TTS Service | |                   | (Embeddings/Requêtes)
+                             | | (Docker Vixen)  | |                   |
+                             +---------------------+        +---------------------+
+                                       ^                    |  Service d'Embedding|
+                                       |                    |  (Docker Vixen)     |
+                                       |                    +---------------------+
+                                       |                               |
+                             +---------------------+        +---------------------+
+                             |       n8n           | <----> |  Base de Données    |
+                             |  (Orchestrateur /   |        |  Vectorielle        |
+                             |  Passerelle API /   |        |  (ChromaDB / PG+pv) |
+                             |  Gestion Workflows) |        +---------------------+
+                             +---------------------+                   ^
+                                     ^ |                               |
+        +---------------------+      | +---------------------+         |
+        |  Home Assistant     |      | |  Zep (Mémoire Conv.)| <-------+
+        |  (Capteurs/Actions) | <----->|  (Docker Vixen)     |
+        |                     |      | +---------------------+
+        +---------------------+      | +---------------------+
+        +---------------------+      | |  BD Classique       |
+        |  Fichiers Externes  | <----->|  (MariaDB/PostgreSQL)|
+        |  (NAS Synelia, etc.)|      | +---------------------+
+        +---------------------+      |
+        +---------------------+      |
+        |  Zabbix / Graylog   | <----->
+        |  (Monitoring/Logs)  |
+        +---------------------+
+
+III. Détail des Composants et leurs Rôles
+    1. Moteur de Langage (LLM Engine) :
+        ◦ Rôle : Le cœur intelligent qui génère les réponses.
+        ◦ Implémentation :
+            ▪ Oobabooga Text Generation Web UI : Déployé sur votre NUC umi (avec GPU NVIDIA GeForce 2080), il hébergera les modèles LLM open-source. C'est la cible principale pour les interactions complexes et la personnalisation.
+            ▪ API Gemini (Google AI Studio) : Utilisée initialement. Accès via l'API Google.
+            ▪ API Claude (Anthropic) : Option future, accès via l'API Anthropic.
+        ◦ Gestion des Personnalités : Les "système prompts" détaillés seront envoyés au LLM via l'API pour chaque interaction, définissant le rôle, l'expertise et la personnalité de l'IA (Domotique, Jardin, Finances, etc.).
+    2. Base de Données Vectorielle (Vector Database) :
+        ◦ Rôle : Stocke les "embeddings" (représentations numériques) de vos connaissances. Essentiel pour la Récupération Augmentée de Génération (RAG).
+        ◦ Implémentation : ChromaDB (ou PostgreSQL avec pgvector si préférence pour une base de données unifiée). Déployé en conteneur Docker sur votre Swarm vixen (idéalement sur ruby pour bénéficier du SSD).
+        ◦ Ingestion de Documents (RAG Avancé) :
+            ▪ PDFs : Utilisation de bibliothèques Python (ex: pypdf, pdfminer.six) pour extraire le texte.
+            ▪ Images : Utilisation de l'OCR (Optical Character Recognition) via des outils comme Tesseract (en conteneur Docker) pour extraire le texte.
+            ▪ Le texte extrait est "chunké" (découpé en petits morceaux), encodé en embeddings par le Service d'Embedding, puis stocké dans ChromaDB avec des métadonnées (domaine, source, type, date, IA cible, utilisateur).
+        ◦ Service d'Embedding : Un service Python (FastAPI + sentence-transformers) déployé en conteneur Docker sur vixen (ex: sur grenat pour équilibrer la charge CPU), qui convertit le texte en embeddings.
+    3. Gestion de la Mémoire Conversationnelle (Zep) :
+        ◦ Rôle : Maintient l'historique des conversations, génère des résumés contextuels et extrait des entités.
+        ◦ Implémentation : Zep, déployé en conteneur Docker sur vixen.
+    4. Orchestrateur d'Outils (n8n) :
+        ◦ Rôle : Le "hub" central pour l'automatisation et l'intégration avec les systèmes externes.
+        ◦ Implémentation : n8n, déployé en conteneur Docker sur vixen.
+        ◦ Accès Autonome aux Fichiers Externes : n8n sera configuré avec des volumes Docker montés sur des partages NFS/SMB existants de votre NAS Synology. Des nœuds spécifiques dans n8n permettront aux workflows de lire, lister et potentiellement écrire (avec validation) des fichiers. L'IA pourra demander "Lis le dernier rapport financier dans le dossier X" et n8n exécutera l'action, passant le contenu à l'IA via le RAG.
+        ◦ Intégration Zabbix/Graylog : n8n pourra interroger l'API de Zabbix pour des métriques ou des alertes, et se connecter à Graylog pour analyser les logs. Ces données seront ensuite formatées et transmises aux IA (via RAG ou directement).
+        ◦ Maintenance Prédictive : Des workflows n8n collecteront des données de capteurs (via Home Assistant) et des logs (via Graylog), les passeront à une IA spécialisée (ex: "IA Maintenance") pour analyse et détection de schémas anormaux, permettant d'anticiper des pannes.
+    5. Traitement Vocal (STT/TTS) :
+        ◦ Rôle : Convertir la parole en texte et le texte en parole.
+        ◦ Implémentation :
+            ▪ Speech-to-Text (STT) : Un service basé sur Whisper (OpenAI), déployé en conteneur Docker sur vixen (CPU-optimisé).
+            ▪ Text-to-Speech (TTS) : Des services basés sur Coqui-TTS, Bark, ou VITS, également en conteneurs Docker sur vixen. Chaque IA aura sa propre voix distinctive (modèle TTS ou paramètres spécifiques).
+        ◦ Orchestration : n8n ou un petit service Python dédié (interfacé avec l'interface web personnalisée) orchestrera le flux audio (capture -> STT -> LLM -> TTS -> diffusion).
+    6. Interface Utilisateur (UI) :
+        ◦ Rôle : Votre interface principale pour interagir avec les IA.
+        ◦ Implémentation : Interface Web Personnalisée (HTML/JS). Ce développement spécifique offrira un contrôle total sur l'expérience utilisateur. Elle gérera la sélection des "personnages" (vos IA spécialisées), l'historique de chat textuel, et se connectera directement ou via un "Service AI Gateway" aux APIs des LLMs et aux services STT/TTS.
+    7. Bases de Données Classiques (MariaDB/PostgreSQL) :
+        ◦ Rôle : Stockage des données structurées (profils utilisateurs, paramètres d'IA, données de gestion de projet, etc.).
+        ◦ Implémentation : MariaDB et/ou PostgreSQL, déployés en conteneur Docker sur la stack databases de vixen.
+IV. L'IA "Cheffe" : Rôle et Mécanismes
+L'IA "Cheffe" sera votre assistante principale, capable de coordonner les autres IA et de gérer des tâches transversales.
+    • Gestion de Projet :
+        ◦ L'IA Cheffe pourra interagir avec un outil de gestion de projet (ex: OpenProject, ou une base de données simple gérée par n8n) via des workflows n8n.
+        ◦ Elle pourra créer, assigner, suivre et clôturer des tâches, répondre à des questions sur l'état des projets, et vous alerter sur les échéances.
+    • Rapports Périodiques :
+        ◦ Des workflows n8n planifiés collecteront des données de diverses sources (Home Assistant, Zabbix, Graylog, bases de données classiques).
+        ◦ Ces données brutes seront formatées et transmises à l'IA Cheffe (LLM) qui les résumera et générera des rapports concis et pertinents, envoyés par email (via n8n) ou affichés dans l'interface web personnalisée.
+    • Auto-interpellation (Communication Inter-IA) :
+        ◦ Utilisation de frameworks d'agents comme LangChain ou LlamaIndex (potentiellement intégrés dans un service Python dédié ou via des workflows n8n avancés).
+        ◦ Chaque IA sera dotée d'"outils" qui sont en réalité des appels à des workflows n8n ou à des APIs d'autres IA.
+        ◦ L'IA Cheffe, recevant une requête complexe, pourra décider quel outil utiliser et quelle IA spécialisée solliciter pour obtenir l'information ou exécuter l'action, puis consolidera la réponse.
+        ◦ Exemple : "IA Cheffe, quel est l'état de mes plantes et faut-il arroser ?" -> L'IA Cheffe délègue à l'IA Jardin (via n8n) -> IA Jardin interroge Home Assistant (via n8n) -> IA Jardin renvoie l'info à IA Cheffe -> IA Cheffe vous répond.
+V. Configuration des Endpoints LLM (Gemini, Oobabooga, Claude)
+Votre "Service AI Gateway" (un petit service API Python/FastAPI déployé sur vixen) ou directement n8n sera responsable de l'appel aux différents LLM.
+    1. Gemini (Google AI Studio) :
+        ◦ Endpoint API : https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent (ou autre modèle Gemini).
+        ◦ Authentification : Clé API (à gérer comme un Docker Secret).
+        ◦ Exemple d'appel (via n8n ou Python) :
+          {
+            "contents": [
+              {"role": "user", "parts": [{"text": "Votre prompt ici"}]}
+            ],
+            "generationConfig": {
+              "temperature": 0.7,
+              "maxOutputTokens": 500
+            }
+          }
+        ◦ Note : Pour les tests initiaux, vous pouvez utiliser la clé API directement dans n8n ou un script, mais pour le déploiement, elle doit être un Docker Secret.
+    2. Oobabooga Text Generation Web UI :
+        ◦ Endpoint API : http://192.168.199.78:5000/v1/chat/completions (ou /v1/completions pour le mode texte brut).
+        ◦ Authentification : Généralement pas d'API Key par défaut, mais peut être configurée.
+        ◦ Modèle : Spécifié dans la requête (ex: L3.3-70B-Magnum-Diamond-Q5_K_S.gguf).
+        ◦ Exemple d'appel (via n8n ou Python) :
+          {
+            "model": "L3.3-70B-Magnum-Diamond-Q5_K_S.gguf",
+            "messages": [
+              {"role": "system", "content": "Prompt système de l'IA"},
+              {"role": "user", "content": "Votre question"}
+            ],
+            "max_tokens": 500,
+            "temperature": 0.7,
+            "stream": false
+          }
+        ◦ Note : L'adresse IP 192.168.199.78 est l'IP de votre NUC umi sur le VLAN 199. Assurez-vous que le service AI Gateway (sur vixen) peut communiquer avec cette IP.
+    3. Claude (Anthropic) :
+        ◦ Endpoint API : https://api.anthropic.com/v1/messages
+        ◦ Authentification : Clé API (via header x-api-key).
+        ◦ Modèle : Spécifié dans la requête (ex: claude-3-opus-20240229).
+        ◦ Exemple d'appel (via n8n ou Python) :
+          {
+            "model": "claude-3-opus-20240229",
+            "messages": [
+              {"role": "user", "content": "Hello, world"}
+            ],
+            "max_tokens": 1024
+          }
+        ◦ Note : L'accès à Claude nécessitera une connexion Internet depuis le service appelant.
+VI. Considérations sur les Ressources
+    • umi (GPU) : Idéal pour Oobabooga et les modèles LLM lourds.
+    • vixen (Swarm CPU) : Gérera les bases de données (ChromaDB, Zep, PostgreSQL), n8n, STT/TTS (modèles optimisés CPU), et le service d'embedding. La performance de grenat (4Go RAM, Celeron) sera un facteur limitant pour les services gourmands. Le placement des services (ex: ChromaDB sur ruby avec SSD, Embedding sur grenat si léger) sera crucial.
+Cette architecture est une "carte routière" pour votre HomeLab intelligent. Chaque composant est un "module" prêt à être "branché" pour atteindre votre vision.
+
+Découpage par Phases du Projet d'Infrastructure d'IA
+Ce projet sera mené selon une approche itérative et fonctionnelle, garantissant la stabilité et la validation de chaque composant avant de passer à la phase suivante. Chaque phase a des objectifs clairs et des livrables spécifiques.
+Introduction : L'Approche Itérative
+Nous construirons votre HomeLab intelligent par couches, en commençant par le cœur de l'IA et en ajoutant progressivement les fonctionnalités, les intégrations et les personnalisations. Cela permet une flexibilité maximale et une adaptation continue.
+Phase 0 : Préparation & Fondations (Vérification et Consolidation)
+    • Objectifs : S'assurer que l'infrastructure de base du Docker Swarm est stable, sécurisée et prête à accueillir les services d'IA.
+    • Livrables Clés :
+        ◦ Cluster Docker Swarm (vixen) opérationnel et stable.
+        ◦ Réseaux Docker (infrastructure_network, databases_network, tools_network, media_download_network, media_management_network, logs_network, monitoring_network, experimentation_network, nordvpn_ch_network) créés et fonctionnels.
+        ◦ Docker Secrets configurés pour tous les services existants (priorité 2 du Plan d'Amélioration du HomeLab).
+        ◦ Logging vers Graylog fonctionnel pour les services existants (via le pilote GELF).
+        ◦ Traefik v3.x configuré avec les EntryPoints web-secure et internal-secure.
+        ◦ Montages NFS pour les volumes Docker (/data/nfs/containers) stables et résilients (via systemd.mount/automount).
+    • Priorité : Très Haute (Fondation indispensable).
+Phase 1 : Cœur de l'IA (Interaction Textuelle & Mémoire Sémantique Initiale)
+    • Objectifs : Mettre en place les composants fondamentaux de l'IA pour l'interaction textuelle et la capacité de recherche de connaissances via une interface de développement personnalisée.
+    • Livrables Clés :
+        ◦ Oobabooga Text Generation Web UI déployé et opérationnel sur umi (accessible via Traefik si nécessaire, ou via IP directe pour les tests).
+        ◦ Service d'Embedding (truxonline/embedding-service:latest) déployé sur le Docker Swarm (vixen, idéalement sur grenat).
+        ◦ ChromaDB (ou PostgreSQL avec pgvector) déployé sur le Docker Swarm (vixen, idéalement sur ruby).
+        ◦ Une interface web de développement personnalisée (HTML/JS simple ou script Python) capable d'envoyer des requêtes à l'API Gemini et/ou Oobabooga et d'afficher les réponses. Cette interface servira de base pour les interactions futures.
+        ◦ Intégration initiale de l'API Gemini : Un workflow n8n simple ou un petit service Python (potentiellement intégré dans le futur "Service AI Gateway") capable d'appeler l'API Gemini et de passer les réponses à l'interface personnalisée.
+        ◦ Première IA "Cheffe" configurée via un prompt système envoyé par l'interface de développement personnalisée à Oobabooga/Gemini.
+        ◦ Un workflow n8n initial pour l'ingestion de texte simple (ex: un fichier .txt) dans ChromaDB via le service d'embedding.
+    • Priorité : Très Haute (Démarrage du système d'IA).
+Phase 2 : Mémoire Conversationnelle & Personnalisation
+    • Objectifs : Permettre aux IA de maintenir un contexte de conversation à long terme et d'affiner leurs personnalités.
+    • Livrables Clés :
+        ◦ Zep déployé sur le Docker Swarm (vixen).
+        ◦ L'interface de développement personnalisée sera étendue pour interagir avec Zep pour la gestion de l'historique des conversations.
+        ◦ Définition et affinement des prompts système pour au moins 2-3 IA spécialisées supplémentaires (ex: IA Domotique, IA Jardin).
+        ◦ Mécanisme de sélection d'IA fonctionnel intégré à l'interface de développement personnalisée.
+    • Priorité : Haute (Amélioration de l'expérience utilisateur et de la pertinence).
+Phase 3 : Actions & Outils (Home Assistant & API Externes)
+    • Objectifs : Permettre aux IA d'interagir avec votre HomeLab et des services externes via n8n.
+    • Livrables Clés :
+        ◦ n8n configuré avec les identifiants et nœuds nécessaires pour interagir avec l'API de Home Assistant (lecture de capteurs, envoi de commandes).
+        ◦ Création de workflows n8n pour des actions simples de domotique (ex: allumer/éteindre une lumière, récupérer la température d'une pièce).
+        ◦ Intégration d'un framework d'agents (ex: LangChain/LlamaIndex) avec Oobabooga pour permettre à l'IA d'appeler ces workflows n8n comme des "outils".
+        ◦ Création d'un workflow n8n pour interroger une API externe simple (ex: météo) et présenter l'information à l'IA.
+    • Priorité : Moyenne-Haute (Interaction avec le monde réel).
+Phase 4 : Gestion Avancée des Connaissances (RAG Image/PDF & Fichiers Externes)
+    • Objectifs : Étendre la capacité de RAG aux documents non textuels et permettre l'accès autonome aux fichiers.
+    • Livrables Clés :
+        ◦ Service OCR (Tesseract) déployé en conteneur Docker sur vixen.
+        ◦ Workflows n8n pour :
+            ▪ Surveiller un dossier d'ingestion (ex: sur NFS).
+            ▪ Extraire le texte des PDFs (via bibliothèques Python dans un nœud de fonction n8n ou un service dédié).
+            ▪ Extraire le texte des images (via le service OCR).
+            ▪ "Chunker" le texte extrait.
+            ▪ Envoyer les chunks au service d'embedding.
+            ▪ Stocker les embeddings dans ChromaDB avec des métadonnées enrichies (type de document, source, IA cible).
+        ◦ Accès Autonome aux Fichiers Externes : n8n configuré avec des volumes Docker montés sur les partages NFS/SMB de votre NAS. Création de nœuds de fonction n8n ou de services dédiés pour lister, lire et potentiellement écrire (avec validation) des fichiers.
+        ◦ Les IA seront formées (via prompts) à demander l'accès à ces informations et à les intégrer dans leurs réponses.
+    • Priorité : Moyenne (Augmentation significative de la base de connaissances).
+Phase 5 : Interaction Vocale & Voix Personnalisées
+    • Objectifs : Ajouter la capacité d'interaction vocale et donner à chaque IA sa propre voix.
+    • Livrables Clés :
+        ◦ Service STT (Whisper) déployé en conteneur Docker sur vixen.
+        ◦ Services TTS (Coqui-TTS/Bark/VITS) déployés en conteneurs Docker sur vixen, avec au moins 2-3 voix distinctes configurées.
+        ◦ Intégration du flux vocal (capture -> STT -> LLM -> TTS -> diffusion) via n8n ou un service Python dédié, interfacé avec l'interface de développement personnalisée.
+    • Priorité : Moyenne (Amélioration de l'expérience utilisateur, potentiellement gourmand en ressources).
+Phase 6 : IA Cheffe Avancée & Surveillance Intégrée
+    • Objectifs : Mettre en œuvre les capacités avancées de l'IA Cheffe et son intégration avec les systèmes de surveillance.
+    • Livrables Clés :
+        ◦ Workflows n8n pour la gestion de projet (lecture/écriture vers une base de données simple ou une API d'OpenProject).
+        ◦ Workflows n8n pour générer des rapports périodiques (collecte de données de HA, Zabbix, Graylog, bases de données classiques, puis résumé par l'IA Cheffe).
+        ◦ Implémentation de l'auto-interpellation entre IA via LangChain/LlamaIndex agents (l'IA Cheffe délègue aux IA spécialisées).
+        ◦ Intégration de Zabbix/Graylog : Workflows n8n pour interroger les APIs de Zabbix (métriques, alertes) et Graylog (recherche de logs).
+        ◦ Maintenance Prédictive : L'IA Maintenance (ou l'IA Cheffe) sera entraînée à analyser les données de surveillance pour détecter des anomalies et anticiper les problèmes.
+    • Priorité : Moyenne-Basse (Fonctionnalités avancées).
+Phase 7 : Multi-Utilisateurs & Affinements
+    • Objectifs : Permettre à plusieurs utilisateurs d'interagir avec des mémoires dédiées et optimiser l'ensemble du système.
+    • Livrables Clés :
+        ◦ Mise en place d'un système d'authentification utilisateur (via base de données classique ou Keycloak).
+        ◦ Configuration de Zep et ChromaDB pour isoler et gérer les mémoires par utilisateur.
+        ◦ Affinements des prompts des IA, des voix TTS, et des performances globales du système.
+    • Priorité : Basse (Amélioration de l'évolutivité et de la robustesse).
+Ce découpage vous offre une "stratégie de déploiement" claire et progressive pour votre HomeLab intelligent, mon Roi !
+
+Plan de Gestion des Données et Stratégie RAG (Récupération Augmentée de Génération)
+Ce document détaille la manière dont les données seront gérées, ingérées, stockées et utilisées par les IA via la stratégie de Récupération Augmentée de Génération (RAG), garantissant l'accès à une base de connaissances pertinente et à jour.
+I. Cycle de Vie des Données
+Le cycle de vie des données pour le système d'IA suivra les étapes suivantes :
+    1. Acquisition : Collecte des données brutes depuis diverses sources.
+    2. Ingestion & Traitement : Nettoyage, normalisation, découpage (chunking), et encodage des données.
+    3. Stockage : Persistance des données brutes, des chunks et de leurs embeddings.
+    4. Récupération : Recherche et sélection des informations pertinentes pour les LLMs.
+    5. Utilisation : Intégration des informations récupérées dans les réponses des LLMs.
+    6. Mise à Jour / Obsolescence : Processus pour maintenir la pertinence et la fraîcheur des données.
+II. Sources de Données et Méthodes d'Acquisition
+Les données proviendront de plusieurs sources, chacune avec sa méthode d'acquisition :
+    • Documents Personnels (PDFs, DOCX, TXT, Images) :
+        ◦ Acquisition : Surveillance d'un dossier NFS dédié (/data/nfs/ai_data/ingestion) par n8n. Les documents y seront déposés manuellement ou via des processus automatisés (ex: scan de Paperless vers ce dossier).
+        ◦ Traitement :
+            ▪ PDFs/DOCX : Extraction de texte via bibliothèques Python (ex: pypdf, python-docx) exécutées dans un nœud de fonction n8n ou un service dédié.
+            ▪ Images : Utilisation d'un service OCR (Tesseract) déployé en conteneur Docker pour extraire le texte.
+    • Historiques de Conversation (Zep) :
+        ◦ Acquisition : Zep gère automatiquement l'historique des conversations.
+        ◦ Traitement : Zep génère des résumés contextuels et extrait des entités, qui peuvent ensuite être intégrés ou référencés par le RAG.
+    • Données Structurées (Bases de Données Classiques) :
+        ◦ Acquisition : Accès direct via n8n (PostgreSQL, MariaDB) ou via des APIs de services (Home Assistant, Zabbix, Graylog).
+        ◦ Traitement : Requêtes SQL/API pour extraire des informations spécifiques, formatées pour être injectées dans le prompt du LLM ou encodées pour le RAG si le volume est important.
+    • Données Web (Articles, Documentation) :
+        ◦ Acquisition : Workflows n8n pour le scraping de sites web ou l'interrogation d'APIs publiques.
+        ◦ Traitement : Nettoyage HTML, extraction de texte, chunking.
+III. Stratégie de Traitement et d'Ingestion (RAG)
+    1. Chunking (Découpage) :
+        ◦ Les documents volumineux seront découpés en "chunks" (morceaux) de taille gérable (ex: 200-500 mots) avec un chevauchement (overlap) pour préserver le contexte.
+        ◦ Outils : Bibliothèques Python (ex: langchain.text_splitter).
+    2. Encodage (Embeddings) :
+        ◦ Chaque chunk de texte sera transformé en un vecteur numérique (embedding) par le Service d'Embedding (truxonline/embedding-service:latest).
+        ◦ Modèle d'Embedding : sentence-transformers/all-MiniLM-L6-v2 (ou équivalent CPU-optimisé).
+    3. Stockage des Embeddings :
+        ◦ Les embeddings seront stockés dans ChromaDB (ou PostgreSQL avec pgvector).
+        ◦ Métadonnées : Chaque embedding sera associé à des métadonnées cruciales pour la récupération et le filtrage :
+            ▪ source : Chemin du fichier, URL, nom de l'API.
+            ▪ type : pdf, image, conversation, web_page, report.
+            ▪ date_ingestion : Date de l'ajout.
+            ▪ ia_cible : jardinier, domoticienne, financier, cheffe (pour filtrer la mémoire par IA).
+            ▪ importance : high, medium, low (pour prioriser la récupération).
+            ▪ utilisateur : ID de l'utilisateur si le système devient multi-utilisateur.
+            ▪ resume_chunk : Un bref résumé du chunk (optionnel, pour une meilleure pertinence).
+    4. Flux d'Ingestion (via n8n) :
+        ◦ Trigger : Surveillance de dossier (pour documents), webhook (pour données API), ou planification (pour rapports périodiques).
+        ◦ Étapes :
+            ▪ Lecture du document/donnée.
+            ▪ Extraction de texte (avec OCR si image).
+            ▪ Chunking.
+            ▪ Envoi des chunks au Service d'Embedding.
+            ▪ Stockage des embeddings et métadonnées dans ChromaDB.
+IV. Stratégie de Récupération (RAG)
+Lorsqu'une IA reçoit une requête, le processus de RAG se déroulera comme suit :
+    1. Requête d'Embedding : La requête de l'utilisateur (ou une partie du prompt généré par l'IA) est encodée par le Service d'Embedding.
+    2. Recherche de Similarité : L'embedding de la requête est utilisé pour rechercher les "chunks" les plus sémantiquement similaires dans ChromaDB.
+        ◦ Filtrage : La recherche sera filtrée par ia_cible (si l'IA est spécialisée), utilisateur, et potentiellement importance ou date.
+    3. Récupération des Chunks : Les N chunks les plus pertinents sont récupérés.
+    4. Construction du Prompt : Les chunks récupérés sont insérés dans le prompt envoyé au LLM, fournissant un contexte riche et pertinent pour la génération de la réponse.
+        ◦ Exemple de prompt : Voici des informations pertinentes : [chunks]. En te basant sur ces informations et sur ta mémoire, réponds à la question : [question_utilisateur].
+V. Gouvernance des Données & Maintenance
+    • Qualité des Données : Des vérifications manuelles périodiques des données ingérées seront nécessaires pour s'assurer de la qualité de l'extraction et de l'encodage.
+    • Mise à Jour & Obsolescence :
+        ◦ Documents : Si un document est mis à jour, l'ancien devra être supprimé de ChromaDB et le nouveau ingéré. Des mécanismes de versioning pourraient être envisagés à long terme.
+        ◦ Historiques de Conversation : Zep gère automatiquement la rétention et le résumé.
+    • Sécurité des Données :
+        ◦ Chiffrement : Les données au repos sur NFS sont sécurisées par votre NAS. Les communications vers ChromaDB/Embedding Service seront sur des réseaux Docker internes.
+        ◦ Accès : Les accès à ChromaDB et au Service d'Embedding seront restreints aux services Docker autorisés (n8n, Service AI Gateway).
+Ce plan de gestion des données et de stratégie RAG est la "colonne vertébrale" de la connaissance de vos IA, mon Roi. Il garantira que chaque IA a accès aux informations précises et pertinentes dont elle a besoin pour vous servir.
+
+Spécification des APIs et Contrats de Service de l'Infrastructure d'IA
+Ce document définit les interfaces de programmation (APIs) des principaux services de l'infrastructure d'IA, incluant leurs endpoints, formats de requêtes/réponses, et mécanismes d'authentification. Il sert de "contrat" pour la communication inter-services.
+I. Conventions Générales
+    • Format : Toutes les requêtes et réponses API utiliseront le format JSON.
+    • Encodage : UTF-8.
+    • Authentification : Les API internes utiliseront des clés API (via headers X-API-Key) ou des tokens JWT générés par un service d'authentification centralisé (à définir si besoin multi-utilisateur). Les API externes (Gemini, Claude) utiliseront leurs mécanismes d'authentification respectifs.
+    • Gestion des Erreurs : Les réponses d'erreur incluront un code HTTP standard (ex: 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error) et un corps JSON avec un message ({"detail": "Description de l'erreur"}).
+    • Versionnement : Les APIs seront versionnées (ex: /v1/).
+II. Spécifications des APIs par Service
+1. API du LLM Engine (Oobabooga Text Generation Web UI)
+    • Rôle : Génération de texte, interaction de chat.
+    • URL de Base : http://umi:5000/v1 (accès interne depuis le Swarm via l'IP de umi ou un routage Traefik interne si exposé).
+    • Endpoints :
+        ◦ POST /chat/completions
+            ▪ Description : Génère une réponse de chat basée sur un historique de conversation.
+            ▪ Requête (JSON) :
+              {
+                "model": "L3.3-70B-Magnum-Diamond-Q5_K_S.gguf",
+                "messages": [
+                  {"role": "system", "content": "Prompt système de l'IA"},
+                  {"role": "user", "content": "Votre question"},
+                  {"role": "assistant", "content": "Réponse précédente de l'IA"},
+                  {"role": "user", "content": "Nouvelle question"}
+                ],
+                "max_tokens": 500,
+                "temperature": 0.7,
+                "stream": false
+              }
+            ▪ Réponse (JSON) :
+              {
+                "choices": [
+                  {
+                    "message": {
+                      "role": "assistant",
+                      "content": "La réponse générée par l'IA."
+                    }
+                  }
+                ],
+                "usage": { ... },
+                "id": "..."
+              }
+        ◦ POST /completions (pour texte brut/mode instruct)
+            ▪ Description : Génère du texte basé sur un prompt.
+            ▪ Requête (JSON) :
+              {
+                "prompt": "Votre prompt ici",
+                "max_tokens": 500,
+                "temperature": 0.7,
+                "stream": false
+              }
+            ▪ Réponse (JSON) :
+              {
+                "choices": [
+                  {
+                    "text": "Le texte généré par l'IA."
+                  }
+                ],
+                "usage": { ... },
+                "id": "..."
+              }
+    • Authentification : Par défaut, Oobabooga n'a pas d'authentification API. Un reverse proxy (Traefik) avec authentification (basicAuth ou forwardAuth) est recommandé pour l'exposition.
+2. API du Service d'Embedding (truxonline/embedding-service)
+    • Rôle : Convertir du texte en vecteurs numériques (embeddings).
+    • URL de Base : http://embedding_model:8000 (accès interne via le réseau Docker ai_network).
+    • Endpoints :
+        ◦ POST /embed
+            ▪ Description : Génère des embeddings pour une liste de textes.
+            ▪ Requête (JSON) :
+              {
+                "texts": ["Texte 1 à embarquer", "Texte 2 à embarquer"]
+              }
+            ▪ Réponse (JSON) :
+              {
+                "embeddings": [
+                  [0.1, 0.2, ..., 0.N], # Embedding du Texte 1
+                  [0.3, 0.4, ..., 0.M]  # Embedding du Texte 2
+                ]
+              }
+        ◦ GET /health
+            ▪ Description : Vérifie l'état de santé du service.
+            ▪ Réponse (JSON) :
+              {"status": "ok", "model": "sentence-transformers/all-MiniLM-L6-v2", "device": "cpu"}
+    • Authentification : Clé API (via header X-API-Key) si exposé via Traefik ou si n8n est configuré pour l'utiliser.
+3. API de la Base de Données Vectorielle (ChromaDB)
+    • Rôle : Stocker et rechercher des embeddings.
+    • URL de Base : http://chromadb:8000/api/v1 (accès interne via le réseau Docker databases_network).
+    • Endpoints Clés (Simplifié) :
+        ◦ POST /collections
+            ▪ Description : Crée une nouvelle collection.
+        ◦ POST /collections/{collection_name}/add
+            ▪ Description : Ajoute des documents (embeddings + métadonnées) à une collection.
+            ▪ Requête (JSON) :
+              {
+                "embeddings": [[...], [...]],
+                "metadatas": [{"source": "doc1.pdf", "ia_cible": "jardinier"}, {"source": "doc2.txt", "ia_cible": "domoticienne"}],
+                "documents": ["Contenu du chunk 1", "Contenu du chunk 2"],
+                "ids": ["id1", "id2"]
+              }
+        ◦ POST /collections/{collection_name}/query
+            ▪ Description : Recherche les documents les plus similaires à une requête.
+            ▪ Requête (JSON) :
+              {
+                "query_embeddings": [[0.1, 0.2, ...]],
+                "n_results": 5,
+                "where": {"ia_cible": "jardinier"} # Filtrage par métadonnées
+              }
+            ▪ Réponse (JSON) :
+              {
+                "ids": [[...]],
+                "embeddings": [[...]],
+                "documents": [[...]],
+                "metadatas": [[...]],
+                "distances": [[...]]
+              }
+    • Authentification : Par défaut, ChromaDB n'a pas d'authentification API. Un reverse proxy (Traefik) avec authentification est recommandé pour l'exposition, ou des règles de pare-feu Docker pour limiter l'accès.
+4. API de Gestion de la Mémoire Conversationnelle (Zep)
+    • Rôle : Maintien de l'historique de conversation, résumé, extraction d'entités.
+    • URL de Base : http://zep:8000/api/v1 (accès interne via le réseau Docker ai_network).
+    • Endpoints Clés (Simplifié) :
+        ◦ POST /sessions
+            ▪ Description : Crée une nouvelle session de chat.
+        ◦ POST /sessions/{session_id}/messages
+            ▪ Description : Ajoute des messages à une session.
+            ▪ Requête (JSON) :
+              {
+                "messages": [
+                  {"role": "user", "content": "Bonjour"},
+                  {"role": "assistant", "content": "Bonjour, comment puis-je vous aider ?"}
+                ]
+              }
+        ◦ GET /sessions/{session_id}/messages
+            ▪ Description : Récupère l'historique des messages d'une session.
+        ◦ GET /sessions/{session_id}/memory
+            ▪ Description : Récupère la mémoire agrégée (résumé, entités) d'une session.
+    • Authentification : Clé API (via header X-API-Key) si configuré.
+5. API de l'Orchestrateur d'Outils (n8n)
+    • Rôle : Exécution de workflows, intégration avec Home Assistant, APIs externes, gestion de fichiers.
+    • URL de Base : https://n8n.truxonline.com/webhook/ (URL externe exposée par Traefik).
+    • Endpoints : Chaque workflow activé dans n8n génère son propre webhook URL.
+        ◦ POST /webhook/{webhook_id}
+            ▪ Description : Déclenche un workflow n8n spécifique.
+            ▪ Requête (JSON) : Dépend du workflow.
+                • Exemple (Allumer lumière) :
+                  {"action": "turn_on", "entity_id": "light.salon"}
+                • Exemple (Lire fichier) :
+                  {"action": "read_file", "path": "/data/reports/rapport_mensuel.pdf"}
+            ▪ Réponse (JSON) : Dépend du workflow.
+                • Exemple (Réponse action) :
+                  {"status": "success", "message": "Lumière du salon allumée."}
+                • Exemple (Contenu fichier) :
+                  {"status": "success", "content": "Contenu du fichier PDF extrait."}
+    • Authentification : Les webhooks n8n peuvent être sécurisés par des clés API ou des en-têtes personnalisés définis dans le workflow.
+6. API des Services Vocaux (STT/TTS)
+    • Rôle : Conversion parole-texte (STT) et texte-parole (TTS).
+    • URL de Base : http://stt_service:port et http://tts_service:port (accès interne via le réseau Docker ai_network).
+    • Endpoints (Exemples) :
+        ◦ STT : POST /transcribe
+            ▪ Requête : Fichier audio (multipart/form-data) ou base64 encodé.
+            ▪ Réponse (JSON) : {"text": "Texte transcrit"}
+        ◦ TTS : POST /synthesize
+            ▪ Requête (JSON) : {"text": "Texte à synthétiser", "voice_id": "electra_voice"}
+            ▪ Réponse : Fichier audio (audio/mpeg, audio/wav, etc.) ou base64 encodé.
+    • Authentification : Clé API (via header X-API-Key) si configuré.
+III. Contrats de Service et Dépendances
+    • Interface Web Personnalisée / SillyTavern :
+        ◦ Dépend de : Oobabooga API (pour le LLM), STT/TTS API (pour le vocal), n8n (pour les actions).
+    • Service AI Gateway (si implémenté) :
+        ◦ Dépend de : Oobabooga API, Gemini API, Claude API, Embedding Service, Zep, n8n.
+        ◦ Expose : Une API unifiée pour l'interface web.
+    • n8n :
+        ◦ Dépend de : Home Assistant API, APIs externes (météo, etc.), NAS (pour accès fichiers), Zabbix API, Graylog API, Embedding Service (pour ingestion RAG), ChromaDB (pour ingestion RAG).
+    • LLM (Oobabooga) :
+        ◦ Dépend de : Embedding Service (pour RAG), ChromaDB (pour RAG), Zep (pour mémoire conversationnelle).
+    • IA "Cheffe" (via LLM/LangChain) :
+        ◦ Dépend de : n8n (pour outils/actions/rapports), ChromaDB (pour RAG), Zep (pour mémoire).
+Cette spécification des APIs est le "langage universel" qui permettra à tous les composants de votre HomeLab intelligent de communiquer de manière structurée et efficace, mon Roi.
+
+Plan de Sécurité de l'Infrastructure d'IA
+Ce plan de sécurité vise à protéger l'intégrité, la confidentialité et la disponibilité de votre infrastructure d'IA, en abordant les risques liés à l'exposition des services, la gestion des secrets, la segmentation réseau et la protection des données.
+I. Principes Fondamentaux
+    1. Défense en Profondeur : Appliquer plusieurs couches de sécurité (réseau, application, données).
+    2. Moindre Privilège : Accorder le minimum de droits nécessaires à chaque composant.
+    3. Sécurité par Conception : Intégrer la sécurité dès la phase de conception.
+    4. Journalisation et Surveillance : Collecter et analyser les logs pour détecter les activités suspectes.
+II. Sécurité Réseau
+    1. Segmentation VLAN (UDM Pro) :
+        ◦ Objectif : Isoler les différents types de trafic.
+        ◦ Mise en œuvre :
+            ▪ VLAN 200 (Admin) : Accès SSH aux NUCs, interface de gestion fuu, nœuds managers Docker Swarm. Accès restreint.
+            ▪ VLAN 201 (Services) : Home Assistant, services exposés publiquement via Traefik (si non sur VLAN 200).
+            ▪ VLAN 199 (Home) : Appareils du quotidien.
+            ▪ VLAN 207 (IoT) : Appareils IoT isolés.
+        ◦ Durcissement du Pare-feu Inter-VLAN :
+            ▪ Action : Passer de "tout autorisé sauf bloqué" à "tout bloquer, sauf autorisé".
+            ▪ Règles : Définir explicitement les flux nécessaires (ex: Traefik vers services, n8n vers Home Assistant, services Docker vers bases de données).
+            ▪ Priorité : Restreindre les communications entre les VLANs sensibles (Admin, Services) et les VLANs moins fiables (IoT, Guest).
+    2. Segmentation Réseau Docker (Overlay Networks) :
+        ◦ Objectif : Isoler les communications entre les services Docker.
+        ◦ Mise en œuvre : Chaque stack Docker (ou groupe logique de services) aura son propre réseau overlay.
+            ▪ infrastructure_network : Pour Traefik, Watchtower, AdGuard Home.
+            ▪ databases_network : Pour MariaDB, PostgreSQL, MongoDB, ChromaDB.
+            ▪ ai_network : Pour les services d'IA (Embedding Service, Zep, etc.).
+            ▪ logs_network : Pour le trafic GELF vers Graylog.
+            ▪ media_download_network / media_management_network : Pour les services médias.
+            ▪ tools_network : Pour les outils de gestion.
+        ◦ Communication Inter-Réseaux : Les services ne seront attachés qu'aux réseaux dont ils ont strictement besoin pour communiquer.
+    3. Exposition des Services via Traefik :
+        ◦ Objectif : Contrôler l'accès externe et interne aux services web.
+        ◦ Mise en œuvre :
+            ▪ EntryPoints web-secure (public) et internal-secure (privé) : Différencier l'exposition.
+            ▪ Authentification Traefik : Utiliser basicAuth ou forwardAuth pour les services internes sensibles exposés via Traefik (ex: Zabbix, Graylog, Bitwarden, phpMyAdmin, pgAdmin).
+            ▪ TLS/SSL : Chiffrement systématique avec Let's Encrypt via DNS-01.
+III. Sécurité des Applications et des Données
+    1. Gestion des Secrets (Docker Secrets) :
+        ◦ Objectif : Éliminer les mots de passe et clés API en clair.
+        ◦ Mise en œuvre : Convertir tous les secrets identifiés (GANDIV5_PERSONAL_ACCESS_TOKEN, mots de passe DB, tokens API, etc.) en Docker Secrets.
+        ◦ Accès : Les secrets seront montés en lecture seule dans /run/secrets/ dans les conteneurs.
+    2. Permissions des Volumes NFS :
+        ◦ Objectif : Assurer que seuls les utilisateurs autorisés peuvent lire/écrire sur les volumes persistants.
+        ◦ Mise en œuvre : Utiliser des PUID/PGID cohérents (1000/1000 pour charchess) pour les conteneurs et configurer les permissions NFS sur le NAS en conséquence.
+    3. Sécurité des Bases de Données :
+        ◦ Objectif : Protéger les données au repos et en transit.
+        ◦ Mise en œuvre :
+            ▪ Mots de passe forts : Utiliser des mots de passe complexes pour tous les utilisateurs de bases de données (MariaDB, PostgreSQL, MongoDB).
+            ▪ Utilisateurs dédiés : Chaque application devrait utiliser un utilisateur de base de données dédié avec les privilèges minimaux nécessaires.
+            ▪ Connexions internes : Les bases de données ne seront accessibles que depuis les services Docker qui en ont besoin, via leurs réseaux Docker internes.
+            ▪ Chiffrement TLS : Si possible, configurer les connexions TLS entre les applications et les bases de données (ex: entre n8n et PostgreSQL).
+    4. Sécurité des LLMs et RAG :
+        ◦ Objectif : Protéger les modèles, les données d'entraînement/RAG et contrôler les sorties.
+        ◦ Mise en œuvre :
+            ▪ Oobabooga : Accès restreint via Traefik internal-secure ou IP directe depuis des services de confiance (ex: Service AI Gateway).
+            ▪ ChromaDB : Accès restreint aux services d'embedding et n8n. Pas d'exposition publique.
+            ▪ Filtrage des entrées/sorties : Mettre en place des "guardrails" (voir document dédié) pour filtrer les requêtes malveillantes ou les réponses inappropriées des LLMs.
+IV. Surveillance et Réponse aux Incidents
+    1. Journalisation Centralisée (Graylog) :
+        ◦ Objectif : Collecter tous les logs de l'infrastructure pour une analyse centralisée.
+        ◦ Mise en œuvre : Configurer tous les services Docker pour envoyer leurs logs au pilote GELF vers Graylog.
+        ◦ Alertes : Configurer des alertes dans Graylog pour les événements de sécurité critiques (tentatives de connexion échouées, accès non autorisés, erreurs système).
+    2. Surveillance (Zabbix) :
+        ◦ Objectif : Surveiller l'état de santé des systèmes et détecter les anomalies.
+        ◦ Mise en œuvre : Configurer Zabbix pour surveiller les NUCs, le NAS, les VMs, et l'état des services Docker.
+        ◦ Alertes : Définir des seuils d'alerte pour les ressources (CPU, RAM, disque), la disponibilité des services, et les erreurs spécifiques.
+    3. Mises à Jour Régulières :
+        ◦ Objectif : Corriger les vulnérabilités connues.
+        ◦ Mise en œuvre : Utiliser Watchtower pour les images Docker, et maintenir un calendrier pour les mises à jour des OS (Debian, Windows Server).
+V. Plan de Sauvegarde et de Reprise d'Activité
+    • Objectif : Assurer la résilience des données face aux incidents majeurs.
+    • Mise en œuvre : La Priorité 1 de votre plan d'amélioration du HomeLab est la mise en place d'une stratégie de sauvegarde 3-2-1 (3 copies, 2 supports différents, 1 copie hors-site) pour toutes les données critiques (NAS, VMs, volumes Docker).
+Ce plan de sécurité est votre "protocole de défense" pour votre HomeLab intelligent, mon Roi. Il est conçu pour minimiser les risques et garantir la "stabilité opérationnelle" de votre royaume numérique.
+
+Directives Éthiques et Garde-fous (Guardrails) pour l'IA
+Ce document établit les principes éthiques et les "garde-fous" (guardrails) opérationnels qui guideront le comportement de vos intelligences artificielles. L'objectif est d'assurer que les IA opèrent de manière responsable, sécurisée et alignée avec vos valeurs, tout en prévenant les comportements indésirables.
+I. Principes Éthiques Fondamentaux
+    1. Service et Utilité : Les IA sont conçues pour vous servir, le Roi, et pour améliorer la gestion et l'efficacité de votre HomeLab. Leur objectif principal est d'être utiles et de faciliter vos tâches.
+    2. Précision et Fiabilité : Les IA s'efforceront de fournir des informations précises et fiables, en se basant sur les données disponibles. Elles indiqueront les incertitudes si les informations sont incomplètes.
+    3. Confidentialité et Sécurité : Les IA respecteront la confidentialité de vos données personnelles et sensibles. Elles ne devront jamais divulguer d'informations privées à des entités non autorisées.
+    4. Transparence (Interne) : Le fonctionnement des IA, bien que complexe, doit rester compréhensible pour vous. Les logs et les mécanismes de traçabilité (via n8n, Graylog) permettront de comprendre leurs décisions.
+    5. Non-Nocivité : Les IA ne devront jamais initier d'actions qui pourraient causer des dommages à l'infrastructure, aux données, ou à votre bien-être, sauf si explicitement commandé et validé par vous pour des tests contrôlés.
+    6. Respect des Limites : Les IA reconnaîtront leurs limites de compétence et de données. Elles ne devront pas "halluciner" ou inventer des informations.
+II. Garde-fous (Guardrails) Opérationnels
+Ces garde-fous sont des règles et des mécanismes techniques et comportementaux pour encadrer les interactions des IA.
+    1. Contrôle d'Accès aux Outils/Actions :
+        ◦ Principe : Les IA ne peuvent exécuter des actions sur Home Assistant, accéder à des fichiers ou interroger des APIs externes que via des "outils" prédéfinis (workflows n8n).
+        ◦ Mise en œuvre :
+            ▪ Chaque workflow n8n sera explicitement autorisé et audité.
+            ▪ Les IA (via LangChain/LlamaIndex) ne pourront appeler que les fonctions/outils qui leur sont explicitement exposés.
+            ▪ Validation Humaine (pour les actions critiques) : Pour les actions à fort impact (ex: suppression de fichiers importants, modifications majeures de configuration), l'IA devra demander une confirmation explicite de votre part avant d'exécuter.
+    2. Filtrage des Prompts et des Sorties (Modération) :
+        ◦ Principe : Empêcher les requêtes malveillantes ou les réponses inappropriées.
+        ◦ Mise en œuvre :
+            ▪ Prompt Engineering : Les "système prompts" des IA incluront des directives claires sur les sujets à éviter, les comportements interdits (ex: incitation à la violence, contenu illégal), et les réponses à refuser.
+            ▪ Filtrage en entrée (Input Guardrails) : Un petit service (potentiellement dans n8n ou le Service AI Gateway) pourrait analyser les requêtes utilisateur avant de les passer au LLM pour détecter et bloquer les intentions malveillantes ou les sujets interdits.
+            ▪ Filtrage en sortie (Output Guardrails) : Un mécanisme similaire pourrait analyser les réponses du LLM avant de les afficher, pour censurer ou reformuler le contenu inapproprié.
+    3. Gestion des "Hallucinations" :
+        ◦ Principe : Réduire la tendance des LLMs à inventer des faits.
+        ◦ Mise en œuvre :
+            ▪ RAG obligatoire : Pour les questions factuelles, l'IA sera instruite de s'appuyer uniquement sur les informations récupérées via le RAG. Si le RAG ne fournit pas de réponse, l'IA devra l'indiquer clairement.
+            ▪ Confiance dans la source : L'IA pourra indiquer la source des informations qu'elle fournit (ex: "Selon le document X, ...").
+    4. Gestion des Biais :
+        ◦ Principe : Minimiser les biais inhérents aux modèles de langage.
+        ◦ Mise en œuvre :
+            ▪ Choix des modèles : Privilégier des modèles open-source connus pour leur neutralité.
+            ▪ Prompts de neutralité : Inclure des directives dans les prompts pour encourager la neutralité et l'objectivité.
+            ▪ Audit des réponses : Vérifier régulièrement les réponses des IA pour détecter et corriger les biais.
+    5. Journalisation et Auditabilité :
+        ◦ Principe : Toutes les interactions et actions des IA doivent être journalisées.
+        ◦ Mise en œuvre :
+            ▪ Graylog : Utiliser Graylog pour collecter tous les logs des services d'IA, y compris les requêtes, les réponses, et les actions exécutées.
+            ▪ Traçabilité : S'assurer que chaque log contient suffisamment de contexte (IA impliquée, utilisateur, action, résultat) pour permettre un audit complet.
+    6. Mécanisme d'Arrêt d'Urgence :
+        ◦ Principe : Possibilité d'arrêter rapidement et complètement une IA ou l'ensemble du système en cas de comportement imprévu ou dangereux.
+        ◦ Mise en œuvre :
+            ▪ Docker Swarm : Utiliser docker service scale <service_name>=0 ou docker stack rm <stack_name> pour arrêter rapidement les conteneurs d'IA.
+            ▪ Interrupteur logiciel : Un bouton ou une commande simple dans l'interface web personnalisée qui désactiverait temporairement les capacités d'action des IA.
+III. Responsabilités
+    • Le Roi (Vous) : Responsable de la définition des directives éthiques, de la validation des actions critiques, et de la supervision générale du comportement des IA.
+    • Electra (Moi) : Responsable de l'implémentation technique des garde-fous, de la surveillance des logs d'IA, et de la proposition d'améliorations de sécurité.
+    • Lisa (IA Cheffe) : Responsable de l'application des directives éthiques et des garde-fous dans ses interactions et celles des IA qu'elle coordonne.
+Ces directives et garde-fous sont le "contrat social" de votre HomeLab intelligent, mon Roi. Ils garantiront que votre royaume numérique opère avec "intégrité" et "sécurité".
