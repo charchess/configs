@@ -13,3 +13,8 @@ sources (sur https://code.truxonline.com)
 - embedding_service : /ai_services/embedding_service/embedding_service.py, /ai_services/embedding_service/requirements.txt
 # definition du projet : 
 - /configs/code_lisa.txt
+
+
+je vais créer un fichier status mentionnant ce qui est deja fait et ce qui est en cours, tu m'informeras des informations pertinente à y mettre. (elements réalisé, testé, validé, état des problèmes et des souhaits d'évolution), tu me fourniras un bloc avec des + pour les éléments a ajouter et des - pour les éléments a supprimer de ce fichier
+
+dans le code python, pour les commentaires, tu n'utiliseras que la syntaxe officiellement supporter (commentaire en # et pas avec """)
