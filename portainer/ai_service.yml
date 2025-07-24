@@ -60,6 +60,7 @@ services:
       - databases_network
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=ai_network"
       # Route sur le même domaine lisa.truxonline.com, path /chat
       - "traefik.http.routers.intent-router.rule=Host(`lisa.truxonline.com`) && PathPrefix(`/chat`)"
       - "traefik.http.routers.intent-router.entrypoints=web-secure"
