@@ -65,7 +65,8 @@ services:
       - "traefik.http.routers.intent-router.entrypoints=web-secure"
       - "traefik.http.routers.intent-router.tls=true"
       - "traefik.http.routers.intent-router.tls.certresolver=gandi"
-      - "traefik.http.services.intent-router.loadbalancer.server.port=8002"#    logging:
+      - "traefik.http.services.intent-router.loadbalancer.server.port=8002"
+#    logging:
 #      driver: gelf
 #      options:
 #        gelf-address: "udp://192.168.201.66:12201"
