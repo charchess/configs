@@ -59,25 +59,13 @@ services:
       - logs_network
       - databases_network
     labels:
-        - "traefik.docker.network=ai_network"
-        # Est-ce que Traefik est bien activé pour ce service ?
-        - "traefik.enable=true"
-        
-        # Le nom du routeur doit être unique.
-        # La syntaxe est importante : traefik.http.routers.NOM_DU_ROUTEUR.rule
-        - "traefik.http.routers.intent-router-https.rule=Host(`intent-router.truxonline.com`)"
-        
-        # Le routeur est-il bien attaché au bon point d'entrée ?
-        - "traefik.http.routers.intent-router-https.entrypoints=internal-secure"
-        
-        # La configuration TLS est-elle correcte ?
-        - "traefik.http.routers.intent-router-https.tls=true"
-        - "traefik.http.routers.intent-router-https.tls.certresolver=gandi"
-        
-        # Est-ce que le service Traefik pointe vers le bon port interne du conteneur ?
-        # Notre intent-router tourne sur le port 8002.
-        - "traefik.http.services.intent-router-https.loadbalancer.server.port=8002"
-#    logging:
+      - "traefik.enable=true"
+      # Route sur le même domaine lisa.truxonline.com, path /chat
+      - "traefik.http.routers.intent-router.rule=Host(`lisa.truxonline.com`) && PathPrefix(`/chat`)"
+      - "traefik.http.routers.intent-router.entrypoints=web-secure"
+      - "traefik.http.routers.intent-router.tls=true"
+      - "traefik.http.routers.intent-router.tls.certresolver=gandi"
+      - "traefik.http.services.intent-router.loadbalancer.server.port=8002"#    logging:
 #      driver: gelf
 #      options:
 #        gelf-address: "udp://192.168.201.66:12201"
