@@ -1,0 +1,31 @@
+status de notre projet.
+
+ce fichiers sert de memoire de l'etat du projet, chose faites, choses à faire
+
+## Statut du Projet - code_lisa
+
+### Éléments Réalisés :
++ Déploiement de Oobabooga (sera utilisé ultérieurement).
++ Déploiement du embedding_service.
++ Déploiement de ChromaDB (fonctionnel).
++ chat-ui fonctionnel (testé avec Gemini).
++ IA principale créée (prompts prêts).
+
+### En Cours :
++ Validation du fonctionnement global (intégration des composants existants).
++ Simplification des commandes `/cmd` dans le chat-ui.
++ Amélioration de l'extraction d'informations par le prompt Neo4j.
+
+### Problèmes :
+- Commande `/cmd` non fonctionnelle dans le chat-ui (en cours de simplification).
+- Prompt Neo4j ne "casse" pas assez les informations (en cours d'amélioration).
+
+### Souhaits d'Évolution :
+- Réduire l'utilisation de n8n au minimum à terme.
+
+### Déprécié :
+- Zep (remplacé par Neo4j).
+
++ Mise à jour de la section "En Cours" : Validation du fonctionnement global.
++ Ajout des sections "Problèmes" et "Souhaits d'Évolution".
++ Ajout de la section "Déprécié" : Zep.
