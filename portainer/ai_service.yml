@@ -19,6 +19,7 @@ services:
         constraints:
           - node.role == worker
           - node.labels.disk.feature.nfs == true
+          - "node.hostname == grenat"
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=ai_network"
@@ -54,6 +55,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - "node.hostname == grenat"
     networks:
       - ai_network
       - logs_network
@@ -89,6 +91,7 @@ services:
         constraints:
           - node.role == worker
           - node.labels.disk.feature.nfs == true
+          - "node.hostname == grenat"
     volumes:
       - /data/nfs/containers/ai_services/embedding-service/models_cache:/models
     logging:
