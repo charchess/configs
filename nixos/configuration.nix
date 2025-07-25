@@ -7,17 +7,19 @@
 {
   imports =
   [ 
-    ./networking.nix
-    ./nfs-mount.nix
-    ./iscsi-connect.nix
-    ./chrony.nix
-    ./keepalived.nix
-    ./docker.nix
-    ./ceph.nix
-    ./node-reporter.nix
-    ./swarm-label-manager.nix
-    ./users.nix
-  ]  ++ lib.optionals (builtins.pathExists ./hardware-configuration.nix) [ ./hardware-configuration.nix ];
+#    ./networking.nix
+#    ./nfs-mount.nix
+#    ./iscsi-connect.nix
+#    ./chrony.nix
+#    ./keepalived.nix
+#    ./docker.nix
+#    ./ceph.nix
+#    ./node-reporter.nix
+#    ./swarm-label-manager.nix
+#    ./users.nix
+  ]  
+  ++ lib.optionals (builtins.pathExists ./hardware-configuration.nix) [ ./hardware-configuration.nix ]
+  ++ lib.optionals (builtins.pathExists ./hosts/current/default.nix) [ ./hosts/current/default.nix ];
 
 
   # Bootloader.

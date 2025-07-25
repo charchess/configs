@@ -7,7 +7,6 @@
 {
   imports =
   [ 
-#    ./hardware-configuration.nix
     ./networking.nix
     ./nfs-mount.nix
     ./iscsi-connect.nix
@@ -18,7 +17,7 @@
     ./node-reporter.nix
     ./swarm-label-manager.nix
     ./users.nix
-  ];
+  ]  ++ lib.optionals (builtins.pathExists ./hardware-configuration.nix) [ ./hardware-configuration.nix ];
 
 
   # Bootloader.
