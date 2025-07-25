@@ -9,7 +9,7 @@ services:
       - "--global.checknewversion=false"
       - "--global.sendanonymoususage=false"
       - "--api" # Active l'API et le dashboard
-      - "--providers.docker" # Active le provider Docker (nécessaire pour les labels)
+#      - "--providers.docker" # Active le provider Docker (nécessaire pour les labels)
       - "--providers.swarm" # Active le provider Swarm
       - "--providers.file" # Active le provider File
       - "--log.level=DEBUG" # Niveau de log, peut être défini ici ou dans traefik.yaml
@@ -21,7 +21,7 @@ services:
       - "80:80"     # Trafic HTTP (redirection)
       - "443:443"   # Trafic HTTPS (pour interne)
       - "10443:10443"   # Trafic HTTPS (pour externe)
-      - "192.168.200.66:8080:8080" # Dashboard Traefik
+      - "192.168.200.60:8080:8080" # Dashboard Traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /data/nfs/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
@@ -31,6 +31,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+          - node.labels.disk.feature.nfs == true
       labels:
         # Labels pour le dashboard Traefik lui-même
         - "traefik.enable=true"
@@ -42,10 +43,10 @@ services:
         - "traefik.http.routers.traefik-https.tls=true"
         - "traefik.http.routers.traefik-https.tls.certresolver=gandi"
     secrets:
-      - traefik_gandi_api_token # Le secret pour l'API Gandi
+      - GANDI_API_KEY # Le secret pour l'API Gandi
     environment:
       # Utilisation du secret via un fichier pour Traefik
-      - GANDIV5_PERSONAL_ACCESS_TOKEN_FILE=/run/secrets/traefik_gandi_api_token
+      - GANDIV5_PERSONAL_ACCESS_TOKEN_FILE=/run/secrets/GANDI_API_KEY
     networks:
       - ai_network
       - databases_network
@@ -127,6 +128,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer AdGuard Home Web UI
         - "traefik.enable=true"
         - "traefik.http.routers.adguard-https.rule=Host(`adguard.truxonline.com`)"
@@ -151,9 +153,7 @@ services:
     # L'image Docker à utiliser. Portainer la tirera (pull) depuis Docker Hub si elle n'est pas locale.
     image: charchess/colmena-deployer:latest
     
-    # Un nom de conteneur fixe pour le retrouver facilement
-    container_name: colmena-deployer
-    
+   
     # --- IMPORTANT : Configurez les chemins sur votre machine HÔTE ici ---
 #    volumes:
       # Montez votre dépôt de configuration NixOS dans le répertoire de travail du conteneur (/app).
@@ -175,7 +175,7 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  traefik_gandi_api_token: # Le secret pour l'API Gandi
+  GANDI_API_KEY: # Le secret pour l'API Gandi
     external: true
 
 # Définition des réseaux utilisés par cette stack

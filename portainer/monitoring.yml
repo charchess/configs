@@ -10,9 +10,9 @@ services:
       - TZ=Europe/Paris
       - DB_SERVER_HOST=mariadb # 'mariadb' est le nom du service dans la stack 'databases'
       - MYSQL_DATABASE=zabbix
-      - MYSQL_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user
-      - MYSQL_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/core_mariadb_root_password # Mot de passe root de la DB MariaDB principale
+      - MYSQL_USER_FILE=/run/secrets/ZABBIX_MYSQL_USER
+      - MYSQL_PASSWORD_FILE=/run/secrets/ZABBIX_MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/MARIADB_ROOT_PASSWORD # Mot de passe root de la DB MariaDB principale
     volumes:
 #      - /data/nfs/containers/zabbix/zabbix-server/etc/zabbix_server.conf:/etc/zabbix/zabbix_server.conf:rw # Maintenu commenté
       - /data/nfs/containers/monitoring/zabbix-server/alertscripts:/usr/lib/zabbix/alertscripts:ro
@@ -20,9 +20,9 @@ services:
       - /data/nfs/containers/monitoring/zabbix-server/snmptraps:/var/lib/zabbix/snmptraps:ro
       - /data/nfs/containers/monitoring/zabbix-server/mibs:/var/lib/zabbix/mibs:ro
     secrets:
-      - monito_zabbixdb_mysql_user
-      - monito_zabbixdb_mysql_password
-      - core_mariadb_root_password
+      - ZABBIX_MYSQL_USER
+      - ZABBIX_MYSQL_PASSWORD
+      - MARIADB_ROOT_PASSWORD
     networks:
       - monitoring_network
       - databases_network # Pour accéder au service 'mariadb'
@@ -33,6 +33,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -52,8 +53,8 @@ services:
       - PGID=1000
       - TZ=Europe/Paris
       - DB_SERVER_HOST=mariadb # 'mariadb' est le nom du service dans la stack 'databases'
-      - MYSQL_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user
-      - MYSQL_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password
+      - MYSQL_USER_FILE=/run/secrets/ZABBIX_MYSQL_USER
+      - MYSQL_PASSWORD_FILE=/run/secrets/ZABBIX_MYSQL_PASSWORD
     ports:
       - 8087:8080 # CHANGÉ : Exposition du port 8087 de l'hôte vers 8080 du conteneur
     volumes:
@@ -61,8 +62,8 @@ services:
       # Ligne supprimée : - /data/nfs/containers/monitoring/zabbix-web/nginx:/etc/nginx/conf.d:ro
       - /data/nfs/containers/monitoring/zabbix-web/modules:/usr/lib/zabbix/modules:ro
     secrets:
-      - monito_zabbixdb_mysql_user
-      - monito_zabbixdb_mysql_password
+      - ZABBIX_MYSQL_USER
+      - ZABBIX_MYSQL_PASSWORD
     networks:
       - monitoring_network
       - databases_network # Pour accéder au service 'mariadb'
@@ -73,6 +74,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik si exposé
         - "traefik.enable=true"
         - "traefik.docker.network=monitoring_network"
@@ -95,11 +97,11 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  monito_zabbixdb_mysql_user:
+  ZABBIX_MYSQL_USER:
     external: true
-  monito_zabbixdb_mysql_password:
+  ZABBIX_MYSQL_PASSWORD:
     external: true
-  core_mariadb_root_password: # Utilisé par zabbix-server
+  MARIADB_ROOT_PASSWORD: # Utilisé par zabbix-server
     external: true
 
 # Définition des réseaux utilisés par cette stack

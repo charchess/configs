@@ -5,10 +5,10 @@ services:
   mariadb:
     image: docker.io/mariadb:11.5.2
     environment:
-      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/core_mariadb_root_password
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/MARIADB_ROOT_PASSWORD
       - MARIADB_DATABASE=zabbix # Exemple si Zabbix est la seule DB, sinon MariaDB gérera plusieurs DBs
-      - MARIADB_USER_FILE=/run/secrets/monito_zabbixdb_mysql_user # Si vous avez un user zabbix
-      - MARIADB_PASSWORD_FILE=/run/secrets/monito_zabbixdb_mysql_password # Si vous avez un pass zabbix
+      - MARIADB_USER_FILE=/run/secrets/ZABBIX_MYSQL_USER # Si vous avez un user zabbix
+      - MARIADB_PASSWORD_FILE=/run/secrets/ZABBIX_MYSQL_PASSWORD # Si vous avez un pass zabbix
       - MARIADB_innodb_force_recovery=5
     command:
       # Passe l'option de configuration directement au processus mysqld
@@ -16,21 +16,17 @@ services:
       - "--innodb-flush-log-at-trx-commit=1"
     volumes:
       - /data/cephfs/containers/databases/mariadb/database:/var/lib/mysql
-#      - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
+#     - /data/nfs/containers/zabbix/export:/export # Volume Zabbix export commenté comme demandé
     secrets:
-      - core_mariadb_root_password
-      - monito_zabbixdb_mysql_user # Décommenter si utilisé
-      - monito_zabbixdb_mysql_password # Décommenter si utilisé
+      - MARIADB_ROOT_PASSWORD
+      - ZABBIX_MYSQL_USER # Décommenter si utilisé
+      - ZABBIX_MYSQL_PASSWORD # Décommenter si utilisé
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network    # AJOUTÉ : Pour envoyer les logs à Graylog
     deploy:
       mode: replicated
       replicas: 1
-      # Ajoutez des contraintes de placement si nécessaire, ex: sur le noeud 'ruby'
-      # placement:
-      #   constraints:
-      #     - node.hostname == ruby
       resources:
         limits:
           memory: 2G # Alloue 1 Go de RAM max à MariaDB. Ajustez si nécessaire.
@@ -39,6 +35,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+          # Contrainte ajoutée : MariaDB utilise un volume CephFS
+          - node.labels.disk.feature.ceph == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -56,12 +54,11 @@ services:
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD_FILE=/run/secrets/databases_postgres_superuser_password # Nouveau secret pour le superuser
+      - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_ROOT_PASSWORD # Nouveau secret pour le superuser
     volumes:
       - /data/cephfs/containers/databases/postgres/data:/var/lib/postgresql/data
     secrets:
-      - databases_postgres_superuser_password
-      - postgres_n8n_password
+      - POSTGRES_ROOT_PASSWORD
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network    # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -74,10 +71,9 @@ services:
       placement:
         constraints:
           - node.role == worker
-          - node.hostname == emy
-    #   placement:
-    #     constraints:
-    #       - node.hostname == ruby
+          - node.hostname == emy # Conserve votre contrainte existante
+          # Contrainte ajoutée : Postgres utilise un volume CephFS
+          - node.labels.disk.feature.ceph == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -93,14 +89,14 @@ services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
     image: "mongo:6.0.18"
-    # ports: # PORT EXPOSÉ SUPPRIMÉ comme demandé
-    #   - "27017:27017"
-    restart: "on-failure"
     deploy:
       placement:
         constraints:
           - node.role == worker
-          - "node.labels.cpu.feature.avx == true"
+          # Contrainte existante pour AVX
+          - node.labels.cpu.feature.avx == true
+          # Contrainte ajoutée : MongoDB utilise des volumes CephFS
+          - node.labels.disk.feature.ceph == true
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -125,8 +121,6 @@ services:
       - PUID=1000 # Votre PUID
       - PGID=1000 # Votre PGID
       - TZ=Europe/Paris # Votre fuseau horaire
-      # ChromaDB peut être configuré avec des variables d'environnement si nécessaire
-      # Pour l'instant, nous utilisons la configuration par défaut qui est suffisante pour démarrer.
     volumes:
       # Volume persistant pour les données de ChromaDB
       # Assurez-vous que ce chemin existe et que les permissions sont correctes sur votre NFS
@@ -140,6 +134,8 @@ services:
       placement:
         constraints:
           - node.role == worker
+          # Contrainte ajoutée : ChromaDB utilise un volume CephFS
+          - node.labels.disk.feature.ceph == true
       labels: # Labels Traefik pour exposer ChromaDB (si vous voulez une UI ou API exposée)
         - "traefik.docker.network=databases_network"
         - "traefik.enable=true" # Active Traefik pour ce service
@@ -167,14 +163,17 @@ services:
     networks:
       - databases_network
       - logs_network
+    volumes:
+      # AJOUTÉ : Volume persistant pour les données de Redis
+      - /data/cephfs/containers/databases/redis/data:/data
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
           - node.role == worker # Permet à Redis de flotter sur n'importe quel nœud worker
-      restart_policy:
-        condition: on-failure
+          # AJOUTÉ : Contrainte pour le volume CephFS
+          - node.labels.disk.feature.ceph == true
       resources:
         limits:
           memory: 256M
@@ -186,19 +185,39 @@ services:
         gelf-address: "udp://192.168.201.66:12201"
         tag: "redis/{{.Name}}/{{.ID}}"
 
+  neo4j:
+    image: neo4j:5-enterprise # L'édition Enterprise est gratuite pour le développement solo
+    ports:
+      - "7474:7474" # Interface Web de Neo4j
+      - "7687:7687" # Port pour la connexion des pilotes (Bolt)
+    volumes:
+      - /data/cephfs/containers/databases/neo4j/data:/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker # Permet à Redis de flotter sur n'importe quel nœud worker
+          # AJOUTÉ : Contrainte pour le volume CephFS
+          - node.labels.disk.feature.ceph == true
+    environment:
+      # Accepte la licence et définit un mot de passe
+      NEO4J_AUTH: neo4j/CHANGEME_UN_MOT_DE_PASSE_TRES_SOLIDE
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    networks:
+      - databases_network # Pour que l'intent-router puisse s'y connecter
+      - logs_network # Pour envoyer les logs à Graylog
 
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  core_mariadb_root_password:
+  MARIADB_ROOT_PASSWORD:
     external: true
-  monito_zabbixdb_mysql_user: # Décommenter si utilisé
+  ZABBIX_MYSQL_USER: # Décommenter si utilisé
     external: true
-  monito_zabbixdb_mysql_password: # Décommenter si utilisé
+  ZABBIX_MYSQL_PASSWORD: # Décommenter si utilisé
     external: true
-  postgres_n8n_password:
-    external: true
-  databases_postgres_superuser_password:
+  POSTGRES_ROOT_PASSWORD:
     external: true
     
 # Définition des réseaux utilisés par cette stack

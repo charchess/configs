@@ -1,3 +1,6 @@
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
   networking = {
     hostName = "jade";
     nameservers = [ "192.168.200.60" ];
@@ -32,3 +35,4 @@
       interface = "vlan200";
     };
   };
+}

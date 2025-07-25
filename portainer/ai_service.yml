@@ -17,13 +17,15 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.role == worker
+#          - node.role == worker
+          - node.labels.disk.feature.nfs == true
+          - "node.hostname == grenat"
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=ai_network"
         - "traefik.http.routers.chat-ui-https.rule=Host(`lisa.truxonline.com`)"
         - "traefik.http.routers.chat-ui-https.entrypoints=internal-secure" # On utilise l'entrypoint public
-        - "traefik.http.routers.chat-ui-https.entrypoints=web-secure" # On utilise l'entrypoint public
+#        - "traefik.http.routers.chat-ui-https.entrypoints=web-secure" # On utilise l'entrypoint public
         - "traefik.http.routers.chat-ui-https.tls=true"
         - "traefik.http.routers.chat-ui-https.tls.certresolver=gandi"
         - "traefik.http.services.chat-ui-https.loadbalancer.server.port=80"
@@ -31,11 +33,9 @@ services:
 
   intent-router:
     image: charchess/intent-router:latest # L'image que nous venons de pousser
-    networks:
-      - ai_network
-      - logs_network
     environment:
       # C'est ici que nous configurons le service !
+      - DEBUG=true
       - LLM_BACKEND=gemini
       - GEMINI_API_KEY=AIzaSyBTXF-L_pgkz6xxvordJkKvaXABsmVoSgQ
       - GEMINI_MODEL_NAME=gemini-2.5-flash
@@ -44,6 +44,9 @@ services:
       - N8N_ACTION_WEBHOOK_URL=https://n8n.truxonline.com/webhook/36dd058c-de30-4dd4-bb17-cd1340fb914b
       - VERBOSE=true
       - N8N_RETRIEVAL_WEBHOOK_URL=https://n8n.truxonline.com/webhook/5dd50a8d-4ddb-4c09-9e9e-a644dc54b0be
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USERNAME=neo4j
+      - NEO4J_PASSWORD=CHANGEME_UN_MOT_DE_PASSE_TRES_SOLIDE
     ports:
       - 8002:8002
     deploy:
@@ -51,26 +54,21 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.role == worker
-      labels:
-        - "traefik.docker.network=ai_network"
-        # Est-ce que Traefik est bien activé pour ce service ?
-        - "traefik.enable=true"
-        
-        # Le nom du routeur doit être unique.
-        # La syntaxe est importante : traefik.http.routers.NOM_DU_ROUTEUR.rule
-        - "traefik.http.routers.intent-router-https.rule=Host(`intent-router.truxonline.com`)"
-        
-        # Le routeur est-il bien attaché au bon point d'entrée ?
-        - "traefik.http.routers.intent-router-https.entrypoints=internal-secure"
-        
-        # La configuration TLS est-elle correcte ?
-        - "traefik.http.routers.intent-router-https.tls=true"
-        - "traefik.http.routers.intent-router-https.tls.certresolver=gandi"
-        
-        # Est-ce que le service Traefik pointe vers le bon port interne du conteneur ?
-        # Notre intent-router tourne sur le port 8002.
-        - "traefik.http.services.intent-router-https.loadbalancer.server.port=8002"
+#          - node.role == worker
+          - "node.hostname == grenat"
+    networks:
+      - ai_network
+      - logs_network
+      - databases_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=ai_network"
+      # Route sur le même domaine lisa.truxonline.com, path /chat
+      - "traefik.http.routers.intent-router.rule=Host(`lisa.truxonline.com`) && PathPrefix(`/chat`)"
+      - "traefik.http.routers.intent-router.entrypoints=web-secure"
+      - "traefik.http.routers.intent-router.tls=true"
+      - "traefik.http.routers.intent-router.tls.certresolver=gandi"
+      - "traefik.http.services.intent-router.loadbalancer.server.port=8002"
 #    logging:
 #      driver: gelf
 #      options:
@@ -91,7 +89,9 @@ services:
       # La section 'placement:' a été supprimée.
       placement:
         constraints:
-          - node.role == worker
+#          - node.role == worker
+          - node.labels.disk.feature.nfs == true
+          - "node.hostname == grenat"
     volumes:
       - /data/nfs/containers/ai_services/embedding-service/models_cache:/models
     logging:
@@ -141,7 +141,8 @@ services:
 #        - "traefik.http.services.sillytavern-https.loadbalancer.server.port=8888" # Port interne de l'interface web (mis à jour)
       placement:
         constraints:
-          - node.role == worker
+#          - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -154,11 +155,10 @@ services:
 #      retries: 3
 #      start_period: 60s # Donne du temps au service pour démarrer
 
+
 configs:
   experimentations_sillytavern-gemini_config.yaml:
     external: true
-
-
 
 # Définition des réseaux utilisés par cette stack
 networks:

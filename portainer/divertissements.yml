@@ -34,6 +34,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer SillyTavern UI
         - "traefik.enable=true"
         - "traefik.docker.network=divertissement_network"
@@ -75,6 +76,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # Configuration du logging vers Graylog
       driver: gelf
       options:

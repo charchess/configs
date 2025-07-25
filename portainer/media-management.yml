@@ -28,6 +28,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Radarr
         - "traefik.enable=true"
         - "traefik.docker.network=media-management_network"
@@ -69,6 +70,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       mode: replicated
       replicas: 1
       labels: # Labels Traefik pour exposer Lidarr
@@ -114,6 +116,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Sonarr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -135,7 +138,7 @@ services:
       start_period: 30s
 
   readarr:
-    image: lscr.io/linuxserver/readarr:nightly
+    image: linuxserver/readarr:0.4.19-nightly
     environment:
       - PUID=1000
       - PGID=1000
@@ -157,7 +160,7 @@ services:
       placement:
         constraints:
           - node.role == worker
-#          - node.arch == x86_64
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Readarr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -171,12 +174,12 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
         tag: "readarr/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-    healthcheck: # AJOUTÉ : Healthcheck pour Readarr
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8787/ping || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+#    healthcheck: # AJOUTÉ : Healthcheck pour Readarr
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8787/ping || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
 
   prowlarr:
     image: linuxserver/prowlarr:latest
@@ -199,6 +202,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Prowlarr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -242,6 +246,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Whisparr
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -276,10 +281,10 @@ services:
       - RADARR__URL=http://radarr:7878     # 'radarr' est dans cette même stack
       - SONARR__URL=http://sonarr:8989     # 'sonarr' est dans cette même stack
     secrets:
-      - media_doplarr_discord_token
-      - media_doplarr_overseerr_api
-      - radarr_api_key # CONSERVÉ : Nom de secret d'origine
-      - sonarr_api_key # CONSERVÉ : Nom de secret d'origine
+      - DISCORD_TOKEN
+      - OVERSEER_API_KEY
+      - RADARR_API_KEY
+      - SONARR_API_KEY
     networks:
       - media_management_network # Pour communiquer avec Radarr/Sonarr de la même stack
       - tools_network # Décommenté pour Overseerr
@@ -290,6 +295,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -325,6 +331,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Mylar3
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -368,6 +375,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Pyload-NG
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -408,6 +416,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Ubooquity
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -451,6 +460,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Hydrus Client
         - "traefik.enable=true"
         - "traefik.docker.network=media_management_network"
@@ -490,6 +500,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       # Labels Traefik si vous souhaitez exposer Hydrus Server (attention à la sécurité)
       # Il n'est généralement pas recommandé d'exposer le serveur Hydrus directement.
       # labels:
@@ -514,13 +525,13 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  media_doplarr_discord_token:
+  DISCORD_TOKEN:
     external: true
-  media_doplarr_overseerr_api:
+  OVERSEER_API_KEY:
     external: true
-  radarr_api_key: # CONSERVÉ : Nom de secret d'origine
+  RADARR_API_KEY: # CONSERVÉ : Nom de secret d'origine
     external: true
-  sonarr_api_key: # CONSERVÉ : Nom de secret d'origine
+  SONARR_API_KEY: # CONSERVÉ : Nom de secret d'origine
     external: true
   # Nouveaux secrets pour les bases de données externalisées - RETIRÉS
   # media_radarr_db_user:

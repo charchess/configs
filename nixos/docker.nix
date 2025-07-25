@@ -4,11 +4,14 @@
   # configuration de docker
   virtualisation.docker.enable = true;
   
+<<<<<<< HEAD
   networking.firewall = {
     allowedUDPPorts = [ 794 4789 7946 ];
     allowedTCPPorts = [ 80 443 794 2377 7946 ];
   };
 
+=======
+>>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
   # jonction au swarm si pas deja fait 
   systemd.services.docker-swarm-join = {
     description = "Join Docker Swarm if not already a member";

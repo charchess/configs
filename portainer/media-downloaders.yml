@@ -21,6 +21,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer SABnzbd
         - "traefik.enable=true"
         - "traefik.docker.network=media_download_network"
@@ -62,6 +63,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer qBittorrent
         - "traefik.enable=true"
         - "traefik.docker.network=nordvpn_ch_network"
@@ -75,12 +77,12 @@ services:
       options:
         gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
         tag: "qbittorrent/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-    healthcheck: # AJOUTÉ : Healthcheck pour qBittorrent
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/v2/app/version || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+#    healthcheck: # AJOUTÉ : Healthcheck pour qBittorrent
+#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/v2/app/version || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 30s
 
 #  amule: # Maintenu commenté comme dans ta version
 #    image: ngosang/amule
@@ -95,8 +97,8 @@ services:
 #      - /data/nfs/downloads/amule:/incoming
 #      - /data/nfs/downloads/incomplete:/temp
 #    secrets:
-#      - media_amule_webui_password
-#      - media_amule_gui_password
+#      - AMULE_WEBUI_PASSWORD
+#      - AMULE_GUI_PASSWORD
 #    networks:
 #      # Attention: Ce service doit passer par le VPN
 #      - nordvpn_ch_network
@@ -108,6 +110,7 @@ services:
 #      placement:
 #        constraints:
 #          - node.role == worker
+#          - node.labels.disk.feature.nfs == true
 #      labels: # Labels Traefik pour exposer aMule WebUI
 #        - "traefik.enable=true"
 #        - "traefik.docker.network=media_download_network"
@@ -124,9 +127,9 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  media_amule_webui_password:
+  AMULE_WEBUI_PASSWORD:
     external: true
-  media_amule_gui_password:
+  AMULE_GUI_PASSWORD:
     external: true
 
 # Définition des réseaux utilisés par cette stack

@@ -24,6 +24,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -73,6 +74,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -108,6 +110,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     logging: # AJOUTÉ : Configuration du logging vers Graylog
       driver: gelf
       options:
@@ -139,6 +142,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -158,6 +162,37 @@ services:
 #      timeout: 10s
 #      retries: 3
 #      start_period: 30s
+
+
+  partage-web:
+    # Utilise l'image officielle de Nginx
+    image: nginx:latest    
+    # Montage des volumes : chemin_hôte:chemin_conteneur:options
+    volumes:
+      # Remplacez './data' par le chemin absolu ou relatif vers votre répertoire
+      # L'option ':ro' (read-only) garantit que le conteneur ne peut pas modifier les fichiers
+      - /data/nfs/content/sources/:/usr/share/nginx/html:ro
+    configs:
+      - source: partage-web_nginx_config
+        target: /etc/nginx/conf.d/default.conf
+    networks:
+      - tools_network # Doit être sur le même réseau que changedetection
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+          - node.labels.disk.feature.nfs == true
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=tools_network"
+        - "traefik.http.routers.partage-web-https.rule=Host(`code.truxonline.com`)"
+        - "traefik.http.routers.partage-web-https.entrypoints=web-secure"
+        - "traefik.http.routers.partage-web-https.tls=true"
+        - "traefik.http.routers.partage-web-https.tls.certresolver=gandi"
+        - "traefik.http.services.partage-web-https.loadbalancer.server.port=80"
+
 
 #  openproject: # Maintenu commenté comme dans ta version
 #    image: openproject/openproject:14
@@ -220,6 +255,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
@@ -269,7 +305,7 @@ services:
       - DB_POSTGRESDB_PORT=5432
       - DB_POSTGRESDB_DATABASE=n8n
       - DB_POSTGRESDB_USER=n8n
-      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/postgres_n8n_password # Utilisation du secret
+      - DB_POSTGRESDB_PASSWORD_FILE=/run/secrets/N8N_POSTGRES_PASSWORD # Utilisation du secret
       - N8N_HOST=n8n.truxonline.com
       - N8N_PORT=5678
       - N8N_PROTOCOL=http # CHANGEMENT CLÉ : n8n écoute en HTTP en interne
@@ -280,7 +316,7 @@ services:
     volumes:
       - /data/nfs/containers/experimentations/n8n/data:/home/node/.n8n
     secrets:
-      - postgres_n8n_password
+      - N8N_POSTGRES_PASSWORD
     networks:
       - tools_network
       - databases_network # Pour accéder au service 'postgres' dans la stack 'databases'
@@ -292,6 +328,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer n8n via HTTPS
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network" # AJOUT : Indique explicitement le réseau à Traefik
@@ -350,19 +387,18 @@ services:
 #      retries: 3
 #      start_period: 30s
 
-# Définition des secrets utilisés dans cette stack
-secrets:
-  postgres_n8n_password:
+configs:
+  partage-web_nginx_config:
     external: true
 
 
 # Définition des secrets utilisés dans cette stack
 secrets:
-  management_openproject_secret_key_base:
-    external: true
-  management_openproject_db_password:
-    external: true
-  postgres_n8n_password:
+#  management_openproject_secret_key_base:
+#    external: true
+#  management_openproject_db_password:
+#    external: true
+  N8N_POSTGRES_PASSWORD:
     external: true # Le mot de passe pour la base de données n8n, défini dans la stack 'databases'
 
 # Définition des réseaux utilisés par cette stack

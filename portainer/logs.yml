@@ -18,6 +18,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
     ulimits:
       memlock:
         hard: -1
@@ -89,6 +90,7 @@ services:
       placement:
         constraints:
           - node.role == worker
+          - node.labels.disk.feature.nfs == true
       labels: # Labels Traefik pour exposer Graylog via HTTPS
         - "traefik.enable=true"
         - "traefik.docker.network=logs_network" # Indique à Traefik le réseau où trouver Graylog
