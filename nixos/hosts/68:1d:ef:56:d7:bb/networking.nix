@@ -3,7 +3,7 @@
 {
   networking = {
     hostName = "jade";
-    nameservers = [ "192.168.200.1" ];
+    nameservers = [ "192.168.200.60" ];
 
     vlans = {
       vlan200 = {

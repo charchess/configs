@@ -2,8 +2,8 @@
 
 {
   networking = {
-    hostName = "jade";
-    nameservers = [ "192.168.200.1" ];
+    hostName = "grenat";
+    nameservers = [ "192.168.200.60" ];
 
     vlans = {
       vlan200 = {
@@ -20,12 +20,12 @@
       enp1s0.useDHCP = false;
       vlan200.ipv4.addresses = [
       {
-        address = "192.168.200.63";
+        address = "192.168.200.64";
         prefixLength = 24;
       }];
       vlan111.ipv4.addresses = [
       {
-        address = "192.168.111.63";
+        address = "192.168.111.64";
         prefixLength = 24;
       }];
     };
