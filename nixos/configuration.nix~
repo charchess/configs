@@ -4,25 +4,22 @@
 
 { config, pkgs, lib, ... }:
 
-let 
-  hardwareSpecificConf = "/etc/nixos/hardware_specific.nix";
-in
 {
   imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./networking.nix
-      ./nfs-mount.nix
-      ./iscsi-connect.nix
-      ./chrony.nix
-      ./keepalived.nix
-      ./docker.nix
-      ./ceph.nix
-      ./node-reporter.nix
-      ./swarm-label-manager.nix
-      ./users.nix
-      (lib.mkIf (builtins.pathExists hardwareSpecificConf) hardwareSpecificConf)
-    ];
+  [ 
+#    ./hardware-configuration.nix
+    ./networking.nix
+    ./nfs-mount.nix
+    ./iscsi-connect.nix
+    ./chrony.nix
+    ./keepalived.nix
+    ./docker.nix
+    ./ceph.nix
+    ./node-reporter.nix
+    ./swarm-label-manager.nix
+    ./users.nix
+  ];
+
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -119,55 +116,27 @@ in
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdMpROENhrrWxRiXt38zNZt3iU25kCDDnrNOFNL+XAv7xymLQGLL3tnLGksku1+zaQeEkMXi+36Rpl9ql0fe6RYVpa53bOTD571lp6be+tXkF5wXuL36RDq2zx5088BS9PFyyGkgocIX9PXmT7JI1Cc3udVy8Uj3gLkODRyggNK2oHRUi6B7UNrYs4y5QnfpE/FqAw2XiJgmuBnvYA1eEnah8qv2fflYdvquk4okkM+3Ed8Za5KnUzJOasF1L/fkgaqmxH4aruI0L3K7biemcl9VNEt2GDxDvh9W8YwdRq6jiVKPKlEtHfQTamu0eskI9DqKka/gd5r4FpXtxh2/m2pdifAXAMHbz6sFeQvyPeQsa/EbPfC6e6lRRqYAJXQdB5ZcJ1MOncO15wJ58LDPpf2zovVmppIjLXNi/3F+cDR8Q7EZjrPa/P3K09jW824TaPD76ByWb8Fpx0S9clwca7W0xnj/CmtNRIL+aipOJ80zqtgQUsHEmlWKB52JvcapyTKMde80x2V4PbJZXlEyRreFLnVF9stOquMTZw7AG4elRCQGWhHz1/rd6fpNhLzm0ATXC3PFvPBNFuYRO3dbkE/8oaJoK3v7AtHYW5p3sBx2mxfvkQZGKTR57pDG4wGzSYPm0VleXhWLVsIQNXQ8oPRT7PP3lEqg6KuxPTKTH3Yw== charchess@truxonline-homelab"
   ];
 
-
   systemd.services.provision-once = {
     description = "Provisionne la machine en fonction de son adresse MAC";
-    conditionPathExists = "!${hardwareSpecificConf}";
-    path = [ pkgs.iproute2 pkgs.gawk pkgs.coreutils ];
+    serviceConfig = {
+      Type               = "oneshot";
+      ConditionPathExists = "!/etc/nixos/hosts/current";
+    };
+    path = with pkgs; [ iproute2 gawk coreutils ];
 
     script = ''
-      # Étape 1: Récupérer l'adresse MAC
       MAC_ADDR=$(ip -o link show | awk '$2 != "lo:" {print $17; exit}')
-
-      # Étape 2: Définir les chemins possibles
-      MAC_SPECIFIC_DIR="/etc/nixos/hosts/''${MAC_ADDR}"
+      MAC_SPECIFIC_DIR="/etc/nixos/hosts/$MAC_ADDR"
       DEFAULT_DIR="/etc/nixos/hosts/default"
-      
-      # --- LOGIQUE DE VÉRIFICATION ET DE REPLI ---
-      # Étape 3: Vérifier si le dossier spécifique à la MAC existe
+
       if [ -d "$MAC_SPECIFIC_DIR" ]; then
-        # Le dossier existe, on l'utilise
-        HOST_CONFIG_DIR="$MAC_SPECIFIC_DIR"
-        echo "Configuration trouvée pour la MAC ''${MAC_ADDR}." >&2
+        ln -sfn "$MAC_SPECIFIC_DIR" /etc/nixos/hosts/current
       else
-        # Le dossier n'existe pas, on utilise le dossier par défaut
-        HOST_CONFIG_DIR="$DEFAULT_DIR"
-        echo "Aucune configuration spécifique pour ${MAC_ADDR}, utilisation de la configuration par défaut." >&2
+        ln -sfn "$DEFAULT_DIR" /etc/nixos/hosts/current
       fi
-      # --- FIN DE LA LOGIQUE ---
-
-      # Étape 4: Lire le nom d'hôte depuis le fichier hostname.conf du dossier choisi
-      HOSTNAME=$(cat "''${HOST_CONFIG_DIR}/hostname.conf")
-
-      # Étape 5: Générer le fichier de configuration spécifique
-      cat > ${hardwareSpecificConf} << EOF
-      # Fichier généré automatiquement au premier démarrage.
-      {
-        networking.hostName = "$HOSTNAME";
-
-        # Importe le fichier network.nix du dossier correspondant.
-        imports = [
-          "''${HOST_CONFIG_DIR}/network.nix"
-        ];
-      }
-      EOF
-
-      # Étape 6: Reconfigurer le système avec la nouvelle identité
-      nixos-rebuild switch
     '';
 
     wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    serviceConfig.Type = "oneshot";
+    after    = [ "network-online.target" ];
   };
 }
