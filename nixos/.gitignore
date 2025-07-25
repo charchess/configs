@@ -3,3 +3,4 @@ result
 secrets
 current
 hosts/current
+./hosts/*/result
