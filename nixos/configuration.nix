@@ -18,7 +18,7 @@
 #    ./swarm-label-manager.nix
 #    ./users.nix
   ]  
-  ++ lib.optionals (builtins.pathExists ./hardware-configuration.nix) [ ./hardware-configuration.nix ]
+  ++ lib.optionals (builtins.pathExists ./hosts/current/hardware-configuration.nix) [ ./hosts/current/hardware-configuration.nix ]
   ++ lib.optionals (builtins.pathExists ./hosts/current/default.nix) [ ./hosts/current/default.nix ];
 
 
