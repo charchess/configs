@@ -17,7 +17,7 @@
     };
 
     interfaces = {
-      enp1s0.useDHCP = false;
+      enp3s0.useDHCP = false;
       vlan200.ipv4.addresses = [
       {
         address = "192.168.200.63";
