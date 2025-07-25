@@ -4,6 +4,9 @@
 
 { config, pkgs, ... }:
 
+let 
+  hardwareSpecificConf = "/etc/nixos/hardware_specific.nix";
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -18,6 +21,7 @@
       ./node-reporter.nix
       ./swarm-label-manager.nix
       ./users.nix
+      (lib.mkIf (builtins.pathExists hardwareSpecificConf) hardwareSpecificConf)
     ];
 
   # Bootloader.
@@ -116,39 +120,65 @@
   ];
 
 
-  # Dans votre configuration.nix générique
-  systemd.services.initial-provisioning = {
-    description = "Détermine le nom de la machine basé sur l'adresse MAC";
-    wantedBy = [ "multi-user.target" ];
-    # S'assure que ce service ne s'exécute qu'une seule fois
-    conditionPathExists = "!/etc/machine-name";
+  systemd.services.provision-once = {
+    description = "Provisionne la machine en fonction de son adresse MAC";
+    conditionPathExists = "!${hardwareSpecificConf}";
+    path = [ pkgs.iproute2 pkgs.gawk pkgs.coreutils ];
 
     script = ''
-      MAC=$(cat /sys/class/net/eth0/address) # Adaptez l'interface
-      case $MAC in
+      # Étape 1: Récupérer l'adresse MAC
+      MAC_ADDR=$(ip -o link show | awk '$2 != "lo:" {print $17; exit}')
+
+      # Étape 2: Définir les chemins possibles
+      MAC_SPECIFIC_DIR="/etc/nixos/hosts/${MAC_ADDR}"
+      DEFAULT_DIR="/etc/nixos/hosts/default"
+      
+      # --- LOGIQUE DE VÉRIFICATION ET DE REPLI ---
+      # Étape 3: Vérifier si le dossier spécifique à la MAC existe
+      if [ -d "$MAC_SPECIFIC_DIR" ]; then
+        # Le dossier existe, on l'utilise
+        HOST_CONFIG_DIR="$MAC_SPECIFIC_DIR"
+        echo "Configuration trouvée pour la MAC ${MAC_ADDR}." >&2
+      else
+        # Le dossier n'existe pas, on utilise le dossier par défaut
+        HOST_CONFIG_DIR="$DEFAULT_DIR"
+        echo "Aucune configuration spécifique pour ${MAC_ADDR}, utilisation de la configuration par défaut." >&2
+      fi
+      # --- FIN DE LA LOGIQUE ---
+
+      # Étape 4: Lire le nom d'hôte depuis le fichier hostname.conf du dossier choisi
+      HOSTNAME=$(cat "''${HOST_CONFIG_DIR}/hostname.conf")
+
+      # Étape 5: Générer le fichier de configuration spécifique
+      cat > ${hardwareSpecificConf} << EOF
+      # Fichier généré automatiquement au premier démarrage.
+      {
+        networking.hostName = "$HOSTNAME";
+
+        # Importe le fichier network.nix du dossier correspondant.
+        imports = [
+          "''${HOST_CONFIG_DIR}/network.nix"
+        ];
+      }
+      EOF
+
+      # Étape 6: Reconfigurer le système avec la nouvelle identité
+      nixos-rebuild switch
+    '';
+
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    serviceConfig.Type = "oneshot";
+  };
+
         "68:1d:ef:56:d7:bb")
           echo "jade" > /etc/machine-name
-          ;;
         "00:1a:a4:10:15:20")
           echo "grenat" > /etc/machine-name
-          ;;
         "00:e1:4f:68:0d:f8")
           echo "ruby" > /etc/machine-name
-          ;;
         "68:1d:ef:4d:d6:a9")
           echo "emy" > /etc/machine-name
-          ;;
         "00:15:5d:00:cb:08")
           echo "VM-nix" > /etc/machine-name
-          ;;
-        "*")
-          echo "unknown" > /etc/machine-name
-          ;;
-      esac
-    '';
-  
-    serviceConfig = {
-      Type = "oneshot";
-    };
-  };
 }
