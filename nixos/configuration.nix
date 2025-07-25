@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let 
   hardwareSpecificConf = "/etc/nixos/hardware_specific.nix";
@@ -110,7 +110,7 @@ in
   system.stateVersion = "25.05"; # Did you read the comment?
 
   networking.firewall.allowedTCPPorts = [ 22 80 443 10443 6789 ];
-  networking.firewall.allowedTCPPortRanges = [ { from = 6800; to = 7300; } ];  services.openssh.enable=true;
+  networking.firewall.allowedTCPPortRanges = [ { from = 6800; to = 7300; } ];  
   networking.firewall.allowedUDPPorts = [ 6789 ];
 
   services.openssh.enable=true;
@@ -130,7 +130,7 @@ in
       MAC_ADDR=$(ip -o link show | awk '$2 != "lo:" {print $17; exit}')
 
       # Étape 2: Définir les chemins possibles
-      MAC_SPECIFIC_DIR="/etc/nixos/hosts/${MAC_ADDR}"
+      MAC_SPECIFIC_DIR="/etc/nixos/hosts/''${MAC_ADDR}"
       DEFAULT_DIR="/etc/nixos/hosts/default"
       
       # --- LOGIQUE DE VÉRIFICATION ET DE REPLI ---
@@ -138,11 +138,11 @@ in
       if [ -d "$MAC_SPECIFIC_DIR" ]; then
         # Le dossier existe, on l'utilise
         HOST_CONFIG_DIR="$MAC_SPECIFIC_DIR"
-        echo "Configuration trouvée pour la MAC ${MAC_ADDR}." >&2
+        echo "Configuration trouvée pour la MAC ''${MAC_ADDR}." >&2
       else
         # Le dossier n'existe pas, on utilise le dossier par défaut
         HOST_CONFIG_DIR="$DEFAULT_DIR"
-        echo "Aucune configuration spécifique pour ${MAC_ADDR}, utilisation de la configuration par défaut." >&2
+        echo "Aucune configuration spécifique pour ''${MAC_ADDR}, utilisation de la configuration par défaut." >&2
       fi
       # --- FIN DE LA LOGIQUE ---
 
@@ -170,15 +170,4 @@ in
     after = [ "network-online.target" ];
     serviceConfig.Type = "oneshot";
   };
-
-        "68:1d:ef:56:d7:bb")
-          echo "jade" > /etc/machine-name
-        "00:1a:a4:10:15:20")
-          echo "grenat" > /etc/machine-name
-        "00:e1:4f:68:0d:f8")
-          echo "ruby" > /etc/machine-name
-        "68:1d:ef:4d:d6:a9")
-          echo "emy" > /etc/machine-name
-        "00:15:5d:00:cb:08")
-          echo "VM-nix" > /etc/machine-name
 }

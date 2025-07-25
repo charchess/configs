@@ -4,14 +4,11 @@
   # configuration de docker
   virtualisation.docker.enable = true;
   
-<<<<<<< HEAD
   networking.firewall = {
     allowedUDPPorts = [ 794 4789 7946 ];
     allowedTCPPorts = [ 80 443 794 2377 7946 ];
   };
 
-=======
->>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
   # jonction au swarm si pas deja fait 
   systemd.services.docker-swarm-join = {
     description = "Join Docker Swarm if not already a member";
@@ -34,7 +31,7 @@
       if ! ${pkgs.docker}/bin/docker info 2>/dev/null | grep -q "Swarm: active"; then
         echo "Node is not in a swarm, attempting to join..."
         # Remplacez l'IP et le port par ceux de votre manager
-        ${pkgs.docker}/bin/docker swarm join --token SWMTKN-1-0ilvdu4vv7rlzrtojz27nrj278lobm7kmr6d49fvh6armeim8x-8jrixhyalzgdmwr3jl8h7347p 192.168.200.66:2377
+        ${pkgs.docker}/bin/docker swarm join --token SWMTKN-1-1jv2if96ggqq2y73agxm3uyiw38j7wnqlbtkhwlc7os9d5nc46-cya6p101wid290qcwa3wm83rp 192.168.200.63:2377
       else
         echo "Node is already a member of a swarm. Skipping join."
       fi

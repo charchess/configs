@@ -2,8 +2,11 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
+let 
+  hardwareSpecificConf = "/etc/nixos/hardware_specific.nix";
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -18,6 +21,7 @@
       ./node-reporter.nix
       ./swarm-label-manager.nix
       ./users.nix
+      (lib.mkIf (builtins.pathExists hardwareSpecificConf) hardwareSpecificConf)
     ];
 
   # Bootloader.
@@ -105,37 +109,65 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
 
-
   networking.firewall.allowedTCPPorts = [ 22 80 443 10443 6789 ];
-  networking.firewall.allowedTCPPortRanges = [ { from = 6800; to = 7300; } ];  services.openssh.enable=true;
+  networking.firewall.allowedTCPPortRanges = [ { from = 6800; to = 7300; } ];  
   networking.firewall.allowedUDPPorts = [ 6789 ];
+
+  services.openssh.enable=true;
   services.openssh.settings.PermitRootLogin="without-password";
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdMpROENhrrWxRiXt38zNZt3iU25kCDDnrNOFNL+XAv7xymLQGLL3tnLGksku1+zaQeEkMXi+36Rpl9ql0fe6RYVpa53bOTD571lp6be+tXkF5wXuL36RDq2zx5088BS9PFyyGkgocIX9PXmT7JI1Cc3udVy8Uj3gLkODRyggNK2oHRUi6B7UNrYs4y5QnfpE/FqAw2XiJgmuBnvYA1eEnah8qv2fflYdvquk4okkM+3Ed8Za5KnUzJOasF1L/fkgaqmxH4aruI0L3K7biemcl9VNEt2GDxDvh9W8YwdRq6jiVKPKlEtHfQTamu0eskI9DqKka/gd5r4FpXtxh2/m2pdifAXAMHbz6sFeQvyPeQsa/EbPfC6e6lRRqYAJXQdB5ZcJ1MOncO15wJ58LDPpf2zovVmppIjLXNi/3F+cDR8Q7EZjrPa/P3K09jW824TaPD76ByWb8Fpx0S9clwca7W0xnj/CmtNRIL+aipOJ80zqtgQUsHEmlWKB52JvcapyTKMde80x2V4PbJZXlEyRreFLnVF9stOquMTZw7AG4elRCQGWhHz1/rd6fpNhLzm0ATXC3PFvPBNFuYRO3dbkE/8oaJoK3v7AtHYW5p3sBx2mxfvkQZGKTR57pDG4wGzSYPm0VleXhWLVsIQNXQ8oPRT7PP3lEqg6KuxPTKTH3Yw== charchess@truxonline-homelab"
   ];
 
 
-  # Dans votre configuration.nix générique
-  systemd.services.initial-provisioning = {
-    description = "Détermine le nom de la machine basé sur l'adresse MAC";
-    wantedBy = [ "multi-user.target" ];
-    # S'assure que ce service ne s'exécute qu'une seule fois
-    conditionPathExists = "!/etc/machine-name";
+  systemd.services.provision-once = {
+    description = "Provisionne la machine en fonction de son adresse MAC";
+    conditionPathExists = "!${hardwareSpecificConf}";
+    path = [ pkgs.iproute2 pkgs.gawk pkgs.coreutils ];
 
     script = ''
-      MAC=$(cat /sys/class/net/eth0/address) # Adaptez l'interface
-      case $MAC in
-        "AA:BB:CC:DD:EE:FF")
-          echo "jade" > /etc/machine-name
-          ;;
-        "00:1a:a4:10:15:20")
-          echo "grenat" > /etc/machine-name
-          ;;
-      esac
+      # Étape 1: Récupérer l'adresse MAC
+      MAC_ADDR=$(ip -o link show | awk '$2 != "lo:" {print $17; exit}')
+
+      # Étape 2: Définir les chemins possibles
+      MAC_SPECIFIC_DIR="/etc/nixos/hosts/''${MAC_ADDR}"
+      DEFAULT_DIR="/etc/nixos/hosts/default"
+      
+      # --- LOGIQUE DE VÉRIFICATION ET DE REPLI ---
+      # Étape 3: Vérifier si le dossier spécifique à la MAC existe
+      if [ -d "$MAC_SPECIFIC_DIR" ]; then
+        # Le dossier existe, on l'utilise
+        HOST_CONFIG_DIR="$MAC_SPECIFIC_DIR"
+        echo "Configuration trouvée pour la MAC ''${MAC_ADDR}." >&2
+      else
+        # Le dossier n'existe pas, on utilise le dossier par défaut
+        HOST_CONFIG_DIR="$DEFAULT_DIR"
+        echo "Aucune configuration spécifique pour ${MAC_ADDR}, utilisation de la configuration par défaut." >&2
+      fi
+      # --- FIN DE LA LOGIQUE ---
+
+      # Étape 4: Lire le nom d'hôte depuis le fichier hostname.conf du dossier choisi
+      HOSTNAME=$(cat "''${HOST_CONFIG_DIR}/hostname.conf")
+
+      # Étape 5: Générer le fichier de configuration spécifique
+      cat > ${hardwareSpecificConf} << EOF
+      # Fichier généré automatiquement au premier démarrage.
+      {
+        networking.hostName = "$HOSTNAME";
+
+        # Importe le fichier network.nix du dossier correspondant.
+        imports = [
+          "''${HOST_CONFIG_DIR}/network.nix"
+        ];
+      }
+      EOF
+
+      # Étape 6: Reconfigurer le système avec la nouvelle identité
+      nixos-rebuild switch
     '';
-  
-    serviceConfig = {
-      Type = "oneshot";
-    };
+
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    serviceConfig.Type = "oneshot";
   };
 }
