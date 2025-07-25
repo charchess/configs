@@ -8,36 +8,22 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-<<<<<<< HEAD
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "sd_mod" "sdhci_pci" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-=======
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sdhci_pci" ];
-  boot.initrd.kernelModules = [ ];
->>>>>>> a0422d0 (ajout de fichier de l'host)
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-<<<<<<< HEAD
     { device = "/dev/disk/by-uuid/874ff54b-fd3a-4e0e-8012-e394af7eb203";
-=======
-    { device = "/dev/disk/by-uuid/f647dffa-8d24-4ff0-a2da-163486f05ebc";
->>>>>>> a0422d0 (ajout de fichier de l'host)
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-<<<<<<< HEAD
     { device = "/dev/disk/by-uuid/5893-2452";
-=======
-    { device = "/dev/disk/by-uuid/7F69-4E60";
->>>>>>> a0422d0 (ajout de fichier de l'host)
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-<<<<<<< HEAD
   fileSystems."/data/nfs/downloads" =
     { device = "192.168.111.69:/volume3/Downloads";
       fsType = "nfs4";
@@ -110,10 +96,6 @@
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/23760326-81e0-4e35-88b1-4a658855fa7d"; }
-=======
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/1f064eb9-d422-4f73-9bf9-d824d016b874"; }
->>>>>>> a0422d0 (ajout de fichier de l'host)
     ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
@@ -121,7 +103,6 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-<<<<<<< HEAD
   # networking.interfaces.docker0.useDHCP = lib.mkDefault true;
   # networking.interfaces.docker_gwbridge.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
@@ -135,10 +116,6 @@
   # networking.interfaces.vlan111.useDHCP = lib.mkDefault true;
   # networking.interfaces.vlan200.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp2s0.useDHCP = lib.mkDefault true;
-=======
-  # networking.interfaces.enp3s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
->>>>>>> a0422d0 (ajout de fichier de l'host)
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
