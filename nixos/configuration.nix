@@ -17,10 +17,7 @@
       ./ceph.nix
       ./node-reporter.nix
       ./swarm-label-manager.nix
-<<<<<<< HEAD
       ./users.nix
-=======
->>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
     ];
 
   # Bootloader.
@@ -81,10 +78,7 @@
     ceph
     openiscsi
     python3
-<<<<<<< HEAD
     sudo
-=======
->>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -101,11 +95,7 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-<<<<<<< HEAD
   networking.firewall.enable = true;
-=======
-  # networking.firewall.enable = false;
->>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -115,20 +105,16 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
 
-<<<<<<< HEAD
-
   networking.firewall.allowedTCPPorts = [ 22 80 443 10443 6789 ];
   networking.firewall.allowedTCPPortRanges = [ { from = 6800; to = 7300; } ];  services.openssh.enable=true;
   networking.firewall.allowedUDPPorts = [ 6789 ];
-=======
+
   services.openssh.enable=true;
->>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
   services.openssh.settings.PermitRootLogin="without-password";
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdMpROENhrrWxRiXt38zNZt3iU25kCDDnrNOFNL+XAv7xymLQGLL3tnLGksku1+zaQeEkMXi+36Rpl9ql0fe6RYVpa53bOTD571lp6be+tXkF5wXuL36RDq2zx5088BS9PFyyGkgocIX9PXmT7JI1Cc3udVy8Uj3gLkODRyggNK2oHRUi6B7UNrYs4y5QnfpE/FqAw2XiJgmuBnvYA1eEnah8qv2fflYdvquk4okkM+3Ed8Za5KnUzJOasF1L/fkgaqmxH4aruI0L3K7biemcl9VNEt2GDxDvh9W8YwdRq6jiVKPKlEtHfQTamu0eskI9DqKka/gd5r4FpXtxh2/m2pdifAXAMHbz6sFeQvyPeQsa/EbPfC6e6lRRqYAJXQdB5ZcJ1MOncO15wJ58LDPpf2zovVmppIjLXNi/3F+cDR8Q7EZjrPa/P3K09jW824TaPD76ByWb8Fpx0S9clwca7W0xnj/CmtNRIL+aipOJ80zqtgQUsHEmlWKB52JvcapyTKMde80x2V4PbJZXlEyRreFLnVF9stOquMTZw7AG4elRCQGWhHz1/rd6fpNhLzm0ATXC3PFvPBNFuYRO3dbkE/8oaJoK3v7AtHYW5p3sBx2mxfvkQZGKTR57pDG4wGzSYPm0VleXhWLVsIQNXQ8oPRT7PP3lEqg6KuxPTKTH3Yw== charchess@truxonline-homelab"
   ];
 
-<<<<<<< HEAD
 
   # Dans votre configuration.nix générique
   systemd.services.initial-provisioning = {
@@ -165,6 +151,4 @@
       Type = "oneshot";
     };
   };
-=======
->>>>>>> 725251c8d7606856474d93d986ddff0ffed25239
 }
