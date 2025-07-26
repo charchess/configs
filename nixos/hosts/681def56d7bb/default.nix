@@ -13,7 +13,8 @@
     ../../configs/chrony.nix
     ../../configs/keepalived.nix # prevoir un master/slave
     ../../configs/docker.nix
-    ../../configs/portainer.nix
+    ../../configs/portainer-ce.nix
+    ../../configs/dockerswarm-join-or-init.nix
 #    ../../configs/ceph.nix
 #    ../../configs/node-reporter.nix
 #    ../../configs/swarm-label-manager.nix
