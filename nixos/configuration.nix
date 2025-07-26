@@ -7,16 +7,6 @@
 {
   imports =
   [ 
-#    ./networking.nix
-#    ./nfs-mount.nix
-#    ./iscsi-connect.nix
-#    ./chrony.nix
-#    ./keepalived.nix
-#    ./docker.nix
-#    ./ceph.nix
-#    ./node-reporter.nix
-#    ./swarm-label-manager.nix
-#    ./users.nix
   ]  
   ++ lib.optionals (builtins.pathExists ./hosts/current/hardware-configuration.nix) [ ./hosts/current/hardware-configuration.nix ]
   ++ lib.optionals (builtins.pathExists ./hosts/current/default.nix) [ ./hosts/current/default.nix ];
@@ -126,7 +116,7 @@
     path = with pkgs; [ iproute2 gawk coreutils ];
 
     script = ''
-      MAC_ADDR=$(ip -o link show | awk '$2 != "lo:" {print $17; exit}')
+      MAC_ADDR=$(ip -o link | awk -F' ' '$2 !~ /lo:/ {print $17}' | sed 's/://g' | head -n1)
       MAC_SPECIFIC_DIR="/etc/nixos/hosts/$MAC_ADDR"
       DEFAULT_DIR="/etc/nixos/hosts/default"
 

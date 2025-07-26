@@ -18,13 +18,11 @@
 
     interfaces = {
       enp3s0.useDHCP = false;
-      vlan200.ipv4.addresses = [
-      {
+      vlan200.ipv4.addresses = [{
         address = "192.168.200.63";
         prefixLength = 24;
       }];
-      vlan111.ipv4.addresses = [
-      {
+      vlan111.ipv4.addresses = [{
         address = "192.168.111.63";
         prefixLength = 24;
       }];

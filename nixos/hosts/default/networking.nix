@@ -7,6 +7,7 @@
 
     interfaces = {
       enp1s0.useDHCP = true;
+    };
 
     defaultGateway = {
       address = "192.168.200.1";
