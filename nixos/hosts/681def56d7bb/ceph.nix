@@ -5,7 +5,7 @@
 
   services.ceph-benaco = {
     enable = true;
-
+    package = pkgs.ceph;
     # Identité du cluster
     fsid        = "4b687c5c-5a20-4a77-8774-487989fd0bc7";
     clusterName = "ceph";

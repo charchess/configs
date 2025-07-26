@@ -5,7 +5,7 @@ with lib;
 let
   cfg = config.services.ceph-keyring;
 
-  cephKeys = pkgs.callPackage ../pkgs/ceph-keyrings.nix {
+  cephKeys = pkgs.callPackage ../../modules/ceph-keyrings.nix {
     inherit (cfg) fsid monName monIp;
   };
 in
