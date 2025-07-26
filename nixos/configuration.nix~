@@ -116,7 +116,7 @@
     path = with pkgs; [ iproute2 gawk coreutils ];
 
     script = ''
-      MAC_ADDR=$(ip -o link show | sed -n '/lo:/!s/.* link\/[^ ]* \([^ ]*\) .*/\1/;s/://g;p;q')
+      MAC_ADDR=$(ip -o link | awk -F' ' '$2 !~ /lo:/ {print $17}' | sed 's/://g' | head -n1)
       MAC_SPECIFIC_DIR="/etc/nixos/hosts/$MAC_ADDR"
       DEFAULT_DIR="/etc/nixos/hosts/default"
 
