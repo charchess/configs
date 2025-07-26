@@ -71,7 +71,6 @@
     openiscsi
     python3
     sudo
-    agenix
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

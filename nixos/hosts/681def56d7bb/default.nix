@@ -15,11 +15,14 @@
     ../../configs/docker.nix
     ../../configs/portainer-ce.nix
     ../../configs/dockerswarm-join-or-init.nix
-    ./ceph.nix
-    ./ceph-keyring.nix
 #    ../../configs/node-reporter.nix
 #    ../../configs/swarm-label-manager.nix
     ../../configs/users.nix
+
+   ../../modules/ceph-keyring.nix      # module
+    ./ceph-keyring-values.nix           # valeurs
+    ../../modules/ceph-benaco.nix
+    ./ceph.nix
   ];
 
 
