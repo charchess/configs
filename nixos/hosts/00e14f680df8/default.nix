@@ -8,15 +8,15 @@
   imports =
   [
     ./networking.nix
-    ../../modules/nfs-mount.nix
-    ../../modules/iscsi-connect.nix
-    ../../modules/chrony.nix
-    ../../modules/keepalived.nix
-    ../../modules/docker.nix
-    ../../modules/ceph.nix
-    ../../modules/node-reporter.nix
-    ../../modules/swarm-label-manager.nix
-    ../../modules/users.nix
+    ../../configs/nfs-mount.nix
+#     ./modules/iscsi-connect.nix
+    ../../configs/chrony.nix
+    ../../configs/keepalived.nix
+    ../../configs/docker.nix
+#    ../../modules/ceph.nix
+    ../../configs/node-reporter.nix
+#    ../../modules/swarm-label-manager.nix
+    ../../configs/users.nix
   ];
 
 
