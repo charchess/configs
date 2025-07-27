@@ -31,8 +31,18 @@
       nodeName = "emy";
     };
 
-    mds.enable     = false;
-    rgw.enable     = false;
+    mds = {
+      enable = true;
+      nodeName = "emy";
+      listenAddr = "192.168.111.65";
+    };
+
+    rgw = {
+      enable = true;
+      nodeName = "emy";
+      listenAddr = "192.168.111.65";
+      port = 3030;
+    };
 
     osds.emy_osd = {
       enable = true;
@@ -55,6 +65,31 @@
       ExecStart = "${pkgs.ceph}/bin/ceph-osd -f --cluster ceph --id 1";
       Restart   = "always";
       RestartSec = 5;
+    };
+  };
+
+  systemd.services.ceph-mon-init-emy = {
+    description = "Ensure Ceph monitor emy is initialized (idempotent)";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "ceph-mon@emy.service" ];
+
+    path = with pkgs; [ ceph ];
+
+    script = ''
+      set -e
+      MON_DIR="/var/lib/ceph/mon/ceph-emy"
+      if [[ ! -f "$MON_DIR/keyring" ]]; then
+        mkdir -p "$MON_DIR"
+        cp /etc/ceph/ceph.mon.keyring "$MON_DIR/keyring"
+        chown -R ceph:ceph "$MON_DIR"
+        ceph-mon --mkfs -i emy --public-addr 192.168.111.66 --keyring "$MON_DIR/keyring"
+      fi
+    '';
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = "root";
     };
   };
 }
