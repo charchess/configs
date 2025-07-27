@@ -69,16 +69,30 @@
       "_netdev"
     ];
   };
-systemd.services.ceph-osd-0 = {
-  description = "Ceph OSD 0";
-  wantedBy = [ "multi-user.target" ];
-  serviceConfig = {
-    Type = "simple";
-    User = "ceph";
-    Group = "ceph";
-    ExecStart = "${pkgs.ceph}/bin/ceph-osd -f --cluster ceph --id 0";
-    Restart = "always";
-    RestartSec = 5;
+
+  systemd.services.ceph-osd-0 = {
+    description = "Ceph OSD 0";
+    wantedBy = [ "multi-user.target" ];  
+    serviceConfig = {
+      Type = "simple";
+      User = "ceph";
+      Group = "ceph";
+      ExecStart = "${pkgs.ceph}/bin/ceph-osd -f --cluster ceph --id 0";
+      Restart = "always";
+      RestartSec = 5;
+    };
   };
-};
+
+  systemd.mounts = [{
+    where  = "/data/cephfs";
+    what   = "192.168.111.63:6789:/";
+    type   = "ceph";
+    options = "name=admin,secretfile=/etc/ceph/cephfs-admin.key,_netdev";
+    wantedBy = [ "multi-user.target" ];
+  }];
+
+  systemd.automounts = [{
+    where  = "/data/cephfs";
+    wantedBy = [ "multi-user.target" ];
+  }];
 }
