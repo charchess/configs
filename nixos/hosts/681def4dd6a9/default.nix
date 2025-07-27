@@ -11,7 +11,7 @@
     ../../configs/nfs-mount.nix
     ./iscsi-connect.nix
     ../../configs/chrony.nix
-    ../../modules/keepalived.nix
+    ../../modules/keepalived-ha.nix
     ../../configs/docker.nix
     ../../configs/node-reporter.nix
 #    ../../configs/swarm-label-manager.nix
