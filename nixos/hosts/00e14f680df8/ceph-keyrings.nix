@@ -42,3 +42,6 @@ in
         user   = "ceph";
         group  = "ceph";
       };
+    };
+  };
+}

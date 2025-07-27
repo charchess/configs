@@ -30,8 +30,18 @@
       nodeName = "ruby";
     };
 
-    mds.enable     = false;
-    rgw.enable     = false;
+    mds = {
+      enable = true;
+      nodeName = "ruby";
+      listenAddr = "192.168.111.66";
+    };
+
+    rgw = {
+      enable = true;
+      nodeName = "ruby";
+      listenAddr = "192.168.111.66";
+      port = 3030;
+    };
 
     osds.ruby_osd = {
       enable = true;
@@ -54,6 +64,31 @@
       ExecStart = "${pkgs.ceph}/bin/ceph-osd -f --cluster ceph --id 2";
       Restart   = "always";
       RestartSec = 5;
+    };
+  };
+
+  systemd.services.ceph-mon-init-ruby = {
+    description = "Ensure Ceph monitor ruby is initialized (idempotent)";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "ceph-mon@ruby.service" ];
+
+    path = with pkgs; [ ceph ];
+
+    script = ''
+      set -e
+      MON_DIR="/var/lib/ceph/mon/ceph-ruby"
+      if [[ ! -f "$MON_DIR/keyring" ]]; then
+        mkdir -p "$MON_DIR"
+        cp /etc/ceph/ceph.mon.keyring "$MON_DIR/keyring"
+        chown -R ceph:ceph "$MON_DIR"
+        ceph-mon --mkfs -i ruby --public-addr 192.168.111.66 --keyring "$MON_DIR/keyring"
+      fi
+    '';
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = "root";
     };
   };
 }
