@@ -23,13 +23,22 @@ in
       monIp   = "192.168.111.63";
     };
 
-    environment.etc."ceph/ceph.client.admin.keyring".source =
-      "${cephKeys}/ceph.client.admin.keyring";
+    environment.etc = {
+      "ceph/ceph.client.admin.keyring" = {
+        source = "${cephKeys}/ceph.client.admin.keyring";
+      };
 
-    environment.etc."ceph/ceph.mon.keyring".source =
-      "${cephKeys}/ceph.mon.keyring";
+      "ceph/ceph.mon.keyring" = {
+        source = "${cephKeys}/ceph.mon.keyring";
+      };
 
-    environment.etc."ceph/ceph.client.bootstrap-osd.keyring".source =
-      "${cephKeys}/ceph.client.bootstrap-osd.keyring";
-  };
-}
+      "ceph/ceph.client.bootstrap-osd.keyring" = {
+        source = "${cephKeys}/ceph.client.bootstrap-osd.keyring";
+      };
+
+      "ceph/ceph.client.bootstrap-osd.keyring" = {  
+        source = "${cephKeys}/ceph.client.bootstrap-osd.keyring;
+        mode   = "0600";
+        user   = "ceph";
+        group  = "ceph";
+      };
