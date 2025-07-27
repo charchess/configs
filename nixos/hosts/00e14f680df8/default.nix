@@ -11,7 +11,7 @@
     ../../configs/nfs-mount.nix
      ./iscsi-connect.nix
     ../../configs/chrony.nix
-    ../../configs/keepalived.nix
+    ../../moduless/keepalived.nix
     ../../configs/docker.nix
     ../../configs/node-reporter.nix
 #    ../../modules/swarm-label-manager.nix
@@ -24,5 +24,10 @@
 
   ];
 
-
+  services.keepalived-ha = {
+    enable    = true;
+    interface = "vlan200";
+    vip       = "192.168.200.60/24";
+    priority  = 100;
+  };
 }
