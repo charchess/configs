@@ -28,6 +28,10 @@ in
       "ceph/ceph.client.bootstrap-osd.keyring" = { 
         source = lib.mkDefault "${cephKeys}/ceph.client.bootstrap-osd.keyring";
       };
+
+      "ceph/cephfs-admin.key" = { 
+        source = lib.mkDefault "${cephKeys}/cephfs-admin.key";
+      };
     };
   };
 }
