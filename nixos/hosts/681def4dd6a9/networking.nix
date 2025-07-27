@@ -4,7 +4,7 @@
   networking = {
     hostName = "emy";
     nameservers = [ "192.168.200.60" ];
-
+    search = [ "admin.truxonline.com" ]; 
     vlans = {
       vlan200 = {
         id = 200;
