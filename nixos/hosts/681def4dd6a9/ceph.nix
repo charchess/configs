@@ -96,13 +96,8 @@
   systemd.mounts = [{
     where  = "/data/cephfs";
     what   = "192.168.111.65:6789:/";
-    type   = "ceph";
+    type   = "ceph"; 
     options = "name=admin,secretfile=/etc/ceph/cephfs-admin.key,_netdev";
-    wantedBy = [ "multi-user.target" ];
-  }];
-
-  systemd.automounts = [{
-    where  = "/data/cephfs";
     wantedBy = [ "multi-user.target" ];
   }];
 }

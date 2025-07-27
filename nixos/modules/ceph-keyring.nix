@@ -30,7 +30,7 @@ in
       };
 
       "ceph/cephfs-admin.key" = { 
-        source = lib.mkDefault "${cephKeys}/ceph.client.cephfs-admin.keyring";
+        source = lib.mkDefault "${cephKeys}/cephfs-admin.key";
       };
     };
   };
