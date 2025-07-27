@@ -10,23 +10,38 @@
     fsid = "4b687c5c-5a20-4a77-8774-487989fd0bc7";
     publicNetworks = [ "192.168.111.0/24" ];
     adminKeyring = ../../secrets/ceph.client.admin.keyring;
-    initialMonitors = [ { hostname = "jade"; ipAddress = "192.168.111.63"; } ];
+    initialMonitors = [
+      { hostname = "jade"; ipAddress = "192.168.111.65"; }
+      { hostname = "ruby"; ipAddress = "192.168.111.64"; }
+      { hostname = "emy";  ipAddress = "192.168.111.63"; }
+    ];
     osdBindAddr = "192.168.111.65";
     osdAdvertisedPublicAddr = "192.168.111.65";
 
-    monitor.enable = false;
-    manager.enable = false;
+    monitor = {
+      enable = true;
+      nodeName = "emy";
+      bindAddr = "192.168.111.63";
+      advertisedPublicAddr = "192.168.111.63";
+      initialKeyring = ../../secrets/ceph.mon.keyring;
+    };
+
+    manager = {
+      enable = true;
+      nodeName = "emy";
+    };
+
     mds.enable     = false;
     rgw.enable     = false;
 
     osds.emy_osd = {
       enable = true;
       id     = 1;
-      uuid   = "6d1fbe6b-7cc4-443b-b699-ac85810ad3ac";
-      blockDevice = "/dev/disk/by-id/dm-name-ceph--b72cb8c8--d023--424c--8ffe--5f70b8343380-osd--block--18c6694a--f813--44b6--93ba--d4f69533a0b9";
-      blockDeviceUdevRuleMatcher = ''KERNEL=="dm-0"'';
+      uuid   = "f6864a0b-86e9-4956-a192-d789dd6c5195";
+      blockDevice = "/dev/sda";
+      blockDeviceUdevRuleMatcher = ''KERNEL=="sda"'';
       bootstrapKeyring = ../../secrets/ceph.client.bootstrap-osd.keyring;
-      skipZap = true;
+      skipZap = false;
     };
   };
 
