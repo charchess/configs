@@ -1,7 +1,8 @@
 { config, pkgs, lib, ... }:
 
 {
-  networking.firewall.allowedTCPPorts = [ 6789 6800-7300 ];
+  networking.firewall.allowedTCPPorts = [ 6789 ];
+  networking.firewall.allowedTCPPortRanges = [ { from = 6800; to = 7300; } ];
 
   services.ceph-benaco = {
     enable = true;
@@ -10,6 +11,8 @@
     publicNetworks = [ "192.168.111.0/24" ];
     adminKeyring = ../../secrets/ceph.client.admin.keyring;
     initialMonitors = [ { hostname = "jade"; ipAddress = "192.168.111.63"; } ];
+    osdBindAddr = "192.168.111.65";
+    osdAdvertisedPublicAddr = "192.168.111.65";
 
     monitor.enable = false;
     manager.enable = false;

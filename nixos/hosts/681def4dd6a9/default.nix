@@ -9,15 +9,19 @@
   [
     ./networking.nix
     ../../configs/nfs-mount.nix
-#    ../../configs/iscsi-connect.nix
+    ./iscsi-connect.nix
     ../../configs/chrony.nix
     ../../configs/keepalived.nix
     ../../configs/docker.nix
-#    ../../configs/ceph.nix
     ../../configs/node-reporter.nix
 #    ../../configs/swarm-label-manager.nix
     ../../configs/users.nix
     ../../configs/dockerswarm-join-or-init.nix
+
+   ../../modules/ceph-keyring.nix      # module
+    ./ceph-keyring-values.nix           # valeurs
+    ../../modules/ceph-benaco.nix
+    ./ceph.nix
   ];
 
 
