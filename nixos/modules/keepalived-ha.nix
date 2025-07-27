@@ -19,6 +19,7 @@ in
 
     services.keepalived = {
       enable = true;
+      openfirewall = true;
       vrrpInstances.VI_1 = {
         interface       = cfg.interface;
         state           = if cfg.priority > 150 then "MASTER" else "BACKUP";
@@ -26,6 +27,11 @@ in
         priority        = cfg.priority;
         virtualIps      = [ { addr = cfg.vip; } ];
       };
+    };
+
+    networking.firewall = {
+      enable = true;
+      allowedUDPPorts = [ 112 ];
     };
   };
 }

@@ -16,8 +16,8 @@
     ../../configs/docker.nix
     ../../configs/portainer-ce.nix
     ../../configs/dockerswarm-join-or-init.nix
-#    ../../configs/node-reporter.nix
-#    ../../configs/swarm-label-manager.nix
+    ../../modules/node-reporter.nix
+    ../../modules/swarm-label-manager.nix
     ../../configs/users.nix
 
    ../../modules/ceph-keyring.nix      # module
