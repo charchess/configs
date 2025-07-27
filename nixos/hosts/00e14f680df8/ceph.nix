@@ -91,4 +91,17 @@
       User = "root";
     };
   };
+
+  systemd.mounts = [{
+    where  = "/data/cephfs";
+    what   = "192.168.111.66:6789:/";
+    type   = "ceph";
+    options = "name=admin,secretfile=/etc/ceph/cephfs-admin.key,_netdev";
+    wantedBy = [ "multi-user.target" ];
+  }];
+
+  systemd.automounts = [{
+    where  = "/data/cephfs";
+    wantedBy = [ "multi-user.target" ];
+  }];
 }
