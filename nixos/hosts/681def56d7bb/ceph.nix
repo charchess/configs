@@ -54,12 +54,6 @@
     };
   };
 
-  # Copie la clé dans /etc/ceph/cephfs-admin.key à chaque rebuild
-  environment.etc."ceph/cephfs-admin.key" = {
-    source = ../../secrets/cephfs-admin.key;
-    mode   = "0400";
-  };
-
   fileSystems."/data/cephfs" = {
     device  = "192.168.111.63:6789:/";
     fsType  = "ceph";
@@ -87,7 +81,7 @@
     where  = "/data/cephfs";
     what   = "192.168.111.63:6789:/";
     type   = "ceph";
-    options = "name=admin,secretfile=/etc/ceph/cephfs-admin.key,_netdev";
+    options = "name=admin,secretfile=/etc/ceph/ceph.client.admin.keyring,_netdev";
     wantedBy = [ "multi-user.target" ];
   }];
 
