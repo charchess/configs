@@ -18,9 +18,11 @@
     ../../configs/users.nix
     ../../configs/dockerswarm-join-or-init.nix
 
-   ../../modules/ceph-keyring.nix      # module
+    ../../modules/ceph-keyring.nix
+    ./ceph-keyrings.nix      # module
     ./ceph-keyring-values.nix           # valeurs
     ../../modules/ceph-benaco.nix
+   
     ./ceph.nix
   ];
 
