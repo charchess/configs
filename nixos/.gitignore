@@ -5,3 +5,4 @@ current
 hosts/current
 ./hosts/*/result*.old
 *.orig
+DEADJOE
