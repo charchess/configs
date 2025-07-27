@@ -39,12 +39,12 @@ in
         group  = "ceph";
       };
 
-      "ceph/cephfs-admin.key" = {
-        source = "${cephKeys}/ceph.client.cephfs-admin.keyring";
-        mode   = "0400";
-        user   = "ceph";
-        group  = "ceph";
-      };
+#      "ceph/cephfs-admin.key" = {
+#        source = "${cephKeys}/ceph.client.cephfs-admin.keyring";
+#        mode   = "0400";
+#        user   = "ceph";
+#        group  = "ceph";
+#      };
     };
   };
 }
