@@ -32,6 +32,14 @@ pkgs.stdenv.mkDerivation {
     ceph-authtool $out/ceph.mon.keyring \
       --import-keyring $out/ceph.client.bootstrap-osd.keyring
 
+    # 4. cephfs-admin keyring
+    ceph-authtool \
+      --create-keyring $out/ceph.client.cephfs-admin.keyring \
+      --gen-key -n client.cephfs-admin \
+      --cap mds 'allow *' \
+      --cap osd 'allow *' \
+      --cap mon 'allow r'
+
     # optionnel : créer aussi ceph.conf minimal
     cat > $out/ceph.conf <<EOF
 [global]
