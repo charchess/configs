@@ -19,7 +19,6 @@ in
 
     services.keepalived = {
       enable = true;
-      openfirewall = true;
       vrrpInstances.VI_1 = {
         interface       = cfg.interface;
         state           = if cfg.priority > 150 then "MASTER" else "BACKUP";
