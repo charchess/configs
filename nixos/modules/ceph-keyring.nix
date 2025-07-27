@@ -17,17 +17,16 @@ in
 
   config = mkIf cfg.enable {
     environment.etc = {
-      "ceph/ceph.client.admin.keyring".source =
-        "${cephKeys}/ceph.client.admin.keyring";
+      "ceph/ceph.client.admin.keyring" = {
+	source = lib.mkDefault  "${cephKeys}/ceph.client.admin.keyring";
+      };
 
-      "ceph/ceph.mon.keyring".source =
-        "${cephKeys}/ceph.mon.keyring";
+      "ceph/ceph.mon.keyring" = {
+        source = lib.mkDefault  "${cephKeys}/ceph.mon.keyring";
+      };
 
-      "ceph/ceph.client.bootstrap-osd.keyring" = {
-        source = "${cephKeys}/ceph.client.bootstrap-osd.keyring";
-        mode   = "0600";
-        user   = "ceph";
-        group  = "ceph";
+      "ceph/ceph.client.bootstrap-osd.keyring" = { 
+        source = lib.mkDefault "${cephKeys}/ceph.client.bootstrap-osd.keyring";
       };
     };
   };
