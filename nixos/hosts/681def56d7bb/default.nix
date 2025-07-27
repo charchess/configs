@@ -11,7 +11,7 @@
     ../../configs/nfs-mount.nix
     ./iscsi-connect.nix
     ../../configs/chrony.nix
-    ../../configs/keepalived.nix # prevoir un master/slave
+    ../../modules/keepalived-ha.nix
     ../../configs/docker.nix
     ../../configs/portainer-ce.nix
     ../../configs/dockerswarm-join-or-init.nix
@@ -25,5 +25,10 @@
     ./ceph.nix
   ];
 
-
+ services.keepalived-ha = {
+    enable    = true;
+    interface = "vlan200";
+    vip       = "192.168.200.60/24";
+    priority  = 200;
+  };
 }
