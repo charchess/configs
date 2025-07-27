@@ -1,9 +1,12 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+#  services.resolved.enable = true;
+#  services.resolved.domains = [ "admin.truxonline.com" ];
   networking = {
     hostName = "jade";
     nameservers = [ "192.168.200.60" ];
+    search = [ "admin.truxonline.com" ];
 
     vlans = {
       vlan200 = {

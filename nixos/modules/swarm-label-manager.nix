@@ -30,6 +30,10 @@ in
       after = [ "network-online.target" "docker.service" ];
       requires = [ "docker.service" ];
 
+      # Spécifiez les dépendances du service
+      serviceConfig = {
+        Environment = "PATH=${pkgs.docker}/bin:${pkgs.curl}/bin:${pkgs.gawk}/bin:$PATH";
+      };
       # Le script principal.
       script = ''
         set -e
