@@ -23,10 +23,10 @@
       enable = true;
       id     = 1;
       uuid   = "6d1fbe6b-7cc4-443b-b699-ac85810ad3ac";
-      blockDevice = "/dev/sdb";
-      blockDeviceUdevRuleMatcher = ''KERNEL=="sdb"'';
+      blockDevice = "/dev/disk/by-id/dm-name-ceph--b72cb8c8--d023--424c--8ffe--5f70b8343380-osd--block--18c6694a--f813--44b6--93ba--d4f69533a0b9";
+      blockDeviceUdevRuleMatcher = ''KERNEL=="dm-0"'';
       bootstrapKeyring = ../../secrets/ceph.client.bootstrap-osd.keyring;
-      skipZap = false;
+      skipZap = true;
     };
   };
 
