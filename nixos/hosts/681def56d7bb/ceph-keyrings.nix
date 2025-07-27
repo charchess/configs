@@ -42,6 +42,12 @@ in
         user   = "ceph";
         group  = "ceph";
       };
+      "ceph/cephfs-admin.key" = {
+        source = "${cephKeys}/cephfs-admin.key";
+        mode   = "0400";
+        user   = "ceph";
+        group  = "ceph";
+      };
     };
   };
 }
