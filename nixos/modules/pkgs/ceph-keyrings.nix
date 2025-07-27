@@ -40,23 +40,6 @@ pkgs.stdenv.mkDerivation {
       --cap osd 'allow *' \
       --cap mon 'allow r'
 
-    # 4. cephfs-admin keyring
-    ceph-authtool \
-      --create-keyring $out/ceph.client.cephfs-admin.keyring \
-      --gen-key -n client.cephfs-admin \
-      --cap mds 'allow *' \
-      --cap osd 'allow *' \
-      --cap mon 'allow r'
-
-    # Vérifier que la clé client.cephfs-admin a été créée
-    if ! ceph-authtool --print-key $out/ceph.client.cephfs-admin.keyring | grep -q 'client.cephfs-admin'; then
-      echo "Error: client.cephfs-admin key not found in ceph.client.cephfs-admin.keyring"
-      exit 1
-    fi
-
-    # Extraire la clé secrète et l'écrire dans un fichier
-    ceph-authtool --print-key $out/ceph.client.cephfs-admin.keyring | grep key | cut -d'=' -f2 | tr -d ' ' > $out/cephfs-admin.key
-
     # optionnel : créer aussi ceph.conf minimal
     cat > $out/ceph.conf <<EOF
 [global]
