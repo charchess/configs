@@ -3,10 +3,13 @@
 pkgs.stdenv.mkDerivation {
   name = "ceph-keyrings-${monName}";
 
+  buildInputs = [ pkgs.ceph ];
+
   buildCommand = ''
     mkdir -p $out
 
-    ${pkgs.ceph}/bin/ceph-authtool \
+    # 1. admin keyring
+    ceph-authtool \
       --create-keyring $out/ceph.client.admin.keyring \
       --gen-key -n client.admin \
       --cap mon 'allow *' \
@@ -14,17 +17,31 @@ pkgs.stdenv.mkDerivation {
       --cap mds 'allow *' \
       --cap mgr 'allow *'
 
-    ${pkgs.ceph}/bin/ceph-authtool \
+    # 2. bootstrap-osd keyring
+    ceph-authtool \
       --create-keyring $out/ceph.client.bootstrap-osd.keyring \
       --gen-key -n client.bootstrap-osd \
       --cap mon 'profile bootstrap-osd'
 
-    ${pkgs.ceph}/bin/ceph-authtool \
+    # 3. mon keyring avec toutes les clés
+    ceph-authtool \
       --create-keyring $out/ceph.mon.keyring \
       --gen-key -n mon. --cap mon 'allow *'
-    ${pkgs.ceph}/bin/ceph-authtool $out/ceph.mon.keyring \
+    ceph-authtool $out/ceph.mon.keyring \
       --import-keyring $out/ceph.client.admin.keyring
-    ${pkgs.ceph}/bin/ceph-authtool $out/ceph.mon.keyring \
+    ceph-authtool $out/ceph.mon.keyring \
       --import-keyring $out/ceph.client.bootstrap-osd.keyring
+
+    # optionnel : créer aussi ceph.conf minimal
+    cat > $out/ceph.conf <<EOF
+[global]
+  fsid = ${fsid}
+  mon initial members = ${monName}
+  mon host = ${monIp}
+  public network = $(echo ${monIp} | cut -d/ -f1-2).0.0/16
+  auth cluster required = cephx
+  auth service required = cephx
+  auth client required = cephx
+EOF
   '';
 }
