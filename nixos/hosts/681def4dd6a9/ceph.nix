@@ -11,9 +11,9 @@
     publicNetworks = [ "192.168.111.0/24" ];
     adminKeyring = ../../secrets/ceph.client.admin.keyring;
     initialMonitors = [
-      { hostname = "jade"; ipAddress = "192.168.111.65"; }
-      { hostname = "ruby"; ipAddress = "192.168.111.64"; }
-      { hostname = "emy";  ipAddress = "192.168.111.63"; }
+      { hostname = "jade"; ipAddress = "192.168.111.63"; }
+      { hostname = "ruby"; ipAddress = "192.168.111.66"; }
+      { hostname = "emy";  ipAddress = "192.168.111.65"; }
     ];
     osdBindAddr = "192.168.111.65";
     osdAdvertisedPublicAddr = "192.168.111.65";
@@ -21,8 +21,8 @@
     monitor = {
       enable = true;
       nodeName = "emy";
-      bindAddr = "192.168.111.63";
-      advertisedPublicAddr = "192.168.111.63";
+      bindAddr = "192.168.111.65";
+      advertisedPublicAddr = "192.168.111.65";
       initialKeyring = ../../secrets/ceph.mon.keyring;
     };
 
