@@ -10,12 +10,26 @@
     fsid = "4b687c5c-5a20-4a77-8774-487989fd0bc7";
     publicNetworks = [ "192.168.111.0/24" ];
     adminKeyring = ../../secrets/ceph.client.admin.keyring;
-    initialMonitors = [ { hostname = "jade"; ipAddress = "192.168.111.63"; } ];
+    initialMonitors = [
+      { hostname = "jade"; ipAddress = "192.168.111.63"; }
+      { hostname = "ruby"; ipAddress = "192.168.111.66"; }
+      { hostname = "emy";  ipAddress = "192.168.111.65"; }
+    ];
     osdBindAddr = "192.168.111.66";
     osdAdvertisedPublicAddr = "192.168.111.66";
+    monitor = {
+      enable = true;
+      nodeName = "ruby";
+      bindAddr = "192.168.111.66";
+      advertisedPublicAddr = "192.168.111.66";
+      initialKeyring = ../../secrets/ceph.mon.keyring;
+    };
 
-    monitor.enable = false;
-    manager.enable = false;
+    manager = {
+      enable = true;
+      nodeName = "ruby";
+    };
+
     mds.enable     = false;
     rgw.enable     = false;
 
