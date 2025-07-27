@@ -13,7 +13,7 @@
     ../../configs/chrony.nix
     ../../modules/keepalived-ha.nix
     ../../configs/docker.nix
-    ../../configs/node-reporter.nix
+    ../../modules/node-reporter.nix
 #    ../../modules/swarm-label-manager.nix
     ../../configs/users.nix
 

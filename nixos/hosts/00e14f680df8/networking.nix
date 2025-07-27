@@ -4,6 +4,7 @@
   networking = {
     hostName = "ruby";
     nameservers = [ "192.168.200.60" ];
+    search = [ "admin.truxonline.com" ];
 
     vlans = {
       vlan200 = {
