@@ -82,7 +82,7 @@
         mkdir -p "$MON_DIR"
         cp /etc/ceph/ceph.mon.keyring "$MON_DIR/keyring"
         chown -R ceph:ceph "$MON_DIR"
-        ceph-mon --mkfs -i emy --public-addr 192.168.111.66 --keyring "$MON_DIR/keyring"
+        ceph-mon --mkfs -i emy --public-addr 192.168.111.65 --keyring "$MON_DIR/keyring"
       fi
     '';
 
@@ -92,4 +92,17 @@
       User = "root";
     };
   };
+
+  systemd.mounts = [{
+    where  = "/data/cephfs";
+    what   = "192.168.111.65:6789:/";
+    type   = "ceph";
+    options = "name=admin,secretfile=/etc/ceph/cephfs-admin.key,_netdev";
+    wantedBy = [ "multi-user.target" ];
+  }];
+
+  systemd.automounts = [{
+    where  = "/data/cephfs";
+    wantedBy = [ "multi-user.target" ];
+  }];
 }
