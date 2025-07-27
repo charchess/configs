@@ -32,10 +32,6 @@ in
         source = "${cephKeys}/ceph.mon.keyring";
       };
 
-      "ceph/ceph.client.bootstrap-osd.keyring" = {
-        source = "${cephKeys}/ceph.client.bootstrap-osd.keyring";
-      };
-
       "ceph/ceph.client.bootstrap-osd.keyring" = {  
         source = "${cephKeys}/ceph.client.bootstrap-osd.keyring;
         mode   = "0600";
