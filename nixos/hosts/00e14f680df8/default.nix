@@ -11,11 +11,12 @@
     ../../configs/nfs-mount.nix
      ./iscsi-connect.nix
     ../../configs/chrony.nix
-    ../../modules/keepalived-ha.nix
+#    ../../modules/keepalived-ha.nix
     ../../configs/docker.nix
     ../../modules/node-reporter.nix
 #    ../../modules/swarm-label-manager.nix
     ../../configs/users.nix
+    ../../configs/dockerswarm-join-or-init.nix
 
    ../../modules/ceph-keyring.nix      # module
     ./ceph-keyring-values.nix           # valeurs
@@ -24,10 +25,10 @@
 
   ];
 
-  services.keepalived-ha = {
-    enable    = true;
-    interface = "vlan200";
-    vip       = "192.168.200.60/24";
-    priority  = 100;
-  };
+#  services.keepalived-ha = {
+#    enable    = true;
+#    interface = "vlan200";
+#    vip       = "192.168.200.60/24";
+#    priority  = 100;
+#  };
 }
