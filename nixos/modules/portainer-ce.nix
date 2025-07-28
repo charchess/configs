@@ -18,7 +18,7 @@ in
 
   config = mkIf cfg.enable {
     virtualisation.docker.enable = true;
-    networking.firewall.allowedTCPPorts = [ 80 443 8000 9443 10443 ];
+    networking.firewall.allowedTCPPorts = [ 80 443 8000 9000 9443 10443 ];
 
     systemd.services.portainer-ce = {
       description = "Portainer CE container";

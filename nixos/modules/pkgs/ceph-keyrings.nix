@@ -1,3 +1,4 @@
+# File: modules/pkgs/ceph-keyrings.nix
 { pkgs, lib, fsid, monName, monIp }:
 
 pkgs.stdenv.mkDerivation {
@@ -17,6 +18,11 @@ pkgs.stdenv.mkDerivation {
       --cap mds 'allow *' \
       --cap mgr 'allow *'
 
+    # NOUVEAU : Extraire la clé admin pure (base64) dans un fichier séparé
+    # L'option secretfile du client Ceph ne veut QUE la clé, pas l'entête ou "key =".
+    ADMIN_KEY_RAW=$(grep "key =" $out/ceph.client.admin.keyring | awk '{print $3}')
+    echo -n "$ADMIN_KEY_RAW" > $out/ceph.client.admin.secret_key
+
     # 2. bootstrap-osd keyring
     ceph-authtool \
       --create-keyring $out/ceph.client.bootstrap-osd.keyring \
@@ -32,10 +38,14 @@ pkgs.stdenv.mkDerivation {
     ceph-authtool $out/ceph.mon.keyring \
       --import-keyring $out/ceph.client.bootstrap-osd.keyring
 
-    # 4. cephfs-admin keyring
+    # 4. cephfs-admin keyring : utilise la clé admin avec des capacités restreintes
+    # Récupérer la clé de l'administrateur (de préférence depuis le keyring complet pour être sûr)
+    ADMIN_KEY_FOR_CEPHFS_ADMIN=$(ceph-authtool $out/ceph.client.admin.keyring --print-key -n client.admin)
+
+    # Créer le keyring cephfs-admin et y ajouter la clé admin pour le client.cephfs-admin
     ceph-authtool \
       --create-keyring $out/ceph.client.cephfs-admin.keyring \
-      --gen-key -n client.cephfs-admin \
+      --add-key "$ADMIN_KEY_FOR_CEPHFS_ADMIN" -n client.cephfs-admin \
       --cap mds 'allow *' \
       --cap osd 'allow *' \
       --cap mon 'allow r'
