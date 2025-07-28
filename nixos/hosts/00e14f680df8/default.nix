@@ -22,8 +22,14 @@
     ./ceph-keyring-values.nix           # valeurs
     ../../modules/ceph-benaco.nix
     ./ceph.nix
-
   ];
+
+  services.docker-swarm = {
+    enable = true;
+    managerAddr = "192.168.111.63";  # Adresse du manager
+    managerUser = "root";                 # Utilisateur pour SSH
+    managerKey = "/root/.ssh/id_rsa";  # Chemin vers la clé SSH du manager
+  };
 
 #  services.keepalived-ha = {
 #    enable    = true;
