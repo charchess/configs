@@ -14,7 +14,7 @@
     ../../configs/chrony.nix
     ../../modules/keepalived-ha.nix
     ../../configs/docker.nix
-    ../../configs/portainer-ce.nix
+    ../../modules/portainer-ce.nix
     ../../configs/dockerswarm-join-or-init.nix
     ../../modules/node-reporter.nix
     ../../modules/swarm-label-manager.nix
@@ -26,7 +26,12 @@
     ./ceph.nix
   ];
 
- services.keepalived-ha = {
+  services.portainer-ce = {
+    enable = true;
+    version = "sts";
+  };
+
+  services.keepalived-ha = {
     enable    = true;
     interface = "vlan200";
     vip       = "192.168.200.60/24";
