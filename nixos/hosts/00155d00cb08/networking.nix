@@ -9,7 +9,7 @@
       eth0.useDHCP = false;
       eth0.ipv4.addresses = [
       {
-        address = "192.168.200.68";
+        address = "192.168.200.99";
         prefixLength = 24;
       }];
     };
