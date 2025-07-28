@@ -30,10 +30,20 @@ in
       after = [ "network-online.target" "docker.service" ];
       requires = [ "docker.service" ];
 
+      # Spécifiez les dépendances du service
+      serviceConfig = {
+        Environment = "PATH=${pkgs.docker}/bin:${pkgs.curl}/bin:${pkgs.gawk}/bin:$PATH";
+      };
       # Le script principal.
       script = ''
         set -e
         
+       # Check if Docker is available
+        if ! command -v docker &> /dev/null; then
+          echo "Docker command not found. Exiting."
+          exit 1
+        fi
+
         # --- VÉRIFICATION DU RÔLE ---
         # C'est la logique la plus importante.
         # 'docker info' nous dit si le nœud est un manager.
