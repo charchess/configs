@@ -6,7 +6,7 @@
   services.ceph-benaco = {
     enable = true;
     clusterName = "ceph";
-    fsid = "4b687c5c-5a20-4a77-8774-487989fd0bc7";
+    fsid = "3541d2bd-2c7e-411c-8f9a-c1a06d79e2c4";
     publicNetworks = [ "192.168.111.0/24" ];
     adminKeyring = ../../secrets/ceph.client.admin.keyring;
     initialMonitors = [
@@ -46,7 +46,7 @@
     osds.jade_osd = {
       enable = true;
       id = 0;
-      uuid = "5d3d44a2-9ab8-4c24-a7f1-aa01dfe66778";
+      uuid = "ac2868e4-f35d-45a1-8400-9154402a0c56";
       blockDevice = "/dev/sdb";
       blockDeviceUdevRuleMatcher = ''KERNEL=="sdb"'';
       bootstrapKeyring = ../../secrets/ceph.client.bootstrap-osd.keyring;

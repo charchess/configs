@@ -20,7 +20,7 @@
     ../../modules/swarm-label-manager.nix
     ../../configs/users.nix
 
-   ../../modules/ceph-keyring.nix      # module
+    ../../modules/ceph-keyring.nix      # module
     ./ceph-keyring-values.nix           # valeurs
     ../../modules/ceph-benaco.nix
     ./ceph.nix

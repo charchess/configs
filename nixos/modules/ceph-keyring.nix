@@ -1,12 +1,18 @@
-# File: modules/ceph-keyring.nix
+# /etc/nixos/modules/ceph-keyring.nix
 { config, lib, pkgs, ... }:
 
 with lib;
 let
   cfg = config.services.ceph-keyring;
-  cephKeys = pkgs.callPackage ./pkgs/ceph-keyrings.nix {
-    inherit (cfg) fsid monName monIp;
-  };
+
+  cephKeys = pkgs.runCommand "ceph-keys" {
+    buildInputs = [ pkgs.ceph ];
+  } ''
+    mkdir -p $out
+    ceph-authtool --create-keyring $out/ceph.client.admin.keyring --gen-key -n client.admin --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
+    ceph-authtool --create-keyring $out/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'
+    ceph-authtool --create-keyring $out/ceph.client.bootstrap-osd.keyring --gen-key -n client.bootstrap-osd --cap mon 'profile bootstrap-osd'
+  '';
 in
 {
   options.services.ceph-keyring = {
@@ -19,30 +25,18 @@ in
   config = mkIf cfg.enable {
     environment.etc = {
       "ceph/ceph.client.admin.keyring" = {
-        source = lib.mkDefault  "${cephKeys}/ceph.client.admin.keyring";
-      };
-
-      # NOUVEAU : Ajout du fichier ne contenant QUE la clé secrète admin
-      "ceph/ceph.client.admin.secret_key" = {
-        source = lib.mkDefault  "${cephKeys}/ceph.client.admin.secret_key";
-        # Assurez-vous que les permissions sont restrictives pour une clé
-        mode = "0400"; # Lecture seule pour le propriétaire (root)
-        user = "root";
-        group = "root";
+        source = lib.mkDefault "${cephKeys}/ceph.client.admin.keyring";
       };
 
       "ceph/ceph.mon.keyring" = {
-        source = lib.mkDefault  "${cephKeys}/ceph.mon.keyring";
+        source = lib.mkDefault "${cephKeys}/ceph.mon.keyring";
       };
 
       "ceph/ceph.client.bootstrap-osd.keyring" = {
         source = lib.mkDefault "${cephKeys}/ceph.client.bootstrap-osd.keyring";
       };
-
-      # Assurez-vous que cette ligne est bien présente pour cephfs-admin
-      "ceph/ceph.client.cephfs-admin.keyring" = {
-        source = lib.mkDefault "${cephKeys}/ceph.client.cephfs-admin.keyring";
-      };
     };
   };
 }
+
+
