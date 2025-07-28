@@ -97,7 +97,7 @@
     where  = "/data/cephfs";
     what   = "192.168.111.65:6789:/";
     type   = "ceph"; 
-    options = "name=admin,secretfile=/etc/ceph/ceph.client.admin.keyring,_netdev";
+    options = "name=admin,secretfile=/etc/ceph/ceph.client.admin.secret_key,_netdev";
     wantedBy = [ "multi-user.target" ];
   }];
 }
