@@ -23,7 +23,7 @@
 #    ../../modules/ceph-keyring.nix      # module
 #    ./ceph-keyring-values.nix           # valeurs
 #    ../../modules/ceph-benaco.nix
-#    ./ceph.nix
+    ./ceph.nix
   ];
 
 services.portainer.enable = true;
