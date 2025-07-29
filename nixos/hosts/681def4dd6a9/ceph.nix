@@ -5,12 +5,16 @@ let
   cephFsid = "3541d2bd-2c7e-411c-8f9a-c1a06d79e2c4";
   cephMonName = "emy";
   cephMonIp = "192.168.111.65"; # Assumer que ce noeud est 'emy'
+  initialAdminKeyFromJade = "AQD7AoloFi/3ChAA3Wo4yqm04NQ12/GGFt4GRw==";
+  initialBootstrapOsdKeyFromJade = "AQD7Aolo/nYyDRAAuj9zzprwnu/yDxAZuDEMtQ==";
 
-  # Générer les keyrings Ceph en tant que package Nix
+
   cephKeyrings = pkgs.callPackage ../../modules/pkgs/ceph-keyrings.nix {
     fsid    = cephFsid;
     monName = cephMonName;
     monIp   = cephMonIp;
+    initialAdminKey = initialAdminKeyFromJade;
+    initialBootstrapOsdKey = initialBootstrapOsdKeyFromJade;
   };
 
 in
@@ -27,7 +31,7 @@ in
   # Activer et configurer le déploiement des keyrings
   services.cephKeyringConfig = {
     enable = true;
-    cephKeyringsPackage = cephKeyrings;
+    cephKeyrings = cephKeyrings; # <-- NOUVEAU NOM DE L'OPTION
   };
 
   services.ceph-benaco = {
