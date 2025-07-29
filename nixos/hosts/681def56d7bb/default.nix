@@ -14,22 +14,22 @@
     ../../configs/chrony.nix
     ../../modules/keepalived-ha.nix
     ../../configs/docker.nix
-    ../../modules/portainer-ce.nix
+    ../../modules/portainer.nix
     ../../configs/dockerswarm-join-or-init.nix
     ../../modules/node-reporter.nix
     ../../modules/swarm-label-manager.nix
     ../../configs/users.nix
 
-    ../../modules/ceph-keyring.nix      # module
-    ./ceph-keyring-values.nix           # valeurs
-    ../../modules/ceph-benaco.nix
-    ./ceph.nix
+#    ../../modules/ceph-keyring.nix      # module
+#    ./ceph-keyring-values.nix           # valeurs
+#    ../../modules/ceph-benaco.nix
+#    ./ceph.nix
   ];
 
-  services.portainer-ce = {
-    enable = true;
-    version = "sts";
-  };
+services.portainer.enable = true;
+  services.portainer.edition = "ce";
+  services.portainer.ceDataDir = "/data/nfs/containers/portainer";
+  services.portainer.version = "sts";
 
   services.keepalived-ha = {
     enable    = true;
