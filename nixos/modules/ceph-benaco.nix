@@ -482,12 +482,12 @@ in
       ${cfg.extraConfig}
     '';
 
-    environment.etc."ceph/ceph.client.admin.keyring" = {
-      source = cfg.adminKeyring;
-      mode = "0600";
-      user = "ceph";
-      group = "ceph";
-    };
+#    environment.etc."ceph/ceph.client.admin.keyring" = {
+#      source = cfg.adminKeyring;
+#      mode = "0600";
+#      user = "ceph";
+#      group = "ceph";
+#    };
 
     users.users.ceph = {
       isNormalUser = false;
