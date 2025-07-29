@@ -71,14 +71,16 @@ in
       port = 3030;
     };
 
-    osds.jade_osd = {
-      enable = true;
-      id = 15;
-      uuid = "51e372e3-f4e6-42c7-9773-1b32df43dd80";
-      blockDevice = "/dev/sdb";
-      blockDeviceUdevRuleMatcher = ''KERNEL=="sdb"'';
-      bootstrapKeyring = "/etc/ceph/ceph.client.bootstrap-osd.keyring"; # Référencer le keyring déployé
-      skipZap = false;
+    osds = {
+      jade_osd = {
+        enable = true;
+        id = 15;
+        uuid = "51e372e3-f4e6-42c7-9773-1b32df43dd80";
+        blockDevice = "/dev/sdb";
+        blockDeviceUdevRuleMatcher = ''KERNEL=="sdb"'';
+        bootstrapKeyring = "/etc/ceph/ceph.client.bootstrap-osd.keyring"; # Référencer le keyring déployé
+        skipZap = false;
+      };
     };
   };
 
