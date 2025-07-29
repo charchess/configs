@@ -17,6 +17,12 @@
     systemd.tmpfiles.rules = [
       "d /etc/ceph 0755 root root" # This creates the directory with correct permissions
       # Optionally, you could also use tmpfiles for keyring permissions if needed, e.g.:
+      "f /etc/ceph/ceph.client.admin.keyring 0600 ceph ceph -"
+      "f /etc/ceph/ceph.client.admin.secret_key 0600 ceph ceph -"
+      "f /etc/ceph/ceph.client.bootstrap-osd.keyring 0600 ceph ceph -"
+      "f /etc/ceph/ceph.mon.keyring 0600 ceph ceph -"
+      "f /etc/ceph/ceph.client.cephfs-admin.keyring 0600 ceph ceph -"
+      "f /etc/ceph/ceph.conf 0644 root root -"
       # "f /etc/ceph/ceph.client.admin.keyring 0600 ceph ceph"
     ];
 
@@ -25,6 +31,7 @@
     environment.etc."ceph/ceph.client.bootstrap-osd.keyring".source = config.services.cephKeyringConfig.cephKeyrings.bootstrapOsdKeyring;
     environment.etc."ceph/ceph.mon.keyring".source = config.services.cephKeyringConfig.cephKeyrings.monKeyring;
     environment.etc."ceph/ceph.client.cephfs-admin.keyring".source = config.services.cephKeyringConfig.cephKeyrings.cephfsAdminKeyring;
+    environment.etc."ceph/ceph.conf".source = lib.mkForce config.services.cephKeyringConfig.cephKeyrings.cephConf;
 
     # Add ceph user and group if they don't exist
     users.users.ceph = {

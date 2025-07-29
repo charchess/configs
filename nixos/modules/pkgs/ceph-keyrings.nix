@@ -6,7 +6,7 @@
 # If initialAdminKey and initialBootstrapOsdKey are NOT provided (null),
 # new keys are generated (backward compatible with single-node setup).
 # If provided, these keys are used instead of generating new ones.
-{ pkgs, lib, fsid, monName, monIp, initialAdminKey ? null, initialBootstrapOsdKey ? null }:
+{ pkgs, lib, fsid, monName, monIp, initialAdminKey ? null, initialBootstrapOsdKey ? null, publicNetwork }:
 
 let
   # The derivation that generates the keyrings
@@ -89,7 +89,7 @@ let
 fsid = ${fsid}
 mon initial members = ${monName}
 mon host = ${monIp}
-public network = $(echo ${monIp} | cut -d/ -f1-2).0.0/16
+public network = ${publicNetwork}
 auth cluster required = cephx
 auth service required = cephx
 auth client required = cephx
