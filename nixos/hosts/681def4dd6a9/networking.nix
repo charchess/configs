@@ -1,6 +1,11 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+imports =
+  [
+    ../../configs/networking.nix
+  ];
+
   networking = {
     hostName = "emy";
     nameservers = [ "192.168.200.60" ];
