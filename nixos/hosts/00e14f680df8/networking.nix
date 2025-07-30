@@ -1,10 +1,14 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+imports =
+  [
+    ../../configs/networking.nix
+  ];
+
   networking = {
     hostName = "ruby";
     nameservers = [ "192.168.200.60" ];
-    search = [ "admin.truxonline.com" ];
 
     vlans = {
       vlan200 = {
@@ -29,11 +33,6 @@
         address = "192.168.111.66";
         prefixLength = 24;
       }];
-    };
-
-    defaultGateway = {
-      address = "192.168.200.1";
-      interface = "vlan200";
     };
   };
 }
