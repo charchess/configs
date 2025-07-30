@@ -20,7 +20,9 @@
     ../../modules/swarm-label-manager.nix
     ../../common/users.nix
 
-    ../../common/sops.nix
+    ./ceph.nix
+
+#    ../../common/sops.nix
   ];
 
 services.portainer.enable = true;
