@@ -82,7 +82,7 @@ in
       jade_osd = {
         enable = true;
         id = 16;
-        uuid = "51e372e3-f4e6-42c7-9773-1b32df43dd80";
+        uuid = "08cd4925-7ea0-4c49-9fed-b884fbfa4af3";
         blockDevice = "/dev/sdb";
         blockDeviceUdevRuleMatcher = ''KERNEL=="sdb"'';
         bootstrapKeyring = "/etc/ceph/ceph.client.bootstrap-osd.keyring"; # Référencer le keyring déployé
@@ -113,4 +113,12 @@ in
 #    where  = "/data/cephfs";
 #    wantedBy = [ "multi-user.target" ];
 #  }];
+
+
+#assertions = [
+#  { assertion = config.services.ceph-benaco.osds.jade_osd.id == 15;
+#    message = "DEBUG: OSD ID for jade_osd is not 15, it's ${toString config.services.ceph-benaco.osds.jade_osd.id}";
+#  }
+#];
+
 }

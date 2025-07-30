@@ -312,6 +312,7 @@ in
         script = ''
           set -euo pipefail
           until [ -f /etc/ceph/ceph.client.admin.keyring ]; do sleep 1; done
+          echo "DEBUG: OSD ID for ${localOsdServiceName} is: ${toString osdConfig.id}" >&2
           OSD_SECRET=$(${cfg.package}/bin/ceph-authtool --gen-print-key)
           echo "{\"cephx_secret\": \"$OSD_SECRET\"}" | \
             ${cfg.package}/bin/ceph osd new ${osdConfig.uuid} ${toString osdConfig.id} -i - \
@@ -538,6 +539,12 @@ in
       ceph-mon-setup = mkIf cfg.monitor.enable {
         description = "Initialize ceph monitor";
         preStart = ensureCephDirs;
+        requires = [ "network-online.target" ];
+        after = [
+          "network-online.target"
+          "local-fs.target"
+          "time-sync.target"
+        ];
         script = let
           monmapNodes = concatStringsSep " " (
             concatMap (mon: [
@@ -547,6 +554,7 @@ in
         in ''
           set -euo pipefail
           rm -rf "${monDir}"
+          mkdir -p "${monDir}"
           echo "Initializing monitor."
           MONMAP_DIR=$(mktemp -d)
           ${cfg.package}/bin/monmaptool --create ${monmapNodes} --fsid ${cfg.fsid} "$MONMAP_DIR/monmap"
@@ -571,6 +579,7 @@ in
           Group = "ceph";
         };
         unitConfig.ConditionPathExists = "!${monDir}/done";
+
       };
 
       ceph-mon = mkIf cfg.monitor.enable {
@@ -583,7 +592,16 @@ in
         ];
         wants = [ "network.target" "local-fs.target" "time-sync.target" ];
         restartTriggers = [ config.environment.etc."ceph/ceph.conf".source ];
-        preStart = ensureTransientCephDirs;
+        preStart = ''
+          ${ensureTransientCephDirs}
+          echo "Waiting for IP address ${cfg.monitor.bindAddr} on public networks ${builtins.concatStringsSep "," cfg.publicNetworks}..." >&2
+          until ${pkgs.iproute2}/bin/ip a show | ${pkgs.gnugrep}/bin/grep -q -E "${builtins.concatStringsSep "|" (map (x: builtins.replaceStrings ["." "/"] ["\\." "\\/"] x) cfg.publicNetworks)}" && \
+                ${pkgs.iproute2}/bin/ip a show | ${pkgs.gnugrep}/bin/grep -q "${cfg.monitor.bindAddr}"; do
+            echo "IP not yet available, waiting 1 second..." >&2
+          sleep 1
+          done
+          echo "IP address ${cfg.monitor.bindAddr} found on public networks." >&2
+        ''; # C'est le preStart d'origine, mais on l'améliore
         serviceConfig = {
           LimitNOFILE = "1048576";
           LimitNPROC = "1048576";
