@@ -1,6 +1,11 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+imports =
+  [
+    ../../configs/networking.nix
+  ];
+
 #  services.resolved.enable = true;
 #  services.resolved.domains = [ "admin.truxonline.com" ];
   networking = {

@@ -48,6 +48,7 @@ in
       { hostname = "ruby"; ipAddress = "192.168.111.66"; }
       { hostname = "emy";  ipAddress = "192.168.111.65"; }
     ];
+
     osdBindAddr          = "192.168.111.63";
     osdAdvertisedPublicAddr = "192.168.111.63";
 

@@ -550,8 +550,16 @@ in
           echo "Initializing monitor."
           MONMAP_DIR=$(mktemp -d)
           ${cfg.package}/bin/monmaptool --create ${monmapNodes} --fsid ${cfg.fsid} "$MONMAP_DIR/monmap"
+          echo "Running ceph-mon --mkfs to initialize ${monDir}..."
           ${cfg.package}/bin/ceph-mon --cluster ${cfg.clusterName} --mkfs \
-            -i ${cfg.monitor.nodeName} --monmap "$MONMAP_DIR/monmap" --keyring ${cfg.monitor.initialKeyring}
+            -i ${cfg.monitor.nodeName} --monmap "$MONMAP_DIR/monmap" --keyring ${cfg.monitor.initialKeyring} --mon-data "${monDir}" # <--- AJOUT CRUCIAL : Spécifie le répertoire de données pour mkfs
+          # Vérifier si le répertoire des données du moniteur a bien été initialisé
+          if [ -z "$(ls -A "${monDir}")" ]; then
+            echo "ERROR: Monitor data directory '${monDir}' is still empty after mkfs! Setup failed." >&2
+            exit 1 # Faire échouer le service de setup si le répertoire est vide
+          else
+            echo "Monitor data directory '${monDir}' initialized successfully by mkfs."
+          fi
           rm -r "$MONMAP_DIR"
           touch ${monDir}/done
         '';

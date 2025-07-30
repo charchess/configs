@@ -71,6 +71,7 @@
     openiscsi
     python3
     sudo
+    gptfdisk
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
