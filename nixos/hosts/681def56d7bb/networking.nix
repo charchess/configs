@@ -6,11 +6,8 @@ imports =
     ../../configs/networking.nix
   ];
 
-#  services.resolved.enable = true;
-#  services.resolved.domains = [ "admin.truxonline.com" ];
   networking = {
     hostName = "jade";
-    nameservers = [ "192.168.200.60" ];
 
     vlans = {
       vlan200 = {
