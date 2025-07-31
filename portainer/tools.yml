@@ -164,36 +164,34 @@ services:
 #      start_period: 30s
 
 
-  vscode:
-    image: lscr.io/linuxserver/code-server:latest
-    container_name: vscode
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == worker
-          - node.labels.disk.feature.nfs == true
-      labels:
-        - "traefik.enable=true"
-        - "traefik.docker.network=tools_network"
-        - "traefik.http.routers.vscode.rule=Host(`code.truxonline.com`)"
-        - "traefik.http.routers.vscode.entrypoints=internal-secure"
-        - "traefik.http.routers.vscode.tls=true"
-        - "traefik.http.routers.vscode.tls.certresolver=gandi"
-        - "traefik.http.services.vscode.loadbalancer.server.port=8443"
-    environment:
-      - PUID=0
-      - PGID=0
-      - TZ=Europe/Paris
-      - PASSWORD=devpwd
-      - SUDO_PASSWORD=rootpwd
-      - DEFAULT_WORKSPACE=/workspace
-    volumes:
-      - /data/nfs/containers/tools/vscode:/workspace
-    networks:
-      - tools_network
-
+coding-factory:
+  image: codercom/code-server:latest
+  container_name: vscode
+  user: "0:0"                       # root si besoin
+  deploy:
+    mode: replicated
+    replicas: 1
+    placement:
+      constraints:
+        - node.role == worker
+        - node.labels.disk.feature.nfs == true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=tools_network"
+      - "traefik.http.routers.vscode.rule=Host(`code.truxonline.com`)"
+      - "traefik.http.routers.vscode.entrypoints=internal-secure"
+      - "traefik.http.routers.vscode.tls=true"
+      - "traefik.http.routers.vscode.tls.certresolver=gandi"
+      - "traefik.http.services.vscode.loadbalancer.server.port=8080"
+  environment:
+    - TZ=Europe/Paris
+    - PASSWORD=devpwd
+    - SUDO_PASSWORD=rootpwd
+    - DEFAULT_WORKSPACE=/workspace
+  volumes:
+    - /data/nfs/containers/tools/vscode:/workspace:rw
+  networks:
+    - tools_network
 
 #  openproject: # Maintenu commenté comme dans ta version
 #    image: openproject/openproject:14
