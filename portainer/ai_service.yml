@@ -106,7 +106,7 @@ services:
     command: >
       sh -c "pip install uvicorn fastapi crewai[tools] &&
              python -m crewai serve --host 0.0.0.0 --port 8000"
-    environment:
+#    environment:
 #      - OPENAI_API_KEY=${OPENAI_API_KEY}
 #      - GEMINI_API_KEY=${GEMINI_API_KEY}
     volumes:
