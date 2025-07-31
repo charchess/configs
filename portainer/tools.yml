@@ -168,19 +168,14 @@ services:
     image: lscr.io/linuxserver/code-server:latest
     container_name: vscode
     deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.hostname == jade
-      restart_policy:
-        condition: unless-stopped
-    deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
           - node.role == worker
           - node.labels.disk.feature.nfs == true
+      restart_policy:
+        condition: unless-stopped
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
