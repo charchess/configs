@@ -84,16 +84,16 @@ let
         --cap mon 'allow r'
 
       # --- 5. Minimal ceph.conf ---
-      cat > $out/keyrings/ceph.conf <<EOF
-[global]
-fsid = ${fsid}
-mon initial members = ${monName}
-mon host = ${monIp}
-public network = ${publicNetwork}
-auth cluster required = cephx
-auth service required = cephx
-auth client required = cephx
-EOF
+#      cat > $out/keyrings/ceph.conf <<EOF
+#[global]
+#fsid = ${fsid}
+#mon initial members = ${monName}
+#mon host = ${monIp}
+#public network = ${publicNetwork}
+#auth cluster required = cephx
+#auth service required = cephx
+#auth client required = cephx
+#EOF
     '';
   };
 in

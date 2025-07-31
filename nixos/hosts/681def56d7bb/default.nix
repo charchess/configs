@@ -8,26 +8,25 @@
   imports =
   [
     ./networking.nix
-    ../../configs/firewall.nix
-    ../../configs/nfs-mount.nix
+    ../../common/firewall.nix
+    ../../common/nfs-mount.nix
     ./iscsi-connect.nix
-    ../../configs/chrony.nix
+    ../../common/chrony.nix
     ../../modules/keepalived-ha.nix
-    ../../configs/docker.nix
+    ../../common/docker.nix
     ../../modules/portainer.nix
-    ../../configs/dockerswarm-join-or-init.nix
+    ../../common/dockerswarm-join-or-init.nix
     ../../modules/node-reporter.nix
     ../../modules/swarm-label-manager.nix
-    ../../configs/users.nix
+    ../../common/users.nix
 
-#    ../../modules/ceph-keyring.nix      # module
-#    ./ceph-keyring-values.nix           # valeurs
-#    ../../modules/ceph-benaco.nix
     ./ceph.nix
+
+#    ../../common/sops.nix
   ];
 
 services.portainer.enable = true;
-  services.portainer.edition = "ce";
+  services.portainer.edition = "ee";
   services.portainer.ceDataDir = "/data/nfs/containers/portainer";
   services.portainer.version = "sts";
 

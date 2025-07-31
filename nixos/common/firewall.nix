@@ -8,7 +8,7 @@
   networking = {
     firewall = {
       # Autoriser les connexions entrantes sur les ports spécifiés
-      allowedTCPPorts = [ 22 53 80 443 9000 9443 10443 ];
+      allowedTCPPorts = [ 22 53 80 443 8000 9000 9443 10443 ];
       allowedUDPPorts = [ 53 112 ];
     };
   };
