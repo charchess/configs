@@ -100,6 +100,36 @@ services:
         gelf-address: "udp://192.168.201.66:12201"
         tag: "embedding/{{.Name}}/{{.ID}}"
         
+  crewai:
+    image: crewai/crewai:latest
+    container_name: crewai
+    command: >
+      sh -c "pip install uvicorn fastapi crewai[tools] &&
+             python -m crewai serve --host 0.0.0.0 --port 8000"
+    environment:
+#      - OPENAI_API_KEY=${OPENAI_API_KEY}
+#      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - /data/nfs/containers/ai_services/crewai/workspace:/workspace
+    networks:
+      - ai_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      # La section 'placement:' a été supprimée.
+      placement:
+        constraints:
+          - node.role == worker
+          - node.labels.disk.feature.nfs == true
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=ai_network"
+        - "traefik.http.routers.crewai.rule=Host(`crewai.truxonline.com`)"
+        - "traefik.http.routers.crewai.entrypoints=internal-secure"
+        - "traefik.http.routers.crewai.tls=true"
+        - "traefik.http.routers.crewai.tls.certresolver=gandi"
+        - "traefik.http.services.crewai.loadbalancer.server.port=8000"
+
   sillytavern-gemini:
 #    image: goolashe/sillytavern:latest # Nouvelle image SillyTavern
     image: ghcr.io/sillytavern/sillytavern:latest
