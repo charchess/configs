@@ -174,8 +174,6 @@ services:
         constraints:
           - node.role == worker
           - node.labels.disk.feature.nfs == true
-      restart_policy:
-        condition: unless-stopped
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=tools_network"
