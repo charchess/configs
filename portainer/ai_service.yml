@@ -102,11 +102,22 @@ services:
         
   crewai:
     image: python:3.11-slim
-    command: tail -f /dev/null   # keep-alive
+    command: >
+      sh -c "
+        pip install --upgrade pip &&
+        pip install crewai crewai-tools &&
+        if [ ! -d \"$CREW_NAME\" ]; then
+          crewai create crew $CREW_NAME &&
+          echo '✅ Projet $CREW_NAME créé';
+        fi &&
+        cd $CREW_NAME &&
+        crewai run
+      "
     working_dir: /workspace
     environment:
       OPENAI_API_KEY:  ${OPENAI_API_KEY}
       GEMINI_API_KEY:  ${GEMINI_API_KEY}
+      CREW_NAME: "vixen_crew"
     volumes:
       - /data/nfs/containers/ai_services/crewai/workspace:/workspace
     deploy:
