@@ -105,10 +105,9 @@ services:
     command: >
       sh -c "
         pip install --upgrade pip crewai crewai-tools --root-user-action=ignore &&
-        cd dev_factory 2>/dev/null || exit 1 &&
         crewai run
       "
-    working_dir: /workspace
+    working_dir: /workspace/dev_factory
     environment:
       OPENAI_API_KEY:  ${OPENAI_API_KEY}
       GEMINI_API_KEY:  ${GEMINI_API_KEY}
