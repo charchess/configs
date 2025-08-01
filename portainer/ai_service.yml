@@ -102,9 +102,6 @@ services:
         
   crewai:
     image: sageil/crewai:latest
-    volumes:
-      # votre workspace partagé
-      - /data/nfs/containers/crewai/workspace:/workspace
     environment:
       - P=workspace
     working_dir: /workspace
