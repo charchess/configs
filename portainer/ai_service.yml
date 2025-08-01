@@ -101,14 +101,16 @@ services:
         tag: "embedding/{{.Name}}/{{.ID}}"
         
   crewai:
-    image: sageil/crewai:latest
-    environment:
-      - P=workspace
-    working_dir: /workspace
-    tty: true 
-    stdin_open: true
+  crewai:
+    image: python:3.11-slim
+    container_name: crewai
     volumes:
       - /data/nfs/containers/ai_services/crewai/workspace:/workspace
+    working_dir: /workspace
+    environment:
+      OPENAI_API_KEY:  ${OPENAI_API_KEY}
+      GEMINI_API_KEY:  ${GEMINI_API_KEY}
+    command: tail -f /dev/null   # keep-alive
     networks:
       - ai_network
     deploy:
