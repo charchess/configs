@@ -106,11 +106,11 @@ services:
       sh -c "
         pip install --upgrade pip &&
         pip install crewai crewai-tools &&
-        if [ ! -d \"$CREW_NAME\" ]; then
-          crewai create crew \"$CREW_NAME\" &&
-          echo \"✅ Projet $CREW_NAME créé\";
+        if [ ! -d \"factory_demo\" ]; then
+          crewai create crew dev_factory &&
+          echo '✅ Projet factory_demo créé';
         fi &&
-        cd \"$CREW_NAME\" &&
+        cd factory_demo &&
         crewai run
       "
     working_dir: /workspace
