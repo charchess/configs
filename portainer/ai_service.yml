@@ -101,18 +101,14 @@ services:
         tag: "embedding/{{.Name}}/{{.ID}}"
         
   crewai:
-  crewai:
     image: python:3.11-slim
-    container_name: crewai
-    volumes:
-      - /data/nfs/containers/ai_services/crewai/workspace:/workspace
+    command: tail -f /dev/null   # keep-alive
     working_dir: /workspace
     environment:
       OPENAI_API_KEY:  ${OPENAI_API_KEY}
       GEMINI_API_KEY:  ${GEMINI_API_KEY}
-    command: tail -f /dev/null   # keep-alive
-    networks:
-      - ai_network
+    volumes:
+      - /data/nfs/containers/ai_services/crewai/workspace:/workspace
     deploy:
       mode: replicated
       replicas: 1
@@ -121,6 +117,8 @@ services:
         constraints:
           - node.role == worker
           - node.labels.disk.feature.nfs == true
+    networks:
+      - ai_network
 
   sillytavern-gemini:
 #    image: goolashe/sillytavern:latest # Nouvelle image SillyTavern
