@@ -107,7 +107,7 @@ services:
         pip install --upgrade pip &&
         pip install crewai crewai-tools &&
         if [ ! -d \"factory_demo\" ]; then
-          crewai create crew dev_factory --provider openai --skip-provider &&
+          crewai create crew dev_factory --provider openai --skip_provider &&
           echo '✅ Projet factory_demo créé';
         fi &&
         cd factory_demo &&
