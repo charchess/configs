@@ -101,7 +101,7 @@ services:
         tag: "embedding/{{.Name}}/{{.ID}}"
         
   crewai:
-    image: crewai/crewai:latest
+    image: seemai/crewai:latest
     container_name: crewai
     command: >
       sh -c "pip install uvicorn fastapi crewai[tools] &&
