@@ -107,10 +107,10 @@ services:
         pip install --upgrade pip &&
         pip install crewai crewai-tools &&
         if [ ! -d \"$CREW_NAME\" ]; then
-          crewai create crew $CREW_NAME &&
-          echo '✅ Projet $CREW_NAME créé';
+          crewai create crew \"$CREW_NAME\" &&
+          echo \"✅ Projet $CREW_NAME créé\";
         fi &&
-        cd $CREW_NAME &&
+        cd \"$CREW_NAME\" &&
         crewai run
       "
     working_dir: /workspace
