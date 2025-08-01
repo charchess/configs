@@ -105,7 +105,7 @@ services:
     environment:
       - P=workspace
     working_dir: /workspace
-    ttyep: true 
+    tty: true 
     stdin_open: true
     volumes:
       - /data/nfs/containers/ai_services/crewai/workspace:/workspace
