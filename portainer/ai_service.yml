@@ -102,12 +102,14 @@ services:
         
   crewai:
     image: sageil/crewai:latest
-    container_name: crewai
     volumes:
       # votre workspace partagé
       - /data/nfs/containers/crewai/workspace:/workspace
     environment:
       - P=workspace
+    working_dir: /workspace
+    ttyep: true 
+    stdin_open: true
     volumes:
       - /data/nfs/containers/ai_services/crewai/workspace:/workspace
     networks:
