@@ -100,6 +100,31 @@ services:
         gelf-address: "udp://192.168.201.66:12201"
         tag: "embedding/{{.Name}}/{{.ID}}"
         
+  crewai:
+    image: python:3.11-slim
+    command: >
+      sh -c "
+        pip install --upgrade pip crewai crewai-tools --root-user-action=ignore &&
+        crewai run
+      "
+    working_dir: /workspace/dev_factory
+    environment:
+      OPENAI_API_KEY:  ${OPENAI_API_KEY}
+      GEMINI_API_KEY:  ${GEMINI_API_KEY}
+      CREW_NAME: "vixen_crew"
+    volumes:
+      - /data/nfs/containers/ai_services/crewai/workspace:/workspace
+    deploy:
+      mode: replicated
+      replicas: 1
+      # La section 'placement:' a été supprimée.
+      placement:
+        constraints:
+          - node.role == worker
+          - node.labels.disk.feature.nfs == true
+    networks:
+      - ai_network
+
   sillytavern-gemini:
 #    image: goolashe/sillytavern:latest # Nouvelle image SillyTavern
     image: ghcr.io/sillytavern/sillytavern:latest
