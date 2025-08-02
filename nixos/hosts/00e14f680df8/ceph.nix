@@ -1,25 +1,18 @@
-{ config, lib, ... }:
+{ config, pkgs, ... }:
 
-let
-  clusterConfig = import ../../common/ceph/cluster-config.nix { inherit lib; };
-in {
+{
   imports = [
-    ../../modules/ceph
+    ../../common/ceph-base.nix
+    ../../common/ceph-network.nix
+    ../../common/ceph-firewall.nix
+    ../../modules/ceph-mon-join.nix
+    ../../modules/ceph-osd.nix
   ];
 
-  services.ceph-custom = {
-    enable = true;
-
-    inherit (clusterConfig.cephCluster) nodes;
-
-    thisNode = "ruby";
-
-    publicNetwork = "192.168.111.0/24";
-    clusterNetwork = "192.168.111.0/24";
-
-    # Activer le mode bootstrap pour le premier déploiement
-    bootstrapSingleNode = true;
+  services.cephExtra = {
+    disk = "/dev/sdc";
+    osdId = 2;
+    monId = "ruby";
+    monAddr = "192.168.111.66";
   };
 }
-
-
