@@ -1,18 +1,23 @@
-{ config, pkgs, ... }:
+{ config, lib, ... }:
 
-{
+let
+  clusterConfig = import ../../common/ceph/cluster-config.nix { inherit lib; };
+in {
   imports = [
-    ../../common/ceph-base.nix
-    ../../common/ceph-network.nix
-    ../../common/ceph-firewall.nix
-    ../../modules/ceph-mon-join.nix
-    ../../modules/ceph-osd.nix
+    ../../modules/ceph
   ];
 
-  services.cephExtra = {
-    disk = "/dev/sda";
-    osdId = 1;
-    monId = "emy";
-    monAddr = "192.168.111.65";
+  services.ceph-custom = {
+    enable = true;
+
+    inherit (clusterConfig.cephCluster) nodes;
+
+    thisNode = "emy";
+
+    publicNetwork = "192.168.111.0/24";
+    clusterNetwork = "192.168.111.0/24";
+
+    # Activer le mode bootstrap pour le premier déploiement
+    bootstrapSingleNode = true;
   };
 }
