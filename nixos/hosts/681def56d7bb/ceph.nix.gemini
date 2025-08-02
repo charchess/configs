@@ -5,14 +5,15 @@
     ../../common/ceph-base.nix
     ../../common/ceph-network.nix
     ../../common/ceph-firewall.nix
-    ../../modules/ceph-mon-join.nix
+    ../../modules/ceph-mon-bootstrap.nix
     ../../modules/ceph-osd.nix
   ];
 
+  # Paramètres spécifiques à jade
   services.cephExtra = {
-    disk = "/dev/sdc";
-    osdId = 2;
-    monId = "ruby";
-    monAddr = "192.168.111.66";
+    disk = "/dev/sdb";
+    osdId = 0;
+    monId = "jade";
+    monAddr = "192.168.111.63";
   };
 }

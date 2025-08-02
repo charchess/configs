@@ -19,11 +19,11 @@ in
       description = "Choisissez entre Portainer CE (Community Edition) et EE (Enterprise Edition).";
     };
 
-    ceDataDir = mkOption {
+      DataDir = mkOption {
       type = types.str;
-      default = "/var/lib/portainer-ce-data";
+      default = "/var/lib/portainer-data";
       description = "Emplacement du dossier de données pour Portainer CE.";
-      defaultText = literalExpression "/var/lib/portainer-ce-data";
+      defaultText = literalExpression "/var/lib/portainer-data";
     };
 
     version = mkOption {
@@ -47,13 +47,14 @@ in
         RemainAfterExit = true;
         ExecStart = let
           image = if cfg.edition == "ce" then "portainer/portainer-ce" else "portainer/portainer-ee";
-          dataDirArg = if cfg.edition == "ce" then "-v ${cfg.ceDataDir}:/data" else "";
+          dataDirArg = "-v ${cfg.DataDir}:/data";
         in
           ''${pkgs.docker}/bin/docker run \
             -d \
             --name portainer \
             --restart unless-stopped \
             -p 8000:8000 \
+	    -p 9000:9000 \
             -p 9443:9443 \
             -v /var/run/docker.sock:/var/run/docker.sock \
             ${dataDirArg} \

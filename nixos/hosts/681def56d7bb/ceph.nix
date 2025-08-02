@@ -1,35 +1,23 @@
-{ config, pkgs, ... }:
+{ config, lib, ... }:
 
-{
+let
+  clusterConfig = import ../../common/ceph/cluster-config.nix { inherit lib; };
+in {
   imports = [
-    ../../common/ceph-base.nix
-    ../../common/ceph-network.nix
-    ../../common/ceph-firewall.nix
-    ../../modules/ceph-mon.nix
-    ../../modules/ceph-osd.nix
+    ../../modules/ceph
   ];
 
-  # Configuration Ceph spécifique à jade
-  services.ceph = {
-    osd = {
-      enable = true;
-      # OSD 0 sur /dev/sdb
-      daemons = [ "0" ];
-      extraConfig = {
-        "osd.0.devs" = "/dev/sdb";
-      };
-    };
-  };
-
-  # Préparation du disque OSD
-  systemd.services.prepare-ceph-osd-jade = {
-    description = "Prepare Ceph OSD disk on jade";
-    wantedBy = [ "multi-user.target" ];
-    before = [ "ceph-osd@0.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.bash}/bin/bash -c 'wipefs -a /dev/sdb || true'";
-    };
+  services.ceph-custom = {
+    enable = true;
+    
+    inherit (clusterConfig.cephCluster) nodes;
+    
+    thisNode = "jade";
+    
+    publicNetwork = "192.168.111.0/24";
+    clusterNetwork = "192.168.111.0/24";
+    
+    # Activer le mode bootstrap pour le premier déploiement
+    bootstrapSingleNode = true;
   };
 }
