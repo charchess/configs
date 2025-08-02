@@ -13,6 +13,9 @@
 # Fichiers compilés
 *.pyc
 
+# systeme de fichiers cachés
+.*
+
 # Dépendances (exemple si vous aviez un projet Node.js)
 /node_modules/
 current
