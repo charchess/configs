@@ -71,7 +71,7 @@
     python3
     sudo
     gptfdisk
-    google-gemini-cli
+    gemini-cli
     sops
     age
   ];
