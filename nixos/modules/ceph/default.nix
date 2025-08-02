@@ -154,6 +154,8 @@ in {
     # Packages requis
     environment.systemPackages = with pkgs; [
       ceph
+      sops
+      nix
     ];
 
     # Répertoires nécessaires
