@@ -3,17 +3,18 @@
 let
   clusterConfig = import ../../common/ceph/cluster-config.nix { inherit lib; };
 in {
-  imports = [ 
-    ../../modules/ceph
-  ];
+  imports = [ ../../modules/ceph ];
 
   services.ceph-custom = {
     enable = true;
+    thisNode = "681def56d7bb";
+    
     nodes.${config.services.ceph-custom.thisNode} = {
       hostname = "jade";
       address = clusterConfig.cephCluster.nodes.${config.services.ceph-custom.thisNode}.address;
       roles = ["mon" "mgr"];
     };
+    
     publicNetwork = "192.168.111.0/24";
     clusterNetwork = "192.168.111.0/24";
     bootstrapSingleNode = false;
