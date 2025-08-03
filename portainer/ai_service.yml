@@ -36,9 +36,9 @@ services:
         constraints:
           - node.role == worker
           - disk.feature.nfs == true
-      resources:
-        limits:
-          memory: 1g
+#      resources:
+#        limits:
+#          memory: 1g
 
   tts:
     image: mytts:latest

@@ -29,11 +29,11 @@ services:
         constraints:
           - node.role == worker
           - disk.feature.nfs == true
-      resources:
-        limits:
-          memory: 1g
-        reservations:
-          memory: 512M
+#      resources:
+#        limits:
+#          memory: 1g
+#        reservations:
+#          memory: 512M
 
   bitwarden: # Vaultwarden
     image: docker.io/vaultwarden/server:latest
