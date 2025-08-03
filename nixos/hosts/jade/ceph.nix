@@ -17,7 +17,7 @@ in {
     };
     publicNetwork = "192.168.111.0/24";
     clusterNetwork = "192.168.111.0/24";
-    bootstrapSingleNode = false;
+    bootstrapSingleNode = true;
   };
 
   sops.secrets."ceph/jade-keyring" = {
