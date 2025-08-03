@@ -73,7 +73,7 @@ services:
       - TZ=Etc/UTC
       - WHISPER_MODEL=base
     volumes:
-      - /data/nfs/containers/ai_services_mytts:/config
+      - /data/nfs/containers/ai_services/mytts/config:/config
     deploy:
       replicas: 1
       mode: replicated
