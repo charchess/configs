@@ -50,7 +50,7 @@ services:
       - TZ=Etc/UTC
       - WHISPER_MODEL=base        # ou tiny, small, medium...
     volumes:
-      - /data/nfs/containers/ai_services_stt:/config
+      - /data/nfs/containers/ai_services/mystt:/config
     deploy:
       replicas: 1
       mode: replicated
