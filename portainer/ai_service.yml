@@ -40,28 +40,6 @@ services:
 #        limits:
 #          memory: 1g
 
-  tts:
-    image: charchess/mytts:latest
-    networks:
-      - ai_network
-      - databases_network  # Accès aux bases de données
-    deploy:
-      replicas: 1
-      mode: replicated
-      labels:
-        - "com.docker.portainer.stack=ai_services"
-        - "traefik.enable=true"
-        - "traefik.http.routers.tts.rule=Host(`tts.truxonline.com`)"
-        - "traefik.http.routers.tts.tls=true"
-        - "traefik.http.routers.tts.tls.certresolver=gandi"
-        - "traefik.docker.network=ai_network"
-      placement:
-        constraints:
-          - node.role == worker
-      resources:
-        limits:
-          memory: 512m
-
   stt:
     image: charchess/mystt:latest
     networks:
