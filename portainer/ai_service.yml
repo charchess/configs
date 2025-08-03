@@ -32,10 +32,10 @@ services:
         - "traefik.http.routers.crew.tls=true"
         - "traefik.http.routers.crew.tls.certresolver=gandi"
         - "traefik.docker.network=ai_network"
-      placement:
-        constraints:
-          - node.role == worker
-          - disk.feature.nfs == true
+#      placement:
+#        constraints:
+#          - node.role == worker
+#          - disk.feature.nfs == true
 #      resources:
 #        limits:
 #          memory: 1g
