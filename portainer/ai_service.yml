@@ -41,10 +41,16 @@ services:
 #          memory: 1g
 
   stt:
-    image: charchess/mystt:latest
+    image: charchess/stt:latest
     networks:
       - ai_network
-      - databases_network  # Accès aux bases de données
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WHISPER_MODEL=base        # ou tiny, small, medium...
+    volumes:
+      - /data/nfs/containers/ai_services_stt:/config
     deploy:
       replicas: 1
       mode: replicated
@@ -54,14 +60,12 @@ services:
         - "traefik.http.routers.stt.rule=Host(`stt.truxonline.com`)"
         - "traefik.http.routers.stt.tls=true"
         - "traefik.http.routers.stt.tls.certresolver=gandi"
+        - "traefik.http.services.stt.loadbalancer.server.port=10300"
         - "traefik.docker.network=ai_network"
       placement:
         constraints:
           - node.role == worker
-      resources:
-        limits:
-          memory: 512m
-
+          - disk.feature.nfs == true
 
   tts:
     image: lscr.io/linuxserver/faster-whisper:latest
