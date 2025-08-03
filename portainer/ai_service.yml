@@ -85,7 +85,31 @@ services:
           memory: 512m
 
 
-
+  tts:
+    image: lscr.io/linuxserver/faster-whisper:latest
+    networks:
+      - ai_network
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WHISPER_MODEL=base
+    volumes:
+      - /data/nfs/containers/ai_services_mytts:/config
+    deploy:
+      replicas: 1
+      mode: replicated
+      labels:
+        - "com.docker.portainer.stack=ai_services"
+        - "traefik.enable=true"
+        - "traefik.http.routers.tts.rule=Host(`tts.truxonline.com`)"
+        - "traefik.http.routers.tts.tls=true"
+        - "traefik.http.routers.tts.tls.certresolver=gandi"
+        - "traefik.http.services.tts.loadbalancer.server.port=10300"
+        - "traefik.docker.network=ai_network"
+      placement:
+        constraints:
+          - node.role == worker
 
   chat-ui:
     image: nginx:alpine
