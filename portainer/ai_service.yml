@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   crew:
-    image: mycrew:latest
+    image: charchess/mycrew:latest
     networks:
       - ai_network
       - logs_network
@@ -41,7 +41,7 @@ services:
 #          memory: 1g
 
   tts:
-    image: mytts:latest
+    image: charchess/mytts:latest
     networks:
       - ai_network
       - databases_network  # Accès aux bases de données
@@ -63,7 +63,7 @@ services:
           memory: 512m
 
   stt:
-    image: mystt:latest
+    image: charchess/mystt:latest
     networks:
       - ai_network
       - databases_network  # Accès aux bases de données
