@@ -248,7 +248,7 @@ configs:
 secrets:
   JWT_SECRET:
     external: true
-  NEO4J_SWARMAIPASSWORD:
+  NEO4J_SWARMAI_PASSWORD:
     external: true
   NEO4J_SWARMAI_USER:
     external: true
