@@ -6,11 +6,10 @@
 
 {
   imports =
-  [ 
-  ]  
+  [
+  ]
   ++ lib.optionals (builtins.pathExists ./hosts/current/hardware-configuration.nix) [ ./hosts/current/hardware-configuration.nix ]
   ++ lib.optionals (builtins.pathExists ./hosts/current/default.nix) [ ./hosts/current/default.nix ];
-
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -72,6 +71,9 @@
     python3
     sudo
     gptfdisk
+    gemini-cli
+    sops
+    age
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

@@ -1,0 +1,88 @@
+{ config, pkgs, lib, ... }:
+
+with lib;
+
+let
+  fsid = "d3611e34-d36a-45f8-9f86-0f10e5aefb5b";
+  hostname = config.networking.hostName;
+  cfg = config.services.cephExtra;
+ systemd.tmpfiles.rules = [
+    "d /var/log/ceph 0755 ceph ceph -"
+  ];
+in
+{
+  imports = [ ./ceph-options.nix ];
+  config = mkIf (hostname == "jade") {
+    systemd.services.ceph-mon-bootstrap = {
+      description = "Bootstrap Ceph monitor";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "ceph";
+        Group = "ceph";
+        ExecStart = "${pkgs.writeShellScript "ceph-mon-bootstrap" ''
+          set -e
+          if [ ! -d /var/lib/ceph/mon/ceph-${hostname} ]; then
+            ${pkgs.ceph}/bin/monmaptool --create --add ${hostname} ${cfg.monAddr} --fsid ${fsid} /tmp/monmap
+            ${pkgs.ceph}/bin/ceph-mon --mkfs -i ${hostname} --monmap /tmp/monmap --keyring /dev/null
+            ${pkgs.ceph}/bin/ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring \
+              --gen-key -n client.admin \
+              --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
+            chown ceph:ceph /etc/ceph/ceph.client.admin.keyring
+          fi
+        ''}";
+      };
+    };
+
+    systemd.services.ceph-mon = {
+      description = "Ceph Monitor";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "ceph-mon-bootstrap.service" ];
+      requires = [ "ceph-mon-bootstrap.service" ];
+      serviceConfig = {
+        Type = "simple";
+        User = "ceph";
+        Group = "ceph";
+        ExecStart = "${pkgs.ceph}/bin/ceph-mon -i ${hostname} --public-addr ${cfg.monAddr}";
+        Restart = "always";
+      };
+    };
+
+ systemd.services.ceph-keyring = {
+    description = "Generate ceph.client.admin.keyring";
+    wantedBy = [ "ceph-mon.service" ];
+    before = [ "ceph-mon.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = "ceph";
+      Group = "ceph";
+      ExecStart = ''
+        ${pkgs.writeShellScript "ceph-keyring-setup" ''
+          set -e
+          if [ ! -f /etc/ceph/ceph.client.admin.keyring ]; then
+            ${pkgs.ceph}/bin/ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring \
+              --gen-key -n client.admin \
+              --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
+            ${pkgs.ceph}/bin/ceph-mon -i ${hostname} --inject-keyring /etc/ceph/ceph.client.admin.keyring
+          fi
+        ''}
+      '';
+    };
+  };
+
+    environment.etc."ceph/ceph.conf".text = ''
+      [global]
+      fsid = ${fsid}
+      mon initial members = jade,emy,ruby
+      mon host = 192.168.111.63,192.168.111.65,192.168.111.66
+      public network = 192.168.111.0/24
+      cluster network = 192.168.111.0/24
+      auth cluster required = cephx
+      auth service required = cephx
+      auth client required = cephx
+    '';
+  };
+
+}

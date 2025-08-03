@@ -1,0 +1,39 @@
+{ config, pkgs, lib, ... }:
+
+let
+  hostname = config.networking.hostName;
+  monAddr = config.networking.interfaces.enp0s3.ipv4.addresses.0.address;
+in
+{
+  imports = [ ./ceph-options.nix ];
+  systemd.services.ceph-mon-join = {
+    description = "Join Ceph monitor";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      User = "ceph";
+      Group = "ceph";
+      ExecStart = "${pkgs.writeShellScript "ceph-mon-join" ''
+        set -e
+        if [ ! -d /var/lib/ceph/mon/ceph-${hostname} ]; then
+          ${pkgs.ceph}/bin/ceph-mon --mkfs -i ${hostname} --monmap /tmp/monmap --keyring /dev/null
+        fi
+      ''}";
+    };
+  };
+
+  systemd.services.ceph-mon = {
+    description = "Ceph Monitor";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "ceph-mon-join.service" ];
+    requires = [ "ceph-mon-join.service" ];
+    serviceConfig = {
+      Type = "simple";
+      User = "ceph";
+      Group = "ceph";
+      ExecStart = "${pkgs.ceph}/bin/ceph-mon -i ${hostname} --public-addr ${monAddr}";
+      Restart = "always";
+    };
+  };
+}

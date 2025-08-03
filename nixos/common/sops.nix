@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
-  ageKeyFile = "/var/lib/sops-nix/key.txt";
+#  ageKeyFile = "/var/lib/sops-nix/key.txt";
+  ageKeyFile = "/etc/nixos/secrets/keys/age-keys.txt";
 in
 {
   imports = [

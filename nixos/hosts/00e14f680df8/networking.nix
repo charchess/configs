@@ -3,7 +3,7 @@
 {
 imports =
   [
-    ../../configs/networking.nix
+    ../../common/networking.nix
   ];
 
   networking = {

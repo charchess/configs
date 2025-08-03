@@ -1,0 +1,12 @@
+{ config, lib, ... }:
+
+with lib;
+
+{
+  options.services.cephExtra = {
+    monId   = mkOption { type = types.str;  default = ""; };
+    monAddr = mkOption { type = types.str;  default = ""; };
+    disk    = mkOption { type = types.str;  default = ""; };
+    osdId   = mkOption { type = types.int;  default = 0; };
+  };
+}
