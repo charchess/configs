@@ -2,6 +2,39 @@
 version: '3.8'
 
 services:
+
+  wekan:
+    image: wekanteam/wekan:latest
+    networks:
+      - tools_network
+      - databases_network # Pour accéder à la base de données (si Vaultwarden utilise une DB externe à sa stack)
+      - logs_network  # AJOUTÉ : Pour envoyer les logs à Graylog
+    environment:
+      - MONGO_URL=mongodb://wekan:${MONGO_WEKAN_PASSWORD}@mongo:27017/wekan
+      - ROOT_URL=https://kanban.truxonline.com
+      - TRUST_PROXY=true
+    secrets:
+      - MONGO_WEKAN_PASSWORD
+    deploy:
+      replicas: 1
+      mode: replicated
+      labels:
+        - "com.docker.portainer.stack=tools"
+        - "traefik.enable=true"
+        - "traefik.http.routers.wekan.rule=Host(`kanban.truxonline.com`)"
+        - "traefik.http.routers.wekan.tls=true"
+        - "traefik.http.routers.wekan.tls.certresolver=gandi"
+        - "traefik.docker.network=tools_network"
+      placement:
+        constraints:
+          - node.role == worker
+          - disk.feature.nfs == true
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512M
+
   bitwarden: # Vaultwarden
     image: docker.io/vaultwarden/server:latest
     environment:
@@ -399,6 +432,9 @@ secrets:
 #    external: true
   N8N_POSTGRES_PASSWORD:
     external: true # Le mot de passe pour la base de données n8n, défini dans la stack 'databases'
+  MONGO_WEKAN_PASSWORD:
+    external: true
+
 
 # Définition des réseaux utilisés par cette stack
 networks:

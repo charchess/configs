@@ -89,6 +89,9 @@ services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongodb:
     image: "mongo:6.0.18"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     deploy:
       placement:
         constraints:
@@ -97,6 +100,11 @@ services:
           - node.labels.cpu.feature.avx == true
           # Contrainte ajoutée : MongoDB utilise des volumes CephFS
           - node.labels.disk.feature.ceph == true
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 1g
     networks:
       - databases_network # Réseau interne de la stack databases
       - logs_network # AJOUTÉ : Pour envoyer les logs à Graylog
@@ -115,51 +123,35 @@ services:
         gelf-address: "udp://192.168.200.66:12201" # Utilise l'adresse IP statique de Graylog
         tag: "mongodb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
 
-  chromadb:
-    image: ghcr.io/chroma-core/chroma:latest # Image officielle de ChromaDB
-    environment:
-      - PUID=1000 # Votre PUID
-      - PGID=1000 # Votre PGID
-      - TZ=Europe/Paris # Votre fuseau horaire
-    volumes:
-      # Volume persistant pour les données de ChromaDB
-      # Assurez-vous que ce chemin existe et que les permissions sont correctes sur votre NFS
-      - /data/cephfs/containers/databases/chromadb/data:/app/chroma/chroma-data
+  qdrant:
+    image: qdrant/qdrant:v1.8
     networks:
-      - databases_network # Réseau interne de cette stack
-      - logs_network # Pour envoyer les logs à Graylog
+      - databases_network
+      - logs_network
+    volumes:
+      - /data/nfs/containers/databases/qdrant/data:/qdrant/storage
     deploy:
-      mode: replicated
       replicas: 1
+      mode: replicated
+      labels:
+        - "com.docker.portainer.stack=databases"
+        - "traefik.enable=false"
       placement:
         constraints:
           - node.role == worker
-          # Contrainte ajoutée : ChromaDB utilise un volume CephFS
-          - node.labels.disk.feature.ceph == true
-      labels: # Labels Traefik pour exposer ChromaDB (si vous voulez une UI ou API exposée)
-        - "traefik.docker.network=databases_network"
-        - "traefik.enable=true" # Active Traefik pour ce service
-        - "traefik.http.routers.chromadb-https.rule=Host(`chromadb.truxonline.com`)" # Nom de domaine pour ChromaDB
-        - "traefik.http.routers.chromadb-https.entrypoints=internal-secure" # Accès interne seulement (outil de backend)
-        - "traefik.http.routers.chromadb-https.tls=true"
-        - "traefik.http.routers.chromadb-https.tls.certresolver=gandi"
-        - "traefik.http.services.chromadb-https.loadbalancer.server.port=8000" # Port par défaut de l'API ChromaDB
-    logging: # Configuration du logging vers Graylog
-      driver: gelf
-      options:
-        gelf-address: "udp://192.168.201.66:12201" # Utilise l'adresse IP statique de Graylog
-        tag: "chromadb/{{.Name}}/{{.ID}}" # Tag pour identifier les logs dans Graylog
-#    healthcheck: # Healthcheck pour ChromaDB (vérifie que l'API répond)
-#      test: ["CMD-SHELL", "wget -q --spider http://localhost:8000/api/v1/heartbeat || exit 1"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 30s # Donne du temps au service pour démarrer
+          - disk.feature.nfs == true
+      resources:
+        limits:
+          memory: 1g
+
 
   # Service Redis (général)
   redis:
-    image: redis:6-alpine
+    image: redis:7-alpine
     hostname: redis
+    command: >
+      sh -c 'redis-server --requirepass "$$(cat /run/secrets/REDIS_PASSWORD)"
+              --save 60 1 --appendonly yes'
     networks:
       - databases_network
       - logs_network
@@ -179,6 +171,8 @@ services:
           memory: 256M
         reservations:
           memory: 128M
+    secrets:
+      - REDIS_PASSWORD
     logging:
       driver: gelf
       options:
@@ -186,7 +180,7 @@ services:
         tag: "redis/{{.Name}}/{{.ID}}"
 
   neo4j:
-    image: neo4j:5-enterprise # L'édition Enterprise est gratuite pour le développement solo
+    image: neo4j:community-ubi9 # L'édition Enterprise est gratuite pour le développement solo
     ports:
       - "7474:7474" # Interface Web de Neo4j
       - "7687:7687" # Port pour la connexion des pilotes (Bolt)
@@ -195,15 +189,27 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      labels:
+        - "com.docker.portainer.stack=databases"
+        - "traefik.enable=true"
+        - "traefik.http.routers.neo4j.rule=Host(`neo4j.truxonline.com`)"
+        - "traefik.http.routers.neo4j.tls=true"
+        - "traefik.http.routers.neo4j.tls.certresolver=gandi"
+        - "traefik.docker.network=databases_network"
       placement:
         constraints:
-          - node.role == worker # Permet à Redis de flotter sur n'importe quel nœud worker
-          # AJOUTÉ : Contrainte pour le volume CephFS
-          - node.labels.disk.feature.ceph == true
+          - node.role == worker
+          - disk.feature.nfs == true
+      resources:
+        limits:
+          memory: 2g
     environment:
       # Accepte la licence et définit un mot de passe
-      NEO4J_AUTH: neo4j/CHANGEME_UN_MOT_DE_PASSE_TRES_SOLIDE
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      - NEO4J_AUTH=${NEO4J_USER}:${NEO4J_PASSWORD}
+      - NEO4J_dbms_memory_pagecache_size=512M
+      - NEO4J_dbms_memory_heap_initial__size=512M
+      - NEO4J_dbms_memory_heap_max__size=512M
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
     networks:
       - databases_network # Pour que l'intent-router puisse s'y connecter
       - logs_network # Pour envoyer les logs à Graylog
@@ -211,6 +217,8 @@ services:
 
 # Définition des secrets utilisés dans cette stack
 secrets:
+  REDIS_PASSWORD:
+    external: true
   MARIADB_ROOT_PASSWORD:
     external: true
   ZABBIX_MYSQL_USER: # Décommenter si utilisé
@@ -218,6 +226,8 @@ secrets:
   ZABBIX_MYSQL_PASSWORD: # Décommenter si utilisé
     external: true
   POSTGRES_ROOT_PASSWORD:
+    external: true
+  MONGO_PASSWORD:
     external: true
     
 # Définition des réseaux utilisés par cette stack
