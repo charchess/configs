@@ -245,6 +245,16 @@ configs:
   experimentations_sillytavern-gemini_config.yaml:
     external: true
 
+secrets:
+  JWT_SECRET:
+    external: true
+  NEO4J_PASSWORD:
+    external: true
+  NEO4J_USER:
+    external: true
+  REDIS_PASSWORD:
+    external: true
+
 # Définition des réseaux utilisés par cette stack
 networks:
   ai_network:
