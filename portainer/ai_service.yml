@@ -1,7 +1,6 @@
 # ai_services.yml
 version: '3.8'
 services:
-services:
   crew:
     image: mycrew:latest
     networks:
