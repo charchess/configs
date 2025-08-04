@@ -18,7 +18,7 @@
     ../../common/users.nix
     ../../common/dockerswarm-join-or-init.nix
 
-    ./ceph.nix
+#    ./ceph.nix
   ];
 
   services.k3s = {

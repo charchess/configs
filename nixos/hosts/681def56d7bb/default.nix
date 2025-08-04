@@ -19,7 +19,7 @@
     ../../modules/node-reporter.nix
     ../../modules/swarm-label-manager.nix
     ../../common/users.nix
-    ./ceph.nix
+#    ./ceph.nix
   ];
 
   services.k3s = {
