@@ -6,3 +6,8 @@ hosts/current
 ./hosts/*/result*.old
 *.orig
 DEADJOE
+*.bak
+.*
+*.old
+*.orig
+*/result

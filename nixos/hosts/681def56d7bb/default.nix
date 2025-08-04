@@ -28,6 +28,8 @@
     clusterInit = true;
   };
 
+networking.firewall.allowedTCPPorts = [ 6443 ];
+
 #  services.portainer = {
 #    enable = false;
 #    edition = "ee";
