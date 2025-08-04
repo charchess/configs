@@ -21,7 +21,7 @@ services:
       - "80:80"     # Trafic HTTP (redirection)
       - "443:443"   # Trafic HTTPS (pour interne)
       - "10443:10443"   # Trafic HTTPS (pour externe)
-      - "192.168.200.60:8080:8080" # Dashboard Traefik
+      - "192.168.200.60:8081:8080" # Dashboard Traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /data/nfs/containers/infrastructure/traefik/config/traefik.yaml:/etc/traefik/traefik.yaml:ro
