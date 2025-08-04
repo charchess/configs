@@ -23,7 +23,7 @@
 
   services.k3s = {
     enable = true;
-    roles = "server";
+    role = "server";
     serverAddr = "192.168.111.63";
     token = "K104b4f27dc487a69f6c4e1652c9aa74107338631a4f5093c79466bebc535ca0289::server:ad2f1cd1b63765ff91ab630398bcd647";
   };
