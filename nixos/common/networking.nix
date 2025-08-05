@@ -20,8 +20,7 @@
 
     firewall = {
       trustedInterfaces = [ "cni0" "flannel.1" ];
-      allowedTCPPorts = [ 2379 2380 6443 8472 9001 30778 ];
-      allowedTCPPorts = [ 22 53 80 443 8000 9000 9443 10443 ];
+      allowedTCPPorts = [ 2379 2380 6443 8472 9001 30778 22 53 80 443 8000 9000 9443 10443 ];
       allowedUDPPorts = [ 53 112 ];
         extraCommands = ''
         iptables -t raw -A PREROUTING -s 10.42.0.0/16 -j ACCEPT
