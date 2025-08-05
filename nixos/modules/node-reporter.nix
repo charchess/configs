@@ -14,7 +14,7 @@ in
     # On ajoute les dépendances du script aux paquets du système.
     # C'est la garantie qu'ils ne seront jamais supprimés par le nettoyeur.
     environment.systemPackages = with pkgs; [
-      socat util-linux docker coreutils jq
+      socat util-linux coreutils jq
     ];
     
     # On ouvre le port dans le pare-feu.
@@ -55,7 +55,7 @@ in
     systemd.services.node-status-api = {
       description = "Node Status Reporter API";
       after = [ "network.target" "docker.service" ];
-      requires = [ "docker.service" ];
+#      requires = [ "docker.service" ];
       wantedBy = [ "multi-user.target" ];
       
       serviceConfig = {

@@ -11,12 +11,12 @@
     ../../common/nfs-mount.nix
     ./iscsi-connect.nix
     ../../common/chrony.nix
-    ../../modules/keepalived-ha.nix
-    ../../common/docker.nix
+#    ../../modules/keepalived-ha.nix
+#    ../../common/docker.nix
 #    ../../modules/portainer.nix
-    ../../common/dockerswarm-join-or-init.nix
+#    ../../common/dockerswarm-join-or-init.nix
     ../../modules/node-reporter.nix
-    ../../modules/swarm-label-manager.nix
+#    ../../modules/swarm-label-manager.nix
     ../../common/users.nix
 #    ./ceph.nix
   ];
@@ -31,6 +31,7 @@
       "--bind-address 192.168.111.63"
       "--etcd-expose-metrics"
     ];
+    containerdConfigTemplate = ../../templates/containerd-config.toml.tmpl;
     manifests = {
       cert-manager = {
         enable = true;
@@ -39,6 +40,7 @@
     };    
   };
 
+
 #  services.portainer = {
 #    enable = false;
 #    edition = "ee";
@@ -46,10 +48,10 @@
 #    version = "sts";
 #  };
 
-  services.keepalived-ha = {
-    enable    = false;
-    interface = "vlan200";
-    vip       = "192.168.200.60/24";
-    priority  = 200;
-  };
+#  services.keepalived-ha = {
+#    enable    = false;
+#    interface = "vlan200";
+#    vip       = "192.168.200.60/24";
+#    priority  = 200;
+#  };
 }
