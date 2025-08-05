@@ -22,6 +22,14 @@
 #    ./ceph.nix
   ];
 
+networking.firewall = {
+  trustedInterfaces = [ "cni0" "flannel.1" ];
+  allowedTCPPorts = [ 2379 2380 6443 8472 9001 30778 ];
+  extraCommands = ''
+    iptables -t raw -A PREROUTING -s 10.42.0.0/16 -j ACCEPT
+  '';
+  };
+
   services.k3s = {
     enable = true;
     role = "server";
@@ -32,15 +40,12 @@
       "--bind-address 192.168.111.63"
       "--etcd-expose-metrics"
     ];
-  };
-
-networking.firewall.allowedTCPPorts = [ 2379 2380 6443 8472 9001 30778 ];
-
-  services.k3s.autoDeployCharts.cert-manager = {
-    chart = "cert-manager";
-    repo  = "https://charts.jetstack.io";
-    namespace = "cert-manager";
-    values.installCRDs = true;
+    manifests = {
+      cert-manager = {
+        enable = true;
+        source = ../../manifests/cert-manager-helm.yaml;
+      };
+    };    
   };
 
 #  services.portainer = {
