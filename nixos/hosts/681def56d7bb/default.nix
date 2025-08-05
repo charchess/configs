@@ -21,17 +21,6 @@
 #    ./ceph.nix
   ];
 
-networking.firewall = {
-  trustedInterfaces = [ "cni0" "flannel.1" ];
-  allowedTCPPorts = [ 2379 2380 6443 8472 9001 30778 ];
-  extraCommands = ''
-    iptables -t raw -A PREROUTING -s 10.42.0.0/16 -j ACCEPT
-  '';
-  extraStopCommands = ''
-    iptables -t raw -D PREROUTING -s 10.42.0.0/16 -j ACCEPT || true
-  '';
-  };
-
   services.k3s = {
     enable = true;
     role = "server";
