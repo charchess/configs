@@ -74,6 +74,7 @@
     gemini-cli
     sops
     age
+    kubernetes-helm
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

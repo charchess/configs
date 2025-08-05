@@ -36,6 +36,13 @@
 
 networking.firewall.allowedTCPPorts = [ 2379 2380 6443 8472 9001 30778 ];
 
+  services.k3s.autoDeployCharts.cert-manager = {
+    chart = "cert-manager";
+    repo  = "https://charts.jetstack.io";
+    namespace = "cert-manager";
+    values.installCRDs = true;
+  };
+
 #  services.portainer = {
 #    enable = false;
 #    edition = "ee";
