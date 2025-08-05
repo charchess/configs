@@ -26,32 +26,37 @@
 
   firewall = {
 
-    # Ouvre les ports pour les services tournant sur l'hôte lui-même (K3s API, SSH, etc.)
-    # Ceci reste inchangé et est très important.
-    allowedTCPPorts = [ 22 53 80 443 2379 2380 6443 8472 8000 9000 9001 9443 10443 30778 ];
-    allowedUDPPorts = [ 53 112 8472 ];
+  allowedTCPPorts = [ 22 53 80 443 2379 2380 6443 8472 8000 9000 9001 9443 10443 30778 ];
+  allowedUDPPorts = [ 53 112 8472 ];
 
-    # -- DÉBUT DE LA SECTION POUR LA COEXISTENCE --
-    # Remplace trustedInterfaces par des règles manuelles plus robustes.
-    extraCommands = ''
-      # Règle 1: Autorise le trafic de retour pour les connexions déjà établies.
-      # C'est la règle la plus cruciale pour que le réseau fonctionne.
-      iptables -I FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  # -- DÉBUT DE LA CONFIGURATION DÉFINITIVE --
+  # On utilise -I pour insérer les règles au début, leur donnant la priorité maximale.
+  extraCommands = ''
+    # --- RÈGLES POUR LE TRAFIC QUI TRAVERSE L'HÔTE (Pods/Conteneurs -> Extérieur) ---
+    iptables -I FORWARD 1 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+    iptables -I FORWARD 2 -s 10.42.0.0/16 -j ACCEPT
+    iptables -I FORWARD 3 -s 172.17.0.0/16 -j ACCEPT
 
-      # Règle 2: Autorise les nouvelles connexions provenant du réseau des pods K3s (flannel).
-      iptables -I FORWARD -s 10.42.0.0/16 -j ACCEPT
+    # --- RÈGLES POUR LE TRAFIC GÉNÉRÉ PAR L'HÔTE LUI-MÊME (Téléchargement d'images, etc.) ---
+    iptables -I OUTPUT 1 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+    iptables -I OUTPUT 2 -p udp --dport 53 -j ACCEPT
+    iptables -I OUTPUT 3 -p tcp --dport 53 -j ACCEPT
+    iptables -I OUTPUT 4 -p tcp --dport 443 -j ACCEPT
+    iptables -I OUTPUT 5 -p tcp --dport 80 -j ACCEPT
+  '';
 
-      # Règle 3: Autorise les nouvelles connexions provenant du réseau par défaut de Docker.
-      iptables -I FORWARD -s 172.17.0.0/16 -j ACCEPT
-    '';
- 
-    # Commande pour nettoyer proprement les règles lors d'un "nixos-rebuild switch".
-    extraStopCommands = ''
-      iptables -D FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT || true
-      iptables -D FORWARD -s 10.42.0.0/16 -j ACCEPT || true
-      iptables -D FORWARD -s 172.17.0.0/16 -j ACCEPT || true
-    '';
-    # -- FIN DE LA SECTION POUR LA COEXISTENCE --
+  # Commandes pour nettoyer proprement toutes nos règles.
+  extraStopCommands = ''
+    iptables -D FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT || true
+    iptables -D FORWARD -s 10.42.0.0/16 -j ACCEPT || true
+    iptables -D FORWARD -s 172.17.0.0/16 -j ACCEPT || true
+    iptables -D OUTPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT || true
+    iptables -D OUTPUT -p udp --dport 53 -j ACCEPT || true
+    iptables -D OUTPUT -p tcp --dport 53 -j ACCEPT || true
+    iptables -D OUTPUT -p tcp --dport 443 -j ACCEPT || true
+    iptables -D OUTPUT -p tcp --dport 80 -j ACCEPT || true
+  '';
+  # -- FIN DE LA CONFIGURATION DÉFINITIVE --
   };
 
   };
