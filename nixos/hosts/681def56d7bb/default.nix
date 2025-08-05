@@ -26,9 +26,12 @@
     enable = true;
     role = "server";
     clusterInit = true;
+    extraFlags = [
+      "--tls-san 192.168.111.63"
+    ];
   };
 
-networking.firewall.allowedTCPPorts = [ 6443 ];
+networking.firewall.allowedTCPPorts = [ 2379 2380 6443 8472 ];
 
 #  services.portainer = {
 #    enable = false;
