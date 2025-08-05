@@ -1,0 +1,15 @@
+# /etc/nixos/k3s-manifests/cert-manager-helm.yaml
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: cert-manager
+  namespace: kube-system
+spec:
+  chart: cert-manager
+  repo: https://charts.jetstack.io
+  targetNamespace: cert-manager
+  createNamespace: true
+  version: v1.14.2
+  valuesContent: |
+    installCRDs: true
+    
