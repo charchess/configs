@@ -28,6 +28,9 @@
     clusterInit = true;
     extraFlags = [
       "--tls-san 192.168.111.63"
+      "--advertise-address 192.168.111.63"
+      "--bind-address 192.168.111.63"
+      "--etcd-expose-metrics"
     ];
   };
 
