@@ -1,6 +1,10 @@
 { config, pkgs, lib, ... }:
 
 {
+  boot.kernel.sysctl = {
+    "net.ipv6.conf.all.disable_ipv6" = 1;
+    "net.ipv6.conf.default.disable_ipv6" = 1;
+  };
   networking = {
     extraHosts =
       ''
