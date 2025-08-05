@@ -36,13 +36,13 @@
     extraCommands = ''
       # Règle 1: Autorise le trafic de retour pour les connexions déjà établies.
       # C'est la règle la plus cruciale pour que le réseau fonctionne.
-      iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+      iptables -I FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
       # Règle 2: Autorise les nouvelles connexions provenant du réseau des pods K3s (flannel).
-      iptables -A FORWARD -s 10.42.0.0/16 -j ACCEPT
+      iptables -I FORWARD -s 10.42.0.0/16 -j ACCEPT
 
       # Règle 3: Autorise les nouvelles connexions provenant du réseau par défaut de Docker.
-      iptables -A FORWARD -s 172.17.0.0/16 -j ACCEPT
+      iptables -I FORWARD -s 172.17.0.0/16 -j ACCEPT
     '';
  
     # Commande pour nettoyer proprement les règles lors d'un "nixos-rebuild switch".
