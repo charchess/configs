@@ -24,7 +24,7 @@
 #      allowedUDPPorts = [ 53 112 8472 ]; # J'ai ajouté le port 8472 pour flannel, c'est une bonne pratique
 #    };
 
-networking.firewall = {
+  firewall = {
 
     # Ouvre les ports pour les services tournant sur l'hôte lui-même (K3s API, SSH, etc.)
     # Ceci reste inchangé et est très important.
