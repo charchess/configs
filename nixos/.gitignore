@@ -11,3 +11,4 @@ DEADJOE
 *.old
 *.orig
 */result
+nixos/result
