@@ -34,7 +34,7 @@
      ];
   };
 
-networking.firewall.allowedTCPPorts = [ 2379 2380 6443 8472 ];
+networking.firewall.allowedTCPPorts = [ 2379 2380 6443 8472 30778 ];
 
   services.docker-swarm = {
     enable = true;
