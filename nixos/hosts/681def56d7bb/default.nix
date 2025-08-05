@@ -31,7 +31,7 @@
       "--bind-address 192.168.111.63"
       "--etcd-expose-metrics"
     ];
-    containerdConfigTemplate = ../../templates/containerd-config.toml.tmpl;
+    containerdConfigTemplate = "../../templates/containerd-config.toml.tmpl";
     manifests = {
       cert-manager = {
         enable = true;
