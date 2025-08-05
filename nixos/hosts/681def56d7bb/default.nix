@@ -8,7 +8,6 @@
   imports =
   [
     ./networking.nix
-    ../../common/firewall.nix
     ../../common/nfs-mount.nix
     ./iscsi-connect.nix
     ../../common/chrony.nix
