@@ -41,7 +41,7 @@ services:
 #          memory: 1g
 
   stt:
-    image: charchess/stt:latest
+    image: charchess/mystt:latest
     networks:
       - ai_network
     environment:
@@ -68,7 +68,7 @@ services:
 #          - disk.feature.nfs == true
 
   tts:
-    image: lscr.io/linuxserver/faster-whisper:latest
+    image: charchess/mytts:latest
     networks:
       - ai_network
     environment:
