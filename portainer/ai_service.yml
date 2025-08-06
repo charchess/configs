@@ -65,7 +65,7 @@ services:
       placement:
         constraints:
           - node.role == worker
-          - disk.feature.nfs == true
+#          - disk.feature.nfs == true
 
   tts:
     image: lscr.io/linuxserver/faster-whisper:latest
