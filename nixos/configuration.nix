@@ -5,8 +5,19 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports =
-  [
+  imports = let
+    # On utilise un commit spécifique de sops-nix pour la reproductibilité.
+    # Vous pouvez le changer pour "master" mais un commit est mieux.
+    commit = "master"; # ou un hash de commit spécifique
+    sops-nix-src = builtins.fetchTarball {
+      url = "https://github.com/Mic92/sops-nix/archive/${commit}.tar.gz";
+      # Pour une vraie reproductibilité, calculez le hash avec :
+      # nix-prefetch-url --unpack <url>
+      sha256 = "0w2w0i530kh7azd3hn7rgpi4a6fd2av5fb6sbvfxznvp67qcllw2"; # Hash pour le commit master au moment de l'écriture
+    };
+  in [
+    # On importe le module sops
+    "${sops-nix-src}/modules/sops"
   ]
   ++ lib.optionals (builtins.pathExists ./hosts/current/hardware-configuration.nix) [ ./hosts/current/hardware-configuration.nix ]
   ++ lib.optionals (builtins.pathExists ./hosts/current/default.nix) [ ./hosts/current/default.nix ];
@@ -71,10 +82,8 @@
     python3
     sudo
     gptfdisk
-    gemini-cli
     sops
     age
-    kubernetes-helm
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
