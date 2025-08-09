@@ -41,11 +41,11 @@
     enable    = true;
     interface = "vlan200";
     vip       = "192.168.200.60/24";
-    priority  = 100;
+    priority  = 10;
   };
 
   
-  networking.nftables.enable = true; # IPTable ca n'existe plus.
+  networking.nftables.enable = false; # IPTable ca n'existe plus.
 
   networking.firewall.allowedTCPPorts = [
     6443 # k3s: required so that pods can reach the API server (running on port 6443 by default)

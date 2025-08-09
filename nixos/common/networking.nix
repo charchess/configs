@@ -25,8 +25,7 @@
     firewall = {
       trustedInterfaces = [ "cni0" "flannel.1" ];
       allowedTCPPorts = [ 22 53 80 443 2379 2380 4240 6443 8472 8000 9000 9001 9443 10443 30778 ];
-      allowedUDPPorts = [ 53 112 8472 ]; # J'ai ajouté le port 8472 pour flannel, c'est une bonne pratique
+      allowedUDPPorts = [ 53 112 8472 ];
     };
-
   };
 }
