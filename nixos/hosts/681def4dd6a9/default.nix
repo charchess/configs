@@ -36,7 +36,7 @@ networking.firewall = {
     enable = true;
     role = "server";
     serverAddr = "https://192.168.111.63:6443";
-    token = "K104b4f27dc487a69f6c4e1652c9aa74107338631a4f5093c79466bebc535ca0289::server:ad2f1cd1b63765ff91ab630398bcd647";
+    token = "K1034e563450f37fb73f7aa0e4edb11ab86bf24d3220a92cc900f0c22f52e908223::server:LesLoutresCestQuandMemeMieuxHein";
     extraFlags = [
       "--tls-san 192.168.111.65"
       "--advertise-address 192.168.111.65"
