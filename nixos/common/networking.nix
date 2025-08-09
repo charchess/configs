@@ -26,6 +26,10 @@
       trustedInterfaces = [ "cni0" "flannel.1" ];
       allowedTCPPorts = [ 22 53 80 443 2379 2380 4240 6443 8472 8000 9000 9001 9443 10443 30778 ];
       allowedUDPPorts = [ 53 112 8472 ];
+      extraCommands = ''
+        iptables -I INPUT   -d 224.0.0.18/32 -j ACCEPT
+        iptables -I OUTPUT  -d 224.0.0.18/32 -j ACCEPT
+      '';
     };
   };
 }
