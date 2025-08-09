@@ -11,7 +11,7 @@
     ../../common/nfs-mount.nix
      ./iscsi-connect.nix
     ../../common/chrony.nix
-#    ../../modules/keepalived-ha.nix
+    ../../modules/keepalived-ha.nix
     ../../common/docker.nix
     ../../modules/node-reporter.nix
 #    ../../modules/swarm-label-manager.nix
@@ -52,10 +52,10 @@
     managerKey = "/root/.ssh/id_rsa";  # Chemin vers la clé SSH du manager
   };
 
-#  services.keepalived-ha = {
-#    enable    = true;
-#    interface = "vlan200";
-#    vip       = "192.168.200.60/24";
-#    priority  = 100;
-#  };
+  services.keepalived-ha = {
+    enable    = true;
+    interface = "vlan200";
+    vip       = "192.168.200.60/24";
+    priority  = 100;
+  };
 }
