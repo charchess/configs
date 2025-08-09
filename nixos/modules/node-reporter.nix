@@ -47,7 +47,7 @@ in
         echo "Content-Type: application/json"
         echo ""
         ${pkgs.jq}/bin/jq -n --arg nfs "$NFS_ACTIVE" --arg ceph "$IS_CEPH_NODE" --arg avx "$AVX_SUPPORT" \
-          '{"disk.feature.nfs": $nfs, "disk.feature.ceph": $ceph, "cpu.feature.avx": $avx}'
+          '{"disk.feature.nfs": $nfs, "disk.feature.ceph": $ceph, "cpu.feature.avx": $avx, "status": "ok"}'
       '';
     };
 
