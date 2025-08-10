@@ -56,6 +56,9 @@ in
         # --- AVX ---
         AVX_SUPPORT=$(grep -q avx /proc/cpuinfo && echo true || echo false)
     
+        # --- Date --- 
+        DATE_ISO=$(date -Iseconds)
+
         # --- JSON ---
         echo "HTTP/1.1 200 OK"
         echo "Content-Type: application/json"
@@ -67,6 +70,7 @@ in
           --arg state  "$KEEPALIVED_STATE" \
           --argjson prio "$KEEPALIVED_PRIO" \
           --argjson age "$AGE" \
+          --arg date   "$DATE_ISO" \
           '{
             "disk.feature.nfs": $nfs,
             "disk.feature.ceph": $ceph,
@@ -74,6 +78,7 @@ in
             "keepalived.state": $state,
             "keepalived.priority": $prio,
             "keepalived.age_seconds": $age,
+            "date": $date,
             "status": "ok"
           }'
       '';
