@@ -42,7 +42,8 @@ networking.firewall = {
       "--advertise-address 192.168.111.65"
       "--bind-address 192.168.111.65"
       "--etcd-expose-metrics"
-     ];
+    ];
+    initCluster = false;
   };
 
   services.keepalived-ha = {

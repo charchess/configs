@@ -42,7 +42,8 @@
       "--advertise-address 192.168.111.66"
       "--bind-address 192.168.111.66"
       "--etcd-expose-metrics"
-     ];
+    ];
+    clusterInit = false;     
   };
 
   services.docker-swarm = {
