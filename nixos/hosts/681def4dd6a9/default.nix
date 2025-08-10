@@ -43,7 +43,7 @@ networking.firewall = {
       "--bind-address 192.168.111.65"
       "--etcd-expose-metrics"
     ];
-    initCluster = false;
+    clusterInit = false;
   };
 
   services.keepalived-ha = {
