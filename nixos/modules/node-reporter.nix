@@ -14,7 +14,7 @@ in
     # On ajoute les dépendances du script aux paquets du système.
     # C'est la garantie qu'ils ne seront jamais supprimés par le nettoyeur.
     environment.systemPackages = with pkgs; [
-      socat util-linux coreutils jq
+      socat util-linux coreutils jq gawk
     ];
     
     # On ouvre le port dans le pare-feu.
@@ -22,32 +22,60 @@ in
 
     # Le script est créé dans /etc.
     environment.etc."node-status-script.sh" = {
-      # --- CORRECTION DE SYNTAXE ---
-      # On utilise 'mode' pour rendre le script exécutable.
       mode = "0755";
-      
-      # Le script utilise des chemins absolus pour une robustesse maximale.
       text = ''
         #!${pkgs.stdenv.shell}
         set -e
-        # Détection NFS
+
+        # --- keepalived ---
+        KEEPALIVED_FILE="/var/run/keepalived_state"
+        if [ -r "$KEEPALIVED_FILE" ]; then
+            KEEPALIVED_STATE=$(${pkgs.gawk}/bin/awk '{print $1}' "$KEEPALIVED_FILE")
+            KEEPALIVED_PRIO=$(${pkgs.gawk}/bin/awk '{print $2}' "$KEEPALIVED_FILE" 2>/dev/null || echo "100")
+            LAST_UPDATE=$(stat -c %Y "$KEEPALIVED_FILE")
+        else
+            KEEPALIVED_STATE="unknown"
+            KEEPALIVED_PRIO=-"unknown"
+            LAST_UPDATE="unknown"
+        fi
+        NOW=$(date +%s)
+        AGE=$((NOW - LAST_UPDATE))
+ 
+        # --- NFS ---
         NFS_ACTIVE=true
         for mount in "/data/nfs/content" "/data/nfs/containers" "/data/nfs/downloads"; do
           if ! ${pkgs.util-linux}/bin/findmnt -M "$mount" >/dev/null; then NFS_ACTIVE=false; break; fi
         done
-        # Détection Ceph
+ 
+        # --- Ceph ---
         IS_CEPH_NODE=false
         if ${pkgs.docker}/bin/docker ps --format '{{.Names}}' | grep -q "osd\."; then
           IS_CEPH_NODE=true
         fi
-        # Détection AVX
+ 
+        # --- AVX ---
         AVX_SUPPORT=$(grep -q avx /proc/cpuinfo && echo true || echo false)
-        # Réponse HTTP
+    
+        # --- JSON ---
         echo "HTTP/1.1 200 OK"
         echo "Content-Type: application/json"
         echo ""
-        ${pkgs.jq}/bin/jq -n --arg nfs "$NFS_ACTIVE" --arg ceph "$IS_CEPH_NODE" --arg avx "$AVX_SUPPORT" \
-          '{"disk.feature.nfs": $nfs, "disk.feature.ceph": $ceph, "cpu.feature.avx": $avx, "status": "ok"}'
+        ${pkgs.jq}/bin/jq -n \
+          --arg nfs    "$NFS_ACTIVE" \
+          --arg ceph   "$IS_CEPH_NODE" \
+          --arg avx    "$AVX_SUPPORT" \
+          --arg state  "$KEEPALIVED_STATE" \
+          --argjson prio "$KEEPALIVED_PRIO" \
+          --argjson age "$AGE" \
+          '{
+            "disk.feature.nfs": $nfs,
+            "disk.feature.ceph": $ceph,
+            "cpu.feature.avx": $avx,
+            "keepalived.state": $state,
+            "keepalived.priority": $prio,
+            "keepalived.age_seconds": $age,
+            "status": "ok"
+          }'
       '';
     };
 

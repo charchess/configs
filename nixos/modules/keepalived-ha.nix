@@ -19,6 +19,17 @@ let
       exit 1
     fi
   '';
+
+  # Petit script notify écrit en Nix
+  notifyScript = pkgs.writeShellScript "keepalived-notify" ''
+    stateFile="/run/keepalived_state"
+    case "$3" in
+      MASTER) echo "MASTER $4" > "$stateFile" ;;
+      BACKUP) echo "BACKUP $4" > "$stateFile" ;;
+      FAULT)  echo "FAULT $4"  > "$stateFile" ;;
+    esac
+  '';
+
 in
 {
   options.services.keepalived-ha = {
@@ -32,13 +43,23 @@ in
   config = mkIf cfg.enable {
     boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = 1;
 
+    systemd.tmpfiles.rules = [
+      "f /run/keepalived_state 0644 root root -"
+    ];
+
+    environment.systemPackages = [
+      (pkgs.writeShellScriptBin "keepalived-state" ''
+        [ -f /run/keepalived_state ] && cat /run/keepalived_state || echo "UNKNOWN"
+      '')
+    ];
+
     services.keepalived = {
       enable = true;
-extraGlobalDefs = "debug 2";
-extraConfig = "debug 3";
       vrrpInstances = {
         VI_1 = {
-extraConfig = "debug 1";
+          extraConfig = ''
+            notify "${notifyScript}"
+          '';
           interface = cfg.interface;
           state = if cfg.priority > 150 then "MASTER" else "BACKUP";
           virtualRouterId = cfg.vrid;
