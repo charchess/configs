@@ -64,7 +64,7 @@
       "--tls-san 192.168.111.63"             # TPACPC
       "--advertise-address 192.168.111.63"   # sinon il utlise pas le reseau 111
       "--bind-address 192.168.111.63"        # et il ajoute pas l'ip au certificat pour le cluster
-      "--flannel-iface=vlan111"
+#      "--flannel-iface=vlan111"
       "--node-ip=192.168.111.63"
       "--flannel-backend=none"
       "--disable-kube-proxy"

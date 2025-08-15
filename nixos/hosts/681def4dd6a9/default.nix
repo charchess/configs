@@ -42,7 +42,7 @@ networking.firewall = {
       "--tls-san 192.168.111.65"
       "--advertise-address 192.168.111.65"
       "--bind-address 192.168.111.65"
-      "--flannel-iface=vlan111"
+#      "--flannel-iface=vlan111"
       "--node-ip=192.168.111.65"
       "--flannel-backend=none"
       "--disable-kube-proxy"
