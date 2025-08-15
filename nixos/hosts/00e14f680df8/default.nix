@@ -42,7 +42,11 @@
       "--tls-san 192.168.111.66"
       "--advertise-address 192.168.111.66"
       "--bind-address 192.168.111.66"
-      "--etcd-expose-metrics"
+      "--flannel-iface=vlan111"
+      "--node-ip=192.168.111.66"
+      "--flannel-backend=none"
+      "--disable-kube-proxy"
+      "--disable-network-policy"
     ];
     clusterInit = false;     
   };
