@@ -16,6 +16,7 @@
     ../../modules/node-reporter.nix
 #    ../../common/swarm-label-manager.nix
     ../../common/users.nix
+    ../../common/k3s_cilium.nix
     ../../common/dockerswarm-join-or-init.nix
 
 #    ./ceph.nix

@@ -17,6 +17,7 @@
     ../../modules/node-reporter.nix
 #    ../../modules/swarm-label-manager.nix
     ../../common/users.nix
+    ../../common/k3s_cilium.nix
 #    ../../common/sops.nix
   ];
 
@@ -45,8 +46,6 @@
   };
 
   
-  networking.nftables.enable = false; # IPTable ca n'existe plus.
-
   networking.firewall.allowedTCPPorts = [
     6443 # k3s: required so that pods can reach the API server (running on port 6443 by default)
     4240 # Cilium health
@@ -62,6 +61,15 @@
     token = "LesLoutresCestQuandMemeMieuxHein";
     clusterInit = true; # Jade est intialisé, les autres noeud feront eux un join dessus.
     extraFlags = toString [
+      "--tls-san 192.168.111.63"             # TPACPC
+      "--advertise-address 192.168.111.63"   # sinon il utlise pas le reseau 111
+      "--bind-address 192.168.111.63"        # et il ajoute pas l'ip au certificat pour le cluster
+      "--flannel-iface=vlan111"
+      "--node-ip=192.168.111.63"
+      "--flannel-backend=none"
+      "--disable-kube-proxy"
+      "--disable-network-policy"
+#      "--kubelet-arg=address=192.168.111.63"
       #"--disable traefik --disable servicelb --disable-kube-proxy --flannel-backend none --disable-network-policy"
       # "--debug" # Optionally add additional args to k3s
     ];
