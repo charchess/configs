@@ -45,9 +45,9 @@
 #      "--flannel-iface=vlan111"
       "--node-ip=192.168.111.66"
       "--flannel-backend=none"
-#      "--disable=servicelb"
-#      "--disable-kube-proxy"
-#      "--disable-network-policy"
+      "--disable=servicelb"
+      "--disable-kube-proxy"
+      "--disable-network-policy"
     ];
     clusterInit = false;     
   };
