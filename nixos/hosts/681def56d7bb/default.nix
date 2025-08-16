@@ -67,8 +67,8 @@
 #      "--flannel-iface=vlan111"
       "--node-ip=192.168.111.63"
       "--flannel-backend=none"
-      "--disable-kube-proxy"
-      "--disable-network-policy"
+#      "--disable-kube-proxy"
+#      "--disable-network-policy"
 #      "--kubelet-arg=address=192.168.111.63"
       #"--disable traefik --disable servicelb --disable-kube-proxy --flannel-backend none --disable-network-policy"
       # "--debug" # Optionally add additional args to k3s
