@@ -1,0 +1,59 @@
+{
+    "apiVersion": "v1",
+    "kind": "Namespace",
+    "metadata": {
+        "creationTimestamp": "2025-08-16T11:34:09Z",
+        "deletionTimestamp": "2025-08-16T12:51:46Z",
+        "labels": {
+            "app.kubernetes.io/name": "cilium-cli",
+            "kubernetes.io/metadata.name": "cilium-test-1"
+        },
+        "name": "cilium-test-1",
+        "resourceVersion": "1629918",
+        "uid": "06c2193a-edb3-470f-9f61-58fdb01b1dfa"
+    },
+    "spec": {
+        "finalizers": [
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastTransitionTime": "2025-08-16T12:51:51Z",
+                "message": "Discovery failed for some groups, 1 failing: unable to retrieve the complete list of server APIs: acme.bwolf.me/v1alpha1: stale GroupVersion discovery: acme.bwolf.me/v1alpha1",
+                "reason": "DiscoveryFailed",
+                "status": "True",
+                "type": "NamespaceDeletionDiscoveryFailure"
+            },
+            {
+                "lastTransitionTime": "2025-08-16T12:51:52Z",
+                "message": "All legacy kube types successfully parsed",
+                "reason": "ParsedGroupVersions",
+                "status": "False",
+                "type": "NamespaceDeletionGroupVersionParsingFailure"
+            },
+            {
+                "lastTransitionTime": "2025-08-16T12:51:53Z",
+                "message": "All content successfully deleted, may be waiting on finalization",
+                "reason": "ContentDeleted",
+                "status": "False",
+                "type": "NamespaceDeletionContentFailure"
+            },
+            {
+                "lastTransitionTime": "2025-08-16T12:51:53Z",
+                "message": "All content successfully removed",
+                "reason": "ContentRemoved",
+                "status": "False",
+                "type": "NamespaceContentRemaining"
+            },
+            {
+                "lastTransitionTime": "2025-08-16T12:51:52Z",
+                "message": "All content-preserving finalizers finished",
+                "reason": "ContentHasNoFinalizers",
+                "status": "False",
+                "type": "NamespaceFinalizersRemaining"
+            }
+        ],
+        "phase": "Terminating"
+    }
+}

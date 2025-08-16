@@ -1,0 +1,54 @@
+# cilium-values.yaml - CONFIGURATION FINALE "PURE BPF"
+
+# 1. Remplacement de Kube-proxy
+kubeProxyReplacement: true
+
+# 2. Configuration du Routage
+routingMode: "native"
+ipv4NativeRoutingCIDR: "10.42.0.0/16"
+enableHostLegacyRouting: true
+
+# 3. Datapath BPF Avancé
+bpf:
+  masquerade: true
+  tproxy: true
+  preallocateMaps: true
+  autoMount:
+    enabled: false
+  clangOptions: "-Wno-macro-redefined"
+
+# 4. Configuration de l'API Server (pour éviter les boucles host-to-self)
+k8s:
+  serviceHost: "192.168.111.63" # IP du master principal
+  servicePort: "6443"
+
+# 5. Spécification de l'Interface
+devices:
+  - "vlan111"
+
+# 6. IPAM
+ipam:
+  operator:
+    clusterPoolIPv4PodCIDRList: ["10.42.0.0/16"]
+
+# 7. Spécifique à NixOS
+extraHostPathMounts:
+  - name: nlx-headers
+    hostPath: /var/lib/kernel-headers-for-cilium
+    hostPathType: Directory
+    mountPath: /usr/src
+    readOnly: true
+    
+# 8. Observabilité
+operator:
+  replicas: 1
+  prometheus:
+    enabled: true
+prometheus:
+  enabled: true
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+    

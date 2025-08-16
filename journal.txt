@@ -1,0 +1,150 @@
+
+
+
+
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+
+# CA MARCHE PAS
+# 
+# helm repo add cilium https://helm.cilium.io/
+# helm upgrade cilium cilium/cilium --version 1.18.0 --namespace kube-system  --set kubeProxyReplacement=true  --set k8sServiceHost=${API_SERVER_IP}  --set k8sServicePort=${API_SERVER_PORT} --set operator.replicas=1
+# 
+# Cilium démarre et le cluster devient ready.
+
+
+# Cert manager
+
+helm install \
+  cert-manager oci://quay.io/jetstack/charts/cert-manager \
+  --version v1.18.2 \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true
+
+
+# Cert manager gandi
+
+helm repo add cert-manager-webhook-gandi https://sintef.github.io/cert-manager-webhook-gandi
+
+helm install cert-manager-webhook-gandi cert-manager-webhook-gandi/cert-manager-webhook-gandi --set gandiPat=42a2a1c56e29bbff391345eafe811e2e03ba0586
+
+# Creation d'un clusterissuer
+
+Creer clusterissuer.yaml avec ca:
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt
+  namespace: cert-manager
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: charchess@truxonline.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt
+    solvers:
+    - dns01:
+        webhook:
+          groupName: acme.bwolf.me
+          solverName: gandi
+          config:
+            patSecretRef:
+              key: pat
+              name: gandi-credentials
+
+
+
+Puis kubectl create -f clusterissuer.yaml
+
+
+Pour générer un certificat signé:
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loutre-truxonline-com
+spec:
+  dnsNames:
+  - loutre.truxonline.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  secretName: loutre-truxonline-com-tls
+
+
+
+Traefik:
+
+
+
+
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: homeassistant
+spec:
+  ports:
+    - protocol: TCP
+      port: 8123
+--- 
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: homeassistant
+subsets:
+  - 
+    addresses:
+      - ip: 192.168.201.51 # External IP
+    ports:
+      - port: 8123
+--- 
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homeassistant
+  annotations:
+    spec.ingressClassName: traefik
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  rules:
+    - host: homeassistant.truxonline.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homeassistant
+                port:
+                  number: 8123
+  tls:
+    - secretName: homeassistant-tls
+      hosts:
+        - homeassistant.truxonline.com
+
+
+
+---
+
+creation d'un arborescence configs/kubernetes/...
+
+installation de cilium :
+kubectl apply -f cilium/namespace.yaml
+cilium install --version v1.16.0 --set kubeProxyReplacement=true --set ipam.operator.clusterPoolIPv4PodCIDRList=10.42.0.0/16
+
+kubectl apply -f init/rancher/namespace.yaml
+helm repo add rancher-latest https://releases.rancher.com/server-charts/latest
+helm install rancher rancher-latest/rancher \
+  --namespace cattle-system --create-namespace \
+  --values init/rancher/02-rancher-values.yaml
+
+kubectl create namespace adguard
+kubectl apply -f init/adguardhome/
+

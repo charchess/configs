@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-monitoring-zabbix-server-ssh_keys
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: ssh_keys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-monitoring-zabbix-server-ssh_keys

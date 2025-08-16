@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-ai_services-sillytavern-gemini-config
+  labels:
+    stack: ai_services
+    container: sillytavern-gemini
+    volume: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-ai_services-sillytavern-gemini-config

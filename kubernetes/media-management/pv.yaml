@@ -1,0 +1,241 @@
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-readarr-config
+  labels:
+    stack: media-management
+    container: readarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/readarr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-whisparr-config
+  labels:
+    stack: media-management
+    container: whisparr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/whisparr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-radarr-config
+  labels:
+    stack: media-management
+    container: radarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/radarr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-sonarr-config
+  labels:
+    stack: media-management
+    container: sonarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/sonarr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-mylar-config
+  labels:
+    stack: media-management
+    container: mylar
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/mylar/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-prowlarr-config
+  labels:
+    stack: media-management
+    container: prowlarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/prowlarr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-hydrus-db
+  labels:
+    stack: media-management
+    container: hydrus
+    volume: db
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/hydrus/db
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-pyload-config
+  labels:
+    stack: media-management
+    container: pyload
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/pyload/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-pyload-tmp
+  labels:
+    stack: media-management
+    container: pyload
+    volume: tmp
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/pyload/tmp
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-ubooquity-tmp
+  labels:
+    stack: media-management
+    container: ubooquity
+    volume: tmp
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/ubooquity/tmp
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-ubooquity-config
+  labels:
+    stack: media-management
+    container: ubooquity
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/ubooquity/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-management-lidarr-config
+  labels:
+    stack: media-management
+    container: lidarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-management/lidarr/config
+

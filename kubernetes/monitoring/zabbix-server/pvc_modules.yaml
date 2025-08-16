@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: monitoring
+  name: pvc-monitoring-zabbix-server-modules
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: modules
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-monitoring-zabbix-server-modules

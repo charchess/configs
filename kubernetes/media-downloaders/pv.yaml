@@ -1,0 +1,81 @@
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-downloaders-torrent-config
+  labels:
+    stack: media-downloaders
+    container: torrent
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-downloaders/torrent/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-downloaders-torrent-downloads
+  labels:
+    stack: media-downloaders
+    container: torrent
+    volume: downloads
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-downloaders/torrent/downloads
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-downloaders-sabnzbd-config
+  labels:
+    stack: media-downloaders
+    container: sabnzbd
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-downloaders/sabnzbd/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-media-downloaders-amule-config
+  labels:
+    stack: media-downloaders
+    container: amule
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/media-downloaders/amule/config
+

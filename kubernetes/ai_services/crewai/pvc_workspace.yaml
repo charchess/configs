@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: ai_services
+  name: pvc-ai_services-crewai-workspace
+  labels:
+    stack: ai_services
+    container: crewai
+    volume: workspace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-ai_services-crewai-workspace

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-divertissement-sillytavern-extensions
+  labels:
+    stack: divertissement
+    container: sillytavern
+    volume: extensions
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-divertissement-sillytavern-extensions

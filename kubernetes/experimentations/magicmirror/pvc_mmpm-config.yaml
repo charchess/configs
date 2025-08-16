@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: experimentations
+  name: pvc-experimentations-magicmirror-mmpm-config
+  labels:
+    stack: experimentations
+    container: magicmirror
+    volume: mmpm-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-experimentations-magicmirror-mmpm-config

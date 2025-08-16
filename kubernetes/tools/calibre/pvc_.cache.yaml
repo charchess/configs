@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: tools
+  name: pvc-tools-calibre-.cache
+  labels:
+    stack: tools
+    container: calibre
+    volume: .cache
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-tools-calibre-.cache

@@ -1,0 +1,2421 @@
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-recyclarr-config
+  labels:
+    stack: experimentations
+    container: recyclarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/recyclarr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mosquitto-log
+  labels:
+    stack: experimentations
+    container: mosquitto
+    volume: log
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mosquitto/log
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mosquitto-data
+  labels:
+    stack: experimentations
+    container: mosquitto
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mosquitto/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mosquitto-config
+  labels:
+    stack: experimentations
+    container: mosquitto
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mosquitto/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-transmission-config
+  labels:
+    stack: experimentations
+    container: transmission
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/transmission/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-cops-config
+  labels:
+    stack: experimentations
+    container: cops
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/cops/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-bin
+  labels:
+    stack: experimentations
+    container: data
+    volume: bin
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/bin
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-kaas
+  labels:
+    stack: experimentations
+    container: data
+    volume: kaas
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/kaas
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-compose
+  labels:
+    stack: experimentations
+    container: data
+    volume: compose
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/compose
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-backup
+  labels:
+    stack: experimentations
+    container: data
+    volume: backup
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/backup
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-tls
+  labels:
+    stack: experimentations
+    container: data
+    volume: tls
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/tls
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-custom_templates
+  labels:
+    stack: experimentations
+    container: data
+    volume: custom_templates
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/custom_templates
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-certs
+  labels:
+    stack: experimentations
+    container: data
+    volume: certs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/certs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-backups
+  labels:
+    stack: experimentations
+    container: data
+    volume: backups
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/backups
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-data-docker_config
+  labels:
+    stack: experimentations
+    container: data
+    volume: docker_config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/data/docker_config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-graylog-opensearch_data
+  labels:
+    stack: experimentations
+    container: graylog
+    volume: opensearch_data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/graylog/opensearch_data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-graylog-mongodb_data
+  labels:
+    stack: experimentations
+    container: graylog
+    volume: mongodb_data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/graylog/mongodb_data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-graylog-mongodb_config
+  labels:
+    stack: experimentations
+    container: graylog
+    volume: mongodb_config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/graylog/mongodb_config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-graylog-config
+  labels:
+    stack: experimentations
+    container: graylog
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/graylog/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-graylog-graylog_data
+  labels:
+    stack: experimentations
+    container: graylog
+    volume: graylog_data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/graylog/graylog_data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-flame-data
+  labels:
+    stack: experimentations
+    container: flame
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/flame/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-organizr-config
+  labels:
+    stack: experimentations
+    container: organizr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/organizr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-database-postgres
+  labels:
+    stack: experimentations
+    container: database
+    volume: postgres
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/database/postgres
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-yacht-config
+  labels:
+    stack: experimentations
+    container: yacht
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/yacht/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-monica-data
+  labels:
+    stack: experimentations
+    container: monica
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/monica/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-authentik-certs
+  labels:
+    stack: experimentations
+    container: authentik
+    volume: certs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/authentik/certs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-authentik-media
+  labels:
+    stack: experimentations
+    container: authentik
+    volume: media
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/authentik/media
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-authentik-custom-templates
+  labels:
+    stack: experimentations
+    container: authentik
+    volume: custom-templates
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/authentik/custom-templates
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-appdaemon-conf
+  labels:
+    stack: experimentations
+    container: appdaemon
+    volume: conf
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/appdaemon/conf
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-appdaemon-certs
+  labels:
+    stack: experimentations
+    container: appdaemon
+    volume: certs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/appdaemon/certs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-zwave2mqtt-.config-db
+  labels:
+    stack: experimentations
+    container: zwave2mqtt
+    volume: .config-db
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/zwave2mqtt/.config-db
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-zwave2mqtt-sessions
+  labels:
+    stack: experimentations
+    container: zwave2mqtt
+    volume: sessions
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/zwave2mqtt/sessions
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-zwave2mqtt-mqtt
+  labels:
+    stack: experimentations
+    container: zwave2mqtt
+    volume: mqtt
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/zwave2mqtt/mqtt
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-calibre-web-config
+  labels:
+    stack: experimentations
+    container: calibre-web
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/calibre-web/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-fogproject-mysql
+  labels:
+    stack: experimentations
+    container: fogproject
+    volume: mysql
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/fogproject/mysql
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-fogproject-images
+  labels:
+    stack: experimentations
+    container: fogproject
+    volume: images
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/fogproject/images
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-ipbx-logs
+  labels:
+    stack: experimentations
+    container: ipbx
+    volume: logs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/ipbx/logs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-ipbx-recording
+  labels:
+    stack: experimentations
+    container: ipbx
+    volume: recording
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/ipbx/recording
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-ipbx-backup
+  labels:
+    stack: experimentations
+    container: ipbx
+    volume: backup
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/ipbx/backup
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-zigbee2mqtt-data
+  labels:
+    stack: experimentations
+    container: zigbee2mqtt
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/zigbee2mqtt/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-Backups
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: Backups
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/Backups
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-Data
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: Data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/Data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-container_cache
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: container_cache
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/container_cache
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-Logs
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: Logs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/Logs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-livekit
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: livekit
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/livekit
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-Config
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: Config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/Config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-foundry-redis
+  labels:
+    stack: experimentations
+    container: foundry
+    volume: redis
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/foundry/redis
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mongodb-data
+  labels:
+    stack: experimentations
+    container: mongodb
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mongodb/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mongodb-config
+  labels:
+    stack: experimentations
+    container: mongodb
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mongodb/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-overseer-config
+  labels:
+    stack: experimentations
+    container: overseer
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/overseer/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-nginx-old
+  labels:
+    stack: experimentations
+    container: nginx
+    volume: old
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/nginx/old
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-nginx-data
+  labels:
+    stack: experimentations
+    container: nginx
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/nginx/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-nginx-letsencrypt
+  labels:
+    stack: experimentations
+    container: nginx
+    volume: letsencrypt
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/nginx/letsencrypt
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-magicmirror-css
+  labels:
+    stack: experimentations
+    container: magicmirror
+    volume: css
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/magicmirror/css
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-magicmirror-mmpm-config
+  labels:
+    stack: experimentations
+    container: magicmirror
+    volume: mmpm-config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/magicmirror/mmpm-config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-magicmirror-config
+  labels:
+    stack: experimentations
+    container: magicmirror
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/magicmirror/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-magicmirror-modules
+  labels:
+    stack: experimentations
+    container: magicmirror
+    volume: modules
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/magicmirror/modules
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-deepstack-datastore
+  labels:
+    stack: experimentations
+    container: deepstack
+    volume: datastore
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/deepstack/datastore
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-zabbix-zabbix-db.old
+  labels:
+    stack: experimentations
+    container: zabbix
+    volume: zabbix-db.old
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/zabbix/zabbix-db.old
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-zabbix-export
+  labels:
+    stack: experimentations
+    container: zabbix
+    volume: export
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/zabbix/export
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-ollama-ollama
+  labels:
+    stack: experimentations
+    container: ollama
+    volume: ollama
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/ollama/ollama
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-ollama-open-webui
+  labels:
+    stack: experimentations
+    container: ollama
+    volume: open-webui
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/ollama/open-webui
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-esphome-config
+  labels:
+    stack: experimentations
+    container: esphome
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/esphome/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-grocy-config
+  labels:
+    stack: experimentations
+    container: grocy
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/grocy/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-picard-config
+  labels:
+    stack: experimentations
+    container: picard
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/picard/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-authelia-config
+  labels:
+    stack: experimentations
+    container: authelia
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/authelia/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-airsonic-podcasts
+  labels:
+    stack: experimentations
+    container: airsonic
+    volume: podcasts
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/airsonic/podcasts
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-airsonic-config
+  labels:
+    stack: experimentations
+    container: airsonic
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/airsonic/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-airsonic-playlists
+  labels:
+    stack: experimentations
+    container: airsonic
+    volume: playlists
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/airsonic/playlists
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-nodered-data
+  labels:
+    stack: experimentations
+    container: nodered
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/nodered/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-puppet-code
+  labels:
+    stack: experimentations
+    container: puppet
+    volume: code
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/puppet/code
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-puppet-ssl
+  labels:
+    stack: experimentations
+    container: puppet
+    volume: ssl
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/puppet/ssl
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-influxdb2-etc
+  labels:
+    stack: experimentations
+    container: influxdb2
+    volume: etc
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/influxdb2/etc
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-influxdb2-lib
+  labels:
+    stack: experimentations
+    container: influxdb2
+    volume: lib
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/influxdb2/lib
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-vscode-config
+  labels:
+    stack: experimentations
+    container: vscode
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/vscode/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-checkmate-redis
+  labels:
+    stack: experimentations
+    container: checkmate
+    volume: redis
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/checkmate/redis
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-checkmate-mongo
+  labels:
+    stack: experimentations
+    container: checkmate
+    volume: mongo
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/checkmate/mongo
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-telegraf-telegraf.d
+  labels:
+    stack: experimentations
+    container: telegraf
+    volume: telegraf.d
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/telegraf/telegraf.d
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-iSpy-Media
+  labels:
+    stack: experimentations
+    container: iSpy
+    volume: Media
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/iSpy/Media
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-iSpy-Commands
+  labels:
+    stack: experimentations
+    container: iSpy
+    volume: Commands
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/iSpy/Commands
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-iSpy-XML
+  labels:
+    stack: experimentations
+    container: iSpy
+    volume: XML
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/iSpy/XML
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-notfiarr-config
+  labels:
+    stack: experimentations
+    container: notfiarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/notfiarr/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-emby-config
+  labels:
+    stack: experimentations
+    container: emby
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/emby/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-budge-config
+  labels:
+    stack: experimentations
+    container: budge
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/budge/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-hydra2-config
+  labels:
+    stack: experimentations
+    container: hydra2
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/hydra2/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-hydra2-downloads
+  labels:
+    stack: experimentations
+    container: hydra2
+    volume: downloads
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/hydra2/downloads
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-beets-config
+  labels:
+    stack: experimentations
+    container: beets
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/beets/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-jackett-downloads
+  labels:
+    stack: experimentations
+    container: jackett
+    volume: downloads
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/jackett/downloads
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-jackett-Jackett
+  labels:
+    stack: experimentations
+    container: jackett
+    volume: Jackett
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/jackett/Jackett
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-jackett-config
+  labels:
+    stack: experimentations
+    container: jackett
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/jackett/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-pihole-dnsmasq.d
+  labels:
+    stack: experimentations
+    container: pihole
+    volume: dnsmasq.d
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/pihole/dnsmasq.d
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-pihole-etc
+  labels:
+    stack: experimentations
+    container: pihole
+    volume: etc
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/pihole/etc
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-samba-shares
+  labels:
+    stack: experimentations
+    container: samba
+    volume: shares
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/samba/shares
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-openxpki-openxpki-config
+  labels:
+    stack: experimentations
+    container: openxpki
+    volume: openxpki-config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/openxpki/openxpki-config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-wazuh-config
+  labels:
+    stack: experimentations
+    container: wazuh
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/wazuh/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-kapowarr-db
+  labels:
+    stack: experimentations
+    container: kapowarr
+    volume: db
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/kapowarr/db
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-traggo-data
+  labels:
+    stack: experimentations
+    container: traggo
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/traggo/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-grafana-lib
+  labels:
+    stack: experimentations
+    container: grafana
+    volume: lib
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/grafana/lib
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-homeassistant-config
+  labels:
+    stack: experimentations
+    container: homeassistant
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/homeassistant/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-heimdall-config
+  labels:
+    stack: experimentations
+    container: heimdall
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/heimdall/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-n8n-data
+  labels:
+    stack: experimentations
+    container: n8n
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/n8n/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-fgc-data
+  labels:
+    stack: experimentations
+    container: fgc
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/fgc/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-jellyfin-config
+  labels:
+    stack: experimentations
+    container: jellyfin
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/jellyfin/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-jellyfin-cache
+  labels:
+    stack: experimentations
+    container: jellyfin
+    volume: cache
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/jellyfin/cache
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-jellyfin-config.old
+  labels:
+    stack: experimentations
+    container: jellyfin
+    volume: config.old
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/jellyfin/config.old
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mailserver-mail-data
+  labels:
+    stack: experimentations
+    container: mailserver
+    volume: mail-data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mailserver/mail-data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mailserver-mail-logs
+  labels:
+    stack: experimentations
+    container: mailserver
+    volume: mail-logs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mailserver/mail-logs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mailserver-mail-state
+  labels:
+    stack: experimentations
+    container: mailserver
+    volume: mail-state
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mailserver/mail-state
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mailserver-data
+  labels:
+    stack: experimentations
+    container: mailserver
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mailserver/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-mailserver-config
+  labels:
+    stack: experimentations
+    container: mailserver
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/mailserver/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-htpcmanager-config
+  labels:
+    stack: experimentations
+    container: htpcmanager
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/htpcmanager/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-obsidian-vaults
+  labels:
+    stack: experimentations
+    container: obsidian
+    volume: vaults
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/obsidian/vaults
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-obsidian-config
+  labels:
+    stack: experimentations
+    container: obsidian
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/obsidian/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-ejbca-persistent
+  labels:
+    stack: experimentations
+    container: ejbca
+    volume: persistent
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/ejbca/persistent
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-FMD2-data
+  labels:
+    stack: experimentations
+    container: FMD2
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/FMD2/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-FMD2-wine
+  labels:
+    stack: experimentations
+    container: FMD2
+    volume: wine
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/FMD2/wine
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-FMD2-modules
+  labels:
+    stack: experimentations
+    container: FMD2
+    volume: modules
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/FMD2/modules
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-FMD2-userdata
+  labels:
+    stack: experimentations
+    container: FMD2
+    volume: userdata
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/FMD2/userdata
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-wordpress-files
+  labels:
+    stack: experimentations
+    container: wordpress
+    volume: files
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/wordpress/files
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-redmine-files
+  labels:
+    stack: experimentations
+    container: redmine
+    volume: files
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/redmine/files
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-experimentations-bazarr-config
+  labels:
+    stack: experimentations
+    container: bazarr
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/experimentations/bazarr/config
+

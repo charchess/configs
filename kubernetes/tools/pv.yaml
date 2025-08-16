@@ -1,0 +1,341 @@
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-changedetection.io-datastore
+  labels:
+    stack: tools
+    container: changedetection.io
+    volume: datastore
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/changedetection.io/datastore
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-calibre-.cache
+  labels:
+    stack: tools
+    container: calibre
+    volume: .cache
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/calibre/.cache
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-calibre-.local
+  labels:
+    stack: tools
+    container: calibre
+    volume: .local
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/calibre/.local
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-calibre-config
+  labels:
+    stack: tools
+    container: calibre
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/calibre/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-calibre-ssl
+  labels:
+    stack: tools
+    container: calibre
+    volume: ssl
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/calibre/ssl
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-calibre-.config
+  labels:
+    stack: tools
+    container: calibre
+    volume: .config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/calibre/.config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-calibre-.XDG
+  labels:
+    stack: tools
+    container: calibre
+    volume: .XDG
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/calibre/.XDG
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-openproject-data
+  labels:
+    stack: tools
+    container: openproject
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/openproject/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-openproject-data.new
+  labels:
+    stack: tools
+    container: openproject
+    volume: data.new
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/openproject/data.new
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-openproject-db.new
+  labels:
+    stack: tools
+    container: openproject
+    volume: db.new
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/openproject/db.new
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-openproject-db
+  labels:
+    stack: tools
+    container: openproject
+    volume: db
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/openproject/db
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-vaultwarden-data
+  labels:
+    stack: tools
+    container: vaultwarden
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/vaultwarden/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-paperless-data
+  labels:
+    stack: tools
+    container: paperless
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/paperless/data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-paperless-config
+  labels:
+    stack: tools
+    container: paperless
+    volume: config
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/paperless/config
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-vscode-.vscode-global
+  labels:
+    stack: tools
+    container: vscode
+    volume: .vscode-global
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/vscode/.vscode-global
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-vscode-configs
+  labels:
+    stack: tools
+    container: vscode
+    volume: configs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/vscode/configs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-tools-wekan-data
+  labels:
+    stack: tools
+    container: wekan
+    volume: data
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/tools/wekan/data
+

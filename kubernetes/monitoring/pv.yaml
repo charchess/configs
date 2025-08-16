@@ -1,0 +1,241 @@
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-etc
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: etc
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/etc
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-snmptraps
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: snmptraps
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/snmptraps
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-export
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: export
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/export
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-mibs
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: mibs
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/mibs
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-modules
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: modules
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/modules
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-enc
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: enc
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/enc
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-ssh_keys
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: ssh_keys
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/ssh_keys
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-dbscripts
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: dbscripts
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/dbscripts
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-alertscripts
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: alertscripts
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/alertscripts
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-server-externalscripts
+  labels:
+    stack: monitoring
+    container: zabbix-server
+    volume: externalscripts
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-server/externalscripts
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-web-modules
+  labels:
+    stack: monitoring
+    container: zabbix-web
+    volume: modules
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-web/modules
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-pvc-monitoring-zabbix-web-nginx
+  labels:
+    stack: monitoring
+    container: zabbix-web
+    volume: nginx
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs
+  nfs:
+    server: jade
+    path: /data/nfs/containers/monitoring/zabbix-web/nginx
+

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: experimentations
+  name: pvc-experimentations-magicmirror-css
+  labels:
+    stack: experimentations
+    container: magicmirror
+    volume: css
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-experimentations-magicmirror-css

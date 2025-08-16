@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: infrastructure
+  name: pvc-infrastructure-awx_task-data
+  labels:
+    stack: infrastructure
+    container: awx_task
+    volume: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+  volumeName: pv-pvc-infrastructure-awx_task-data
