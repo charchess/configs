@@ -1,18 +1,15 @@
-# manifests/hubble-ui-ingress.yaml
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: hubble-ui-ingress
-  namespace: kube-system  # L'IngressRoute doit être dans le même namespace que le service qu'il cible
-spec:
-  entryPoints:
-    - websecure
-    - web # On ajoute aussi le http pour le premier test
-  routes:
-    - match: Host(`hubble.truxonline.com`)
-      kind: Rule
-      services:
-        - name: hubble-ui
-          port: 80
-          
-          
+    apiVersion: traefik.containo.us/v1alpha1
+    kind: IngressRoute
+    metadata:
+      name: hubble-ui-ingress
+      namespace: kube-system # Le service hubble-ui est dans kube-system
+    spec:
+      entryPoints:
+        - web # Pour le test en HTTP sur le port 80
+      routes:
+        - match: Host(`hubble.truxonline.com`)
+          kind: Rule
+          services:
+            - name: hubble-ui # Le nom du service que nous avons enfin réussi à créer
+              port: 80
+    
