@@ -165,8 +165,8 @@ cluster:
     extraManifests:
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cilium.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/traefik.yaml
-        - https://raw.githubusercontent.com/charchess/configs/refs/heads/main/talos/manifests/metallb-official.yaml
-        - https://raw.githubusercontent.com/charchess/configs/refs/heads/main/talos/manifests/metallb-config.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/metallb-official.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/metallb-config.yaml
     #   - https://www.example.com/manifest1.yaml
     #   - https://www.example.com/manifest2.yaml
 
