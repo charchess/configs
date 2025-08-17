@@ -60,7 +60,11 @@ spec:
           image: quay.io/metallb/controller:v0.14.5
           args:
             - --port=7472
-            - --config=metallb
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"      - --config=metallb
+            
 ---
 # DaemonSet speaker
 apiVersion: apps/v1
@@ -82,6 +86,10 @@ spec:
           image: quay.io/metallb/speaker:v0.14.5
           args:
             - --port=7472
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
 ---
 # IPAddressPool
 apiVersion: metallb.io/v1beta1
