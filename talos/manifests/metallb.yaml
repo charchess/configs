@@ -60,7 +60,7 @@ spec:
           image: quay.io/metallb/controller:v0.14.5
           args:
             - --port=7472
-            - --config=metallb
+#            - --config=metallb
       tolerations:
         - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
