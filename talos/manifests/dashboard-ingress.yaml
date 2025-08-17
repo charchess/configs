@@ -1,26 +1,21 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: ServersTransport
-metadata:
-  name: dashboard-transport
-  namespace: kubernetes-dashboard
-spec:
-  insecureSkipVerify: true
----
-apiVersion: traefik.containo.us/v1alpha1
+    
+# manifests/dashboard-ingress.yaml
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: kubernetes-dashboard-ingressroute
+  name: dashboard-ingress
   namespace: kubernetes-dashboard
 spec:
   entryPoints:
-    - websecure
+    - web # On commence par HTTP, c'est plus simple
   routes:
     - match: Host(`dashboard.truxonline.com`)
       kind: Rule
       services:
         - name: kubernetes-dashboard
           port: 443
-          scheme: https
-          serversTransport: dashboard-transport
-  tls:
-    secretName: dashboard-truxonline-cert
+          scheme: https # TRÈS IMPORTANT: On dit à Traefik de parler en HTTPS au dashboard
+          serversTransport: insecure-skip-verify@kubernetescrd
+          
+  
+  
