@@ -8,7 +8,7 @@ spec:
   entryPoints:
     - websecure # On utilise le point d'entrée HTTPS
   routes:
-    - match: Host(`traefik.ton-domaine.com`) # Le domaine pour accéder au dashboard
+    - match: Host(`traefik.truxonline.com`) # Le domaine pour accéder au dashboard
       kind: Rule
       services:
         - name: api@internal # C'est le nom magique pour le service du dashboard
