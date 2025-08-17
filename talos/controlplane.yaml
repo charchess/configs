@@ -167,10 +167,10 @@ cluster:
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cilium.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/metallb-official.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/metallb-config.yaml
-        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/traefik-complete.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/traefik-crds.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/kubernetes-dashboard.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/dashboard-admin-user.yaml
-        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/dashboard-ingress.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/dashboard-ingressroute.yaml
         
     #   - https://www.example.com/manifest1.yaml
     #   - https://www.example.com/manifest2.yaml
