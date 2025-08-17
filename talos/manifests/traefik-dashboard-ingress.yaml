@@ -1,0 +1,16 @@
+# manifests/traefik-dashboard-ingress.yaml
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure # On utilise le point d'entrée HTTPS
+  routes:
+    - match: Host(`traefik.ton-domaine.com`) # Le domaine pour accéder au dashboard
+      kind: Rule
+      services:
+        - name: api@internal # C'est le nom magique pour le service du dashboard
+          kind: TraefikService
+          

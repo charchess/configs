@@ -1639,6 +1639,10 @@ spec:
         app: metallb
         component: controller
     spec:
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists
       containers:
       - args:
         - --port=7472
