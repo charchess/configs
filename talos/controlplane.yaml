@@ -12,6 +12,7 @@ machine:
         disk: /dev/sda
         # On ne met PAS d'image d'installation. Talos utilisera celle de l'ISO.
     network:
+        hostname: jade
         interfaces:
           - interface: enp1s0  # On déclare l'interface PHYSIQUE
             # Pas de DHCP ou d'IP sur l'interface physique elle-même
