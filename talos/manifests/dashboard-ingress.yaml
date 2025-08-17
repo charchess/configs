@@ -3,7 +3,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: dashboard-ingress
+  name: kubernetes-dashboard
   namespace: kubernetes-dashboard
 spec:
   entryPoints:
@@ -15,7 +15,6 @@ spec:
         - name: kubernetes-dashboard
           port: 443
           scheme: https # TRÈS IMPORTANT: On dit à Traefik de parler en HTTPS au dashboard
-          serversTransport: kubernetes-dashboard/insecure-skip-verify@kubernetescrd
-          
+          serversTransport: traefik/insecure-skip-verify@kubernetescrd          
   
   

@@ -4,7 +4,7 @@ apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
 metadata:
   name: insecure-skip-verify
-  namespace: kubernetes-dashboard # On le met au même endroit que l'IngressRoute
+  namespace: traefik
 spec:
   insecureSkipVerify: true # La ligne magique qui dit "fais confiance"
 
