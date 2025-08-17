@@ -165,6 +165,7 @@ cluster:
     # A list of urls that point to additional manifests.
     extraManifests:
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cilium.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/traefik-crds.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/traefik.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/metallb-official.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/metallb-config.yaml
