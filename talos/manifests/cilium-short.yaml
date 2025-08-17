@@ -12,7 +12,7 @@ metadata:
   namespace: kube-system
 spec:
   chart: oci://ghcr.io/cilium/charts/cilium
-  version: 1.15.5
+  version: 1.18.1
   values: |
     operator:
       replicas: 1
