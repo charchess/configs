@@ -15,6 +15,7 @@ spec:
         - name: kubernetes-dashboard
           port: 443
           scheme: https # TRÈS IMPORTANT: On dit à Traefik de parler en HTTPS au dashboard
-
+          serversTransport: insecure-skip-verify@kubernetescrd
+          
   
   
