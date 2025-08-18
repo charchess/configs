@@ -19,3 +19,4 @@
 # Dépendances (exemple si vous aviez un projet Node.js)
 /node_modules/
 current
+talos/talos-backups
