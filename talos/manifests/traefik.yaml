@@ -1,9 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: traefik
----
 # Source: traefik/templates/rbac/serviceaccount.yaml
 kind: ServiceAccount
 apiVersion: v1
@@ -126,7 +121,6 @@ metadata:
     helm.sh/chart: traefik-37.0.0
     app.kubernetes.io/managed-by: Helm
   annotations:
-    cilium.io/loadbalancer-ipam-ips: 192.168.200.70
 spec:
   type: LoadBalancer
   selector:
@@ -244,10 +238,10 @@ spec:
           - "--metrics.prometheus.entrypoint=metrics"
           - "--providers.kubernetescrd"
           - "--providers.kubernetescrd.allowEmptyServices=true"
-          - "--providers.kubernetescrd.allowCrossNamespace=true"
           - "--providers.kubernetesingress"
           - "--providers.kubernetesingress.allowEmptyServices=true"
           - "--providers.kubernetesingress.ingressendpoint.publishedservice=traefik/traefik"
+          - "--providers.kubernetescrd.namespaces=traefik,kube-system,kubernetes-dashboard"
           - "--entryPoints.websecure.http.tls=true"
           - "--log.level=INFO"
           
@@ -269,13 +263,6 @@ spec:
         runAsGroup: 65532
         runAsNonRoot: true
         runAsUser: 65532
-      tolerations:
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
 ---
 # Source: traefik/templates/ingressclass.yaml
 apiVersion: networking.k8s.io/v1
