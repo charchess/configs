@@ -2,7 +2,7 @@
     kind: CiliumNetworkPolicy
     metadata:
       name: hubble-relay-policy
-      namespace: kube-system # La politique doit être dans le même namespace
+      namespace: kube-system
     spec:
       endpointSelector:
         matchLabels:
@@ -16,12 +16,10 @@
         - ports:
           - port: "53"
             protocol: ANY
-      # Règle N°2 : Autoriser la communication avec les agents Cilium (via le service hubble-peer)
-      - toEndpoints:
-        - matchLabels:
-            k8s-app: cilium
-        toPorts:
-        - ports:
-          - port: "4244" # Port de communication direct de Hubble
-            protocol: TCP
+      # Règle N°2 : Autoriser la communication avec le service hubble-peer
+      # Le service hubble-peer pointe vers les agents cilium.
+      - toServices:
+        - k8sService:
+            serviceName: hubble-peer
+            namespace: kube-system
     
