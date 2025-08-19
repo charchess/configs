@@ -1,4 +1,4 @@
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: dashboard-ingress
@@ -13,4 +13,4 @@ spec:
         - name: kubernetes-dashboard
           port: 443
           scheme: https
-          serversTransport: dashboard-transport@kubernetescrd # <--- AJOUTEZ CETTE LIGNE
+          serversTransport: dashboard-transport # <--- CORRIGÉ

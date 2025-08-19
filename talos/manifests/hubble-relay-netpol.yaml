@@ -1,0 +1,19 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-hubble-relay-to-peers
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s-app: hubble-relay
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s-app: cilium
+    toPorts:
+    - ports:
+      - port: "4244" # Port interne de Hubble Peer
+        protocol: TCP
+      - port: "443" # Port du service hubble-peer
+        protocol: TCP
