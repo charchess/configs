@@ -1002,7 +1002,7 @@ spec:
           type: Unconfined
         seccompProfile:
           type: RuntimeDefault
-     containers:
+      containers:
       - name: cilium-agent
         image: "quay.io/cilium/cilium:v1.18.1@sha256:65ab17c052d8758b2ad157ce766285e04173722df59bdee1ea6d5fda7149f0e9"
         imagePullPolicy: IfNotPresent
