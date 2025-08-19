@@ -263,6 +263,10 @@ spec:
         runAsGroup: 65532
         runAsNonRoot: true
         runAsUser: 65532
+      tolerations:         # <--- Vérifiez cet alignement
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"        
 ---
 # Source: traefik/templates/ingressclass.yaml
 apiVersion: networking.k8s.io/v1
