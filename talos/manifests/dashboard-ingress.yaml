@@ -1,20 +1,17 @@
-    
-# manifests/dashboard-ingress.yaml
-apiVersion: traefik.io/v1alpha1
+# dashboard-ingress.yaml
+apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: kubernetes-dashboard
-  namespace: kubernetes-dashboard
+  name: dashboard-ingress
+  namespace: kubernetes-dashboard # Important: le namespace du dashboard
 spec:
   entryPoints:
-    - web # On commence par HTTP, c'est plus simple
+    - web # ou websecure si vous configurez le TLS
   routes:
     - match: Host(`dashboard.truxonline.com`)
       kind: Rule
       services:
         - name: kubernetes-dashboard
           port: 443
-          scheme: https # TRÈS IMPORTANT: On dit à Traefik de parler en HTTPS au dashboard
-          serversTransport: traefik/insecure-skip-verify@kubernetescrd          
-  
-  
+          scheme: https # Le service du dashboard écoute en HTTPS
+

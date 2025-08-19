@@ -1834,6 +1834,7 @@ spec:
             - hubble-relay
           args:
             - serve
+            - --peer-service-scheme=http
           ports:
             - name: grpc
               containerPort: 4245
