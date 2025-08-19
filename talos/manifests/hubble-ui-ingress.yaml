@@ -1,15 +1,14 @@
-    apiVersion: traefik.containo.us/v1alpha1
-    kind: IngressRoute
-    metadata:
-      name: hubble-ui-ingress
-      namespace: kube-system # Le service hubble-ui est dans kube-system
-    spec:
-      entryPoints:
-        - web # Pour le test en HTTP sur le port 80
-      routes:
-        - match: Host(`hubble.truxonline.com`)
-          kind: Rule
-          services:
-            - name: hubble-ui # Le nom du service que nous avons enfin réussi à créer
-              port: 80
-    
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hubble-ui-ingress
+  namespace: kube-system
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`hubble.truxonline.com`)
+      kind: Rule
+      services:
+        - name: hubble-ui
+          port: 80
