@@ -29,14 +29,6 @@ metadata:
   name: "cilium-operator"
   namespace: kube-system
 ---
-# Source: cilium/templates/hubble-relay/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: "hubble-relay"
-  namespace: kube-system
-automountServiceAccountToken: false
----
 # Source: cilium/templates/hubble-ui/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -1009,8 +1001,8 @@ spec:
         appArmorProfile:
           type: Unconfined
         seccompProfile:
-          type: Unconfined
-      containers:
+          type: RuntimeDefault
+     containers:
       - name: cilium-agent
         image: "quay.io/cilium/cilium:v1.18.1@sha256:65ab17c052d8758b2ad157ce766285e04173722df59bdee1ea6d5fda7149f0e9"
         imagePullPolicy: IfNotPresent
@@ -1059,6 +1051,8 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           timeoutSeconds: 5
+        securityContext: # <--- AJOUTEZ CE BLOC
+          privileged: true
         env:
         - name: K8S_NODE_NAME
           valueFrom:
