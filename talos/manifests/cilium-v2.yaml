@@ -1809,7 +1809,6 @@ spec:
         kubernetes.io/os: linux
       tolerations:
         - key: node-role.kubernetes.io/control-plane
-          operator: Exists
       volumes:
       - name: config
         configMap:
