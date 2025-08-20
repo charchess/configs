@@ -315,7 +315,7 @@ metadata:
 data:
   config.yaml: |
     cluster-name: default
-#    peer-service: "hubble-peer.kube-system.svc.cluster.local.:80"
+    #    peer-service: "hubble-peer.kube-system.svc.cluster.local.:80"
     peer-service: "192.168.111.63:4244"
     listen-address: :4245
     gops: true
@@ -324,8 +324,6 @@ data:
     sort-buffer-len-max: 
     sort-buffer-drain-timeout: 
     disable-client-tls: true
-    
-    disable-server-tls: true
 ---
 # Source: cilium/templates/hubble-ui/configmap.yaml
 apiVersion: v1
