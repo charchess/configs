@@ -48,7 +48,7 @@ else
 fi
 
 # Le test le plus important pour Hubble Relay : est-il Ready ?
-kubectl wait --for=condition=Ready pod -l k8s-app=hubble-relay -n kube-system --timeout=60s &>/dev/null
+kubectl wait --for=condition=Ready pod -l k8s-app=hubble-relay -n kube-system --timeout=10s &>/dev/null
 check_result $? "Hubble Relay est Ready (communication avec l'agent OK)."
 
 

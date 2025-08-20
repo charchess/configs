@@ -1,38 +1,66 @@
-# Fichier : talos/manifests/cert-manager-webhook-gandi.yaml
+# Fichier : manifests/cert-manager-webhook-gandi.yaml (version finale)
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: cert-manager-webhook-gandi
   namespace: cert-manager
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+apiVersion: v1
+kind: Service
 metadata:
-  name: cert-manager-webhook-gandi:domain-solver
-rules:
-  - apiGroups:
-      - acme.cert-manager.io
-    resources:
-      - challenges
-    verbs:
-      - get
-      - list
-      - watch
-      - update
+  name: cert-manager-webhook-gandi
+  namespace: cert-manager
+spec:
+  type: ClusterIP
+  ports:
+  - port: 443
+    targetPort: https
+    protocol: TCP
+    name: https
+  selector:
+    app: cert-manager-webhook-gandi
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+apiVersion: cert-manager.io/v1
+kind: Certificate
 metadata:
-  name: cert-manager-webhook-gandi:domain-solver
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cert-manager-webhook-gandi:domain-solver
-subjects:
-  - apiGroup: ""
-    kind: ServiceAccount
-    name: cert-manager-webhook-gandi
-    namespace: cert-manager
+  name: cert-manager-webhook-gandi-ca
+  namespace: cert-manager
+spec:
+  isCA: true
+  commonName: cert-manager-webhook-gandi-ca
+  secretName: cert-manager-webhook-gandi-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: cert-manager-webhook-gandi-issuer
+  namespace: cert-manager
+spec:
+  ca:
+    secretName: cert-manager-webhook-gandi-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: cert-manager-webhook-gandi-tls
+  namespace: cert-manager
+spec:
+  secretName: cert-manager-webhook-gandi-tls
+  duration: 8760h
+  renewBefore: 360h
+  dnsNames:
+  - cert-manager-webhook-gandi
+  - cert-manager-webhook-gandi.cert-manager
+  - cert-manager-webhook-gandi.cert-manager.svc
+  issuerRef:
+    name: cert-manager-webhook-gandi-issuer
+    kind: Issuer
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -50,7 +78,6 @@ spec:
         app: cert-manager-webhook-gandi
     spec:
       serviceAccountName: cert-manager-webhook-gandi
-      # --- AJOUT DES TOLERATIONS ---
       tolerations:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
@@ -58,22 +85,20 @@ spec:
       - key: "node-role.kubernetes.io/master"
         operator: "Exists"
         effect: "NoSchedule"
-      # ---------------------------
       containers:
-        - name: webhook
-          image: sintef/cert-manager-webhook-gandi:v1.7.0
-          args:
-            - --tls-cert-file=/tls/tls.crt
-            - --tls-key-file=/tls/tls.key
-          ports:
-            - containerPort: 8443
-              name: https
-          volumeMounts:
-            - name: tls
-              mountPath: /tls
-              readOnly: true
-      volumes:
+      - name: webhook
+        image: ghcr.io/sintef/cert-manager-webhook-gandi:main
+        env:
+        - name: GROUP_NAME
+          value: acme.bwolf.me
+        ports:
+        - containerPort: 8443
+          name: https
+        volumeMounts:
         - name: tls
-          secret:
-            secretName: cert-manager-webhook-gandi-tls
-            
+          mountPath: /tls
+          readOnly: true
+      volumes:
+      - name: tls
+        secret:
+          secretName: cert-manager-webhook-gandi-tls

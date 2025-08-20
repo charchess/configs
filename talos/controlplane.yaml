@@ -172,9 +172,27 @@ cluster:
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/dashboard-admin-user.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/hubble-ui-ingress.yaml    
         - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+        # --- Dépendances et correctifs pour Cert-Manager ---
+        # 1. La politique réseau CRUCIALE pour autoriser la communication avec l'API-Server
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager-network-policies.yaml
+        
+        # 2. Le self-signed issuer pour les certificats internes
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/selfsigned-issuer.yaml
+
+        # --- Installation de Cert-Manager ---
+        # 3. Le cert-manager lui-même (assurez-vous que ce fichier est bien la version patchée avec les tolerations)
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager.yaml
-        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager-webhook-gandi.yaml        
-                      
+        
+        # 4. Le webhook Gandi complet (avec son service, certificat interne, etc.)
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager-webhook-gandi.yaml
+        
+        # 5. Les permissions RBAC nécessaires pour le webhook
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager-webhook-gandi-auth-reader.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager-gandi-rbac.yaml
+        
+        
+        
     #   - https://www.example.com/manifest1.yaml
     #   - https://www.example.com/manifest2.yaml
 
