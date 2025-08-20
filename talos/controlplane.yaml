@@ -172,7 +172,9 @@ cluster:
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/dashboard-admin-user.yaml
         - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/hubble-ui-ingress.yaml    
         - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-      
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager.yaml
+        - https://raw.githubusercontent.com/charchess/configs/main/talos/manifests/cert-manager-webhook-gandi.yaml        
+                      
     #   - https://www.example.com/manifest1.yaml
     #   - https://www.example.com/manifest2.yaml
 
