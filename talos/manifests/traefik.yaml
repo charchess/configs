@@ -1,4 +1,10 @@
 ---
+# Source: manifest/traefik.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik
+---
 # Source: traefik/templates/rbac/serviceaccount.yaml
 kind: ServiceAccount
 apiVersion: v1
