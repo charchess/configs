@@ -315,8 +315,8 @@ metadata:
 data:
   config.yaml: |
     cluster-name: default
-    #    peer-service: "hubble-peer.kube-system.svc.cluster.local.:80"
-    peer-service: "192.168.111.63:4244"
+    peer-service: "hubble-peer.kube-system.svc.cluster.local.:80"
+    # peer-service: "192.168.111.63:4244"
     listen-address: :4245
     gops: true
     gops-port: "9893"
