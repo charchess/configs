@@ -1,0 +1,75 @@
+machine en mode maintenance, on apply les configs
+* talosctl apply-config --insecure --nodes 192.168.0.167   --file controlplane.yaml --config-patch @vixens-jade.yaml
+* talosctl apply-config --insecure --nodes emy.mtn   --file controlplane.yaml --config-patch @vixens-emy.yaml
+* talosctl apply-config --insecure --nodes ruby.mtn   --file controlplane.yaml --config-patch @vixens-ruby.yaml
+
+on defini le endpoint contacté par defaut lors des commandes talosctl :
+* talosctl config endpoint 192.168.111.60
+
+on verifie l'etat des membres
+* talosctl --talosconfig talosconfig --nodes 192.168.111.63 get members
+
+
+on configure les endpoints et node par defaut (devrait etre la vip je pense?) :
+* talosctl --talosconfig talosconfig config endpoint 192.168.111.63
+* talosctl --talosconfig talosconfig config node 192.168.111.63
+
+on bootstrap un seul node ! :
+* talosctl --nodes 192.168.111.63 bootstrap
+
+
+on genere le kubeconfig :
+* talosctl --nodes 192.168.111.60 kubeconfig .
+* export KUBECONFIG=$(pwd)/kubeconfig
+
+on installe cilium :
+* helm install cilium cilium/cilium --version 1.18.1 \
+  --namespace kube-system \
+  -f manifests/cilium-values.yaml
+
+
+installation de metallb :
+* helm repo add metallb https://metallb.github.io/metallb
+* helm repo update
+* helm install metallb metallb/metallb \
+  --namespace metallb-system --create-namespace \
+  -f metallb-values.yaml
+
+installation de traefik :
+* helm repo add traefik https://helm.traefik.io/traefik
+* helm repo update
+* helm install traefik traefik/traefik \
+  --namespace traefik \
+  --create-namespace \
+  -f manifests/traefik-values.yaml \
+  --set providers.kubernetesCRD.enabled=true \
+  --set providers.kubernetesIngress.enabled=true
+
+
+
+installation de cert-manager :
+* helm repo add jetstack https://charts.jetstack.io
+* helm repo update
+* helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --values manifests/cert-manager-values.yaml
+
+
+installation webhook sintef/gandi
+* helm repo add gandi-webhook https://sintef.github.io/cert-manager-webhook-gandi
+* helm repo update
+* helm install gandi-webhook gandi-webhook/cert-manager-webhook-gandi \
+  --namespace cert-manager \
+  --set gandiPat="42a2a1c56e29bbff391345eafe811e2e03ba0586" \
+  --values manifests/cert-manager-webhook-gandi-values.yaml
+
+on installe le clusterissuer :
+* kubectl apply -f manifests/cert-manager-clusterissuer.yaml
+
+	on mets en place le certificat pour homeassistant :
+	* kubectl apply -f manifests/homeassistant-ingress-https.yaml
+
+
+
+

@@ -1,0 +1,31 @@
+# manifests/cert-manager-webhook-gandi-values.yaml
+rbac:
+  create: true
+  createClusterIssuerRBAC: true
+    
+gandiApiToken: "42a2a1c56e29bbff391345eafe811e2e03ba0586"
+
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+# Option spécifique au SINTEF fork
+certManager:
+  serviceAccount:
+    create: false               # déjà existant
+    name: cert-manager          # SA utilisé par cert-manager
+
+extraRBAC:
+  enabled: true 
+  serviceAccountName: cert-manager   # <— link the cert-manager SA
+  
+extraClusterRoleBinding:
+  # bind the ClusterRole to the cert-manager SA
+  - name: cert-manager-webhook-gandi:cert-manager
+    subjects:
+      - kind: ServiceAccount
+        name: cert-manager
+        namespace: cert-manager
+        
+groupName: acme.bwolf.me

@@ -1,0 +1,40 @@
+# manifests/mail-contacts-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mail-contacts
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-gandi-prod
+    # Traefik will forward to HTTPS backend
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    # Skip TLS verify if backend uses self-signed
+    traefik.ingress.kubernetes.io/service.serverstransport: insecure@file
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - mail.truxonline.com
+        - contacts.truxonline.com
+      secretName: mail-contacts-truxonline-tls
+  rules:
+    - host: mail.truxonline.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mail-backend
+                port:
+                  number: 443
+    - host: contacts.truxonline.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mail-backend
+                port:
+                  number: 443
+                  

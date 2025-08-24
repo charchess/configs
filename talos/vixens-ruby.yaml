@@ -1,0 +1,28 @@
+# vixens-ruby.yaml
+machine:
+  type: controlplane
+  certSANs: ["192.168.111.66", "192.168.200.66"]
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.30.0
+    clusterDNS: ["10.96.0.10"]
+    nodeIP:
+      validSubnets: ["192.168.111.0/24", "192.168.200.0/24"]
+  network:
+    hostname: ruby
+    interfaces:
+      - interface: enp2s0
+        vlans:
+          - vlanId: 200
+            dhcp: false
+            addresses: ["192.168.200.66/24"]
+            routes:
+              - network: 0.0.0.0/0
+                gateway: 192.168.200.1
+          - vlanId: 111
+            dhcp: false
+            addresses: ["192.168.111.66/24"]
+            vip:
+              ip: 192.168.111.60
+  install:
+    disk: /dev/sda
+    image: ghcr.io/siderolabs/installer:v1.7.5

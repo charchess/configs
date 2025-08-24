@@ -1,0 +1,26 @@
+# manifests/hubble-service.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hubble-ui
+  namespace: kube-system
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-gandi-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure   # HTTPS
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - hubble.truxonline.com
+      secretName: hubble-truxonline-tls
+  rules:
+    - host: hubble.truxonline.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hubble-ui
+                port:
+                  number: 80         # 80 interne, pas 443
