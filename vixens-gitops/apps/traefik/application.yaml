@@ -1,11 +1,27 @@
-source:
-  repoURL: https://helm.traefik.io/traefik
-  chart: traefik
-  targetRevision: "34.0.0"
-  helm:
-    releaseName: traefik
-    valueFiles:
-      - $values/vixens-gitops/apps/traefik/values.yaml
-- repoURL: https://github.com/charchess/configs.git
-  targetRevision: gitops
-  ref: values
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://helm.traefik.io/traefik
+      chart: traefik
+      targetRevision: "34.0.0"
+      helm:
+        releaseName: traefik
+        valueFiles:
+          - $values/vixens-gitops/apps/traefik/values.yaml
+    - repoURL: https://github.com/charchess/configs.git
+      targetRevision: gitops
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
