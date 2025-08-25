@@ -1,2 +1,0 @@
-#!/bin/bash
-kubectl run test --image=alpine --rm -it --restart=Never \  --overrides='{"spec": {"tolerations":[{"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}],"securityContext":{"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}},"containers":[{"name":"test","image":"alpine","command":["sh"],"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]}}}]}}'
