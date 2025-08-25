@@ -12,6 +12,7 @@
 #    port: 443
 #    targetPort: 443
 
+# vixens-gitops/apps/traefik/values.yaml
 service:
   type: LoadBalancer
   loadBalancerIP: "192.168.200.70"
@@ -28,3 +29,15 @@ tolerations:
   - key: "node-role.kubernetes.io/control-plane"
     operator: "Exists"
     effect: "NoSchedule"
+
+# 🔒 respect PodSecurity restricted
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
