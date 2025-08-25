@@ -1,0 +1,32 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: ingress-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.200.70-192.168.200.79
+  autoAssign: false
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: dynamic-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.200.200-192.168.200.250
+  autoAssign: true
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: vlan200-advertisement
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - ingress-pool
+  - dynamic-pool
+  interfaces:
+  - enp2s0.200
+  - enp3s0.200

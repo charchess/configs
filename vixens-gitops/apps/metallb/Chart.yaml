@@ -1,0 +1,10 @@
+# vixens-gitops/apps/metallb/Chart.yaml
+apiVersion: v2
+name: metallb
+type: application
+version: 1.0.0
+appVersion: "0.14.5"
+dependencies:
+  - name: metallb
+    version: 0.14.5
+    repository: https://metallb.github.io/metallb
