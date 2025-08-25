@@ -12,7 +12,7 @@ spec:
       helm:
         releaseName: argocd
         valueFiles:
-          - $values/vixens-gitops/argocd/values.yaml
+          - $values/vixens-gitops/apps/argocd/values.yaml
     - repoURL: https://github.com/charchess/configs.git
       targetRevision: gitops
       ref: values
