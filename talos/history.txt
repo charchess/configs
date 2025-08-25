@@ -34,6 +34,10 @@ installation de metallb :
 * helm install metallb metallb/metallb \
   --namespace metallb-system --create-namespace \
   -f metallb-values.yaml
+* kubectl apply -f manifests/metallb-config.yaml
+
+
+
 
 installation de traefik :
 * helm repo add traefik https://helm.traefik.io/traefik
@@ -44,6 +48,7 @@ installation de traefik :
   -f manifests/traefik-values.yaml \
   --set providers.kubernetesCRD.enabled=true \
   --set providers.kubernetesIngress.enabled=true
+* kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v3.0/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml # pour ajouter les crds
 
 
 
@@ -72,4 +77,34 @@ on installe le clusterissuer :
 
 
 
+installation de rook :
+* helm repo add rook-release https://charts.rook.io/release
+* helm repo update
 
+
+
+
+
+
+
+
+
+installation de argoCD
+* helm repo add argo https://argoproj.github.io/argo-helmhelm 
+* repo update
+* kubectl apply -f manifests/argocd-redis-secret.yaml
+* helm install argocd argo/argo-cd \
+  --namespace argocd \
+  --create-namespace \
+  -f manifests/argocd-values.yaml
+* kubectl apply -f manifests/argocd-ingress.yaml
+* recuperation du mot de passe : kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+* ajout du repo : kubectl apply -f manifests/argocd-repo.yaml
+
+# 1. S’assurer que le secret contient bien une valeur non vide
+kubectl create secret generic argocd-redis \
+  --from-literal=redis-password='argocd-redis-pw' \
+  --namespace argocd \
+  --dry-run=client -o yaml | kubectl apply -f -
+# 2. Redémarrer le déploiement Redis (déclenche un nouveau pod)
+kubectl rollout restart deployment argocd-redis -n argocd

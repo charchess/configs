@@ -1,0 +1,42 @@
+# manifests/argocd-ingress.yaml
+# 1. On demande à cert-manager de créer un certificat pour notre domaine.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-ui-tls
+  namespace: argocd
+spec:
+  # Le nom du Secret où cert-manager stockera le certificat généré.
+  secretName: argocd-ui-tls-secret
+  
+  # Le nom de domaine à sécuriser.
+  dnsNames:
+  - argocd.truxonline.com
+
+  # On indique quel est l'émetteur de certificat à utiliser.
+  issuerRef:
+    name: letsencrypt-gandi-prod
+    kind: ClusterIssuer
+
+---
+# 2. On dit à Traefik d'exposer le service d'ArgoCD en utilisant ce certificat.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+spec:
+  # On écoute sur le point d'entrée sécurisé (HTTPS/443).
+  entryPoints:
+    - websecure
+  routes:
+    # Si la requête est pour "argocd.truxonline.com"...
+    - match: Host(`argocd.truxonline.com`)
+      kind: Rule
+      services:
+        # ...on la redirige vers le service de l'interface d'ArgoCD.
+        - name: argocd-server
+          port: 80 # Traefik gère le TLS, on peut donc cibler le port HTTP du service.
+  # On dit à Traefik d'utiliser le certificat qui sera créé par cert-manager.
+  tls:
+    secretName: argocd-ui-tls-secret

@@ -26,4 +26,22 @@ machine:
   install:
     disk: /dev/nvme0n1
     image: ghcr.io/siderolabs/installer:v1.7.5
-    wipe: false
+
+#  files:
+#    - op: create
+#      path: /var/etc/iscsi/initiatorname.iscsi
+#      permissions: 0o600
+#      content: |
+#        InitiatorName=iqn.2017-11.dev.talos:494e9791d5f66a852806d70ea21a82de
+#
+#    - op: create
+#      path: /var/etc/iscsi/send_targets
+#      permissions: 0o644
+#      content: |
+#        # BEGIN RECORD 2.0-873
+#        discovery.startup = manual
+#        discovery.type = sendtargets
+#        discovery.sendtargets.address = 192.168.111.69
+#        discovery.sendtargets.port = 3260
+#        discovery.sendtargets.auth.authmethod = None
+#        # END RECORD

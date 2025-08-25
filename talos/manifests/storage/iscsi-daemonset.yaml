@@ -1,0 +1,37 @@
+# manifests/storage/iscsi-daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: iscsiadm
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: iscsiadm
+  template:
+    metadata:
+      labels:
+        app: iscsiadm
+    spec:
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+      - operator: Exists
+      containers:
+      - name: iscsiadm
+        image: ghcr.io/siderolabs/iscsi-tools:v0.1.0
+#        command: ["/bin/sleep","infinity"]   # si sleep existe, sinon supprime command
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: iscsi-config
+          mountPath: /etc/iscsi
+        - name: dev
+          mountPath: /dev
+      volumes:
+      - name: iscsi-config
+        hostPath:
+          path: /var/etc/iscsi
+      - name: dev
+        hostPath:
+          path: /dev
