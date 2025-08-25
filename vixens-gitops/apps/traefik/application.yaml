@@ -6,12 +6,17 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/charchess/configs.git
-    targetRevision: gitops
-    path: vixens-gitops/apps/traefik
+    repoURL: https://helm.traefik.io/traefik
+    chart: traefik
+    targetRevision: "34.0.0"
     helm:
+      releaseName: traefik
       valueFiles:
-        - values.yaml
+        - $values/vixens-gitops/apps/traefik/values.yaml
+    # second repo that only carries values.yaml
+  - repoURL: https://github.com/charchess/configs.git
+    targetRevision: gitops
+    ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
