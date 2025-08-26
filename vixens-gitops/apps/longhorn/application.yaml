@@ -13,6 +13,9 @@ spec:
     targetRevision: 1.6.0
     helm:
       values: |
+        global:
+          cattle:
+            systemDefaultRegistry: ""
         defaultSettings:
           createDefaultDiskLabeledNodes: true
           defaultDataPath: /var/lib/longhorn
@@ -31,13 +34,7 @@ spec:
           ui:
             type: ClusterIP
         
-        csi:
-          attacherReplicaCount: 3
-          provisionerReplicaCount: 3
-          resizerReplicaCount: 3
-          snapshotterReplicaCount: 3
-        
-        # Tolerations pour control-plane
+        # Configurations pour Talos OS
         longhornManager:
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
@@ -46,6 +43,8 @@ spec:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
+          securityContext:
+            privileged: true
         
         longhornDriver:
           tolerations:
@@ -55,15 +54,23 @@ spec:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
+          securityContext:
+            privileged: true
         
-        longhornUI:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
+        # Désactiver le hook pré-upgrade problématique
+        preUpgradeChecker:
+          job:
+            enabled: false
+        
+        # Configuration CSI
+        csi:
+          attacherReplicaCount: 2
+          provisionerReplicaCount: 2
+          resizerReplicaCount: 2
+          snapshotterReplicaCount: 2
+        
+        webhook:
+          replicas: 2
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
@@ -73,4 +80,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-            
+      - SkipDryRunOnMissingResource=true
