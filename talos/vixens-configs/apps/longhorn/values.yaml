@@ -1,0 +1,25 @@
+# values.yaml - À créer comme ConfigMap
+defaultSettings:
+  createDefaultDiskLabeledNodes: true
+  defaultDataPath: /var/lib/longhorn
+  replicaSoftAntiAffinity: false
+  storageOverProvisioningPercentage: 200
+  storageMinimalAvailablePercentage: 25
+
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+
+ingress:
+  enabled: false
+
+service:
+  ui:
+    type: ClusterIP
+
+csi:
+  attacherReplicaCount: 3
+  provisionerReplicaCount: 3
+  resizerReplicaCount: 3
+  snapshotterReplicaCount: 3
+  
