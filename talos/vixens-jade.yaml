@@ -27,13 +27,28 @@ machine:
     disk: /dev/nvme0n1
     image: ghcr.io/siderolabs/installer:v1.7.5
 
-#  files:
+  files:
+    - op: create
+      path: /var/etc/iscsi/initiatorname.iscsi
+      permissions: 0o600
+      content: |
+        InitiatorName=iqn.2017-11.dev.talos:494e9791d5f66a852806d70ea21a82de-test
+
 #    - op: create
-#      path: /var/etc/iscsi/initiatorname.iscsi
-#      permissions: 0o600
+#      path: /etc/iscsi/iscsid.conf
+#      permissions: 0o644
 #      content: |
-#        InitiatorName=iqn.2017-11.dev.talos:494e9791d5f66a852806d70ea21a82de
-#
+#        # Talos iSCSI daemon configuration
+#        iscsid.startup = /bin/systemctl
+#        node.startup = automatic
+#        node.session.auth.authmethod = None
+#        node.session.timeo.replacement_timeout = 120
+#        node.conn[0].timeo.login_timeout = 15
+#        node.conn[0].timeo.logout_timeout = 15
+#        node.conn[0].timeo.noop_out_interval = 5
+#        node.conn[0].timeo.noop_out_timeout = 5
+        
+        
 #    - op: create
 #      path: /var/etc/iscsi/send_targets
 #      permissions: 0o644

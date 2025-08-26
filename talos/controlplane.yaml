@@ -290,7 +290,8 @@ machine:
     kernel:
         modules:
         - name: iscsi_tcp
-#        - name: ib_iser        
+        - name: dm_crypt
+        - name: dm_mod
     #         - name: brtfs
     # seccompProfiles:
     #     - name: audit.json

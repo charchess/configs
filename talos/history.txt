@@ -77,10 +77,27 @@ on installe le clusterissuer :
 
 
 
+
+installation iscsi :
+* upgrade du node (v1.10.6, iscsi-tools) :  
+  talosctl upgrade --nodes <IP_DU_NŒUD> \
+  --image factory.talos.dev/metal-installer/c9078f9419961640c712a8bf2bb9174933dfcf1da383fd8ea2b7dc21493f8bac:v1.10.6 \
+  --preserve
+
 installation de rook :
 * helm repo add rook-release https://charts.rook.io/release
 * helm repo update
-
+export ROOK_NS="rook-ceph"
+export ROOK_VERSION="v1.18.0"       # <- choisis la dernière stable
+export HELM_REPO="rook-release"
+helm upgrade --install rook-ceph "$HELM_REPO/rook-ceph" \
+  --namespace "$ROOK_NS" \
+  --values manifests/rook-operator-values.yaml \
+  --version "$ROOK_VERSION"
+helm upgrade --install rook-ceph-cluster "$HELM_REPO/rook-ceph-cluster" \
+  --namespace "$ROOK_NS" \
+  --values rook-cluster-values.yaml \
+  --version "$ROOK_VERSION"
 
 
 
