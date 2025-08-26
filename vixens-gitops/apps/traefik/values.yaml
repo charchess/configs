@@ -1,9 +1,4 @@
 # apps/traefik/values.yaml
-
-
-
-
-
 #ports:
 #  web:
 #    port: 80
