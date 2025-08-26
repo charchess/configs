@@ -1,90 +1,49 @@
-# application.yaml - Configuration officielle
+# --- File: application.yaml ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  # Nom de l'application dans ArgoCD
   name: longhorn
+  # Toutes les applications ArgoCD doivent être dans le namespace 'argocd'
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
+  # Projet ArgoCD cible
   project: default
+
+  # Source de la configuration de l'application
   source:
-    repoURL: https://charts.longhorn.io
-    chart: longhorn
-    targetRevision: 1.6.0
+    # Le dépôt Git où se trouvent les manifestes et les fichiers de valeurs
+    repoURL: https://github.com/charchess/configs.git
+    targetRevision: gitops
+    path: vixens-gitops/apps/longhorn
+
+    # Spécification du chart Helm à utiliser
     helm:
-      values: |
-        # Configuration Talos OS officielle
-        global:
-          cattle:
-            systemDefaultRegistry: ""
-        
-        # Désactiver complètement les hooks problématiques
-        preUpgradeChecker:
-          enabled: false
-        
-        # Settings optimisés
-        defaultSettings:
-          createDefaultDiskLabeledNodes: true
-          defaultDataPath: /var/lib/longhorn
-          replicaSoftAntiAffinity: false
-          storageOverProvisioningPercentage: 200
-          storageMinimalAvailablePercentage: 25
-        
-        persistence:
-          defaultClass: true
-          defaultClassReplicaCount: 2
-        
-        ingress:
-          enabled: false
-        
-        service:
-          ui:
-            type: ClusterIP
-        
-        # Configuration Talos OS
-        longhornManager:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          securityContext:
-            privileged: true
-        
-        longhornDriver:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          securityContext:
-            privileged: true
-        
-        # Réduction des ressources
-        csi:
-          attacherReplicaCount: 1
-          provisionerReplicaCount: 1
-          resizerReplicaCount: 1
-          snapshotterReplicaCount: 1
-        
-        webhook:
-          replicas: 1
+      # Chart à déployer et sa source
+      chart: longhorn
+      repoURL: https://charts.longhorn.io
+      # Version à jour et stable du chart
+      targetRevision: 1.9.1
+
+      # Fichier de valeurs à utiliser, situé dans le 'path' du dépôt Git ci-dessus
+      valueFiles:
+        - ./values.yaml
+
+  # Destination du déploiement
   destination:
+    # URL du cluster cible (cluster interne où ArgoCD est installé)
     server: https://kubernetes.default.svc
+    # Namespace cible pour le déploiement des ressources Longhorn
     namespace: longhorn-system
+
+  # Politique de synchronisation
   syncPolicy:
     automated:
+      # Supprime automatiquement les ressources qui ne sont plus dans Git
       prune: true
+      # Rétablit automatiquement l'état désiré si une dérive est détectée
       selfHeal: true
     syncOptions:
+      # Crée automatiquement le namespace de destination s'il n'existe pas
       - CreateNamespace=true
-      - SkipDryRunOnMissingResource=true
-      - SkipHooks=true  # Force l'ignorance des hooks
-      
-      
-      
+            
