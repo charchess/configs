@@ -13,29 +13,12 @@ spec:
     targetRevision: 1.6.0
     helm:
       values: |
-        # Désactiver le hook pour éviter le problème
+        global:
+          cattle:
+            systemDefaultRegistry: ""
         preUpgradeChecker:
-          job:
-            enabled: false
+          enabled: false  # ← Désactive complètement
         
-        # Configuration Talos OS
-        longhornManager:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-          securityContext:
-            privileged: true
-        
-        longhornDriver:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-          securityContext:
-            privileged: true
-        
-        # Configuration de base
         defaultSettings:
           createDefaultDiskLabeledNodes: true
           defaultDataPath: /var/lib/longhorn
@@ -54,6 +37,22 @@ spec:
           ui:
             type: ClusterIP
         
+        longhornManager:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+          securityContext:
+            privileged: true
+        
+        longhornDriver:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+          securityContext:
+            privileged: true
+        
         csi:
           attacherReplicaCount: 2
           provisionerReplicaCount: 2
@@ -68,5 +67,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      
-      
+      - SkipDryRunOnMissingResource=true
