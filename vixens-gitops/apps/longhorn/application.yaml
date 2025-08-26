@@ -1,4 +1,4 @@
-# application.yaml avec configuration complète
+# application.yaml - Basé sur la doc officielle
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -11,37 +11,34 @@ spec:
   source:
     repoURL: https://charts.longhorn.io
     chart: longhorn
-    targetRevision: 1.6.0
+    targetRevision: 1.6.0  # Version stable
     helm:
       values: |
-        # Configuration ServiceAccount pour le pre-upgrade job
-        serviceAccount:
-          create: true
-          name: longhorn-service-account
-        
-        # Configuration Talos OS
+        # Configuration Talos OS officielle
         global:
           cattle:
             systemDefaultRegistry: ""
         
+        # Settings optimisés pour Talos
         defaultSettings:
           createDefaultDiskLabeledNodes: true
           defaultDataPath: /var/lib/longhorn
           replicaSoftAntiAffinity: false
           storageOverProvisioningPercentage: 200
           storageMinimalAvailablePercentage: 25
+          defaultReplicaCount: 2  # Pour 3 nœuds
+          defaultLonghornStaticStorageClass: longhorn
         
+        # Configuration CSI
         persistence:
           defaultClass: true
-          defaultClassReplicaCount: 3
+          defaultClassReplicaCount: 2
         
-        ingress:
+        # Désactiver les hooks problématiques
+        preUpgradeChecker:
           enabled: false
         
-        service:
-          ui:
-            type: ClusterIP
-        
+        # Managers avec tolérations Talos
         longhornManager:
           tolerations:
             - key: "node-role.kubernetes.io/control-plane"
@@ -64,14 +61,34 @@ spec:
           securityContext:
             privileged: true
         
-        # Configuration namespace
-        namespaceOverride: "longhorn-system"
+        # UI accessible
+        ingress:
+          enabled: false
+        service:
+          ui:
+            type: ClusterIP
         
+        # Réduction des replicas pour petit cluster
         csi:
           attacherReplicaCount: 2
           provisionerReplicaCount: 2
           resizerReplicaCount: 2
           snapshotterReplicaCount: 2
+        
+        webhook:
+          replicas: 2
+        
+        # SecurityContext
+        longhornManager:
+          securityContext:
+            privileged: true
+        longhornDriver:
+          securityContext:
+            privileged: true
+        
+        # NetworkPolicy (facultatif)
+        networkPolicies:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
@@ -82,3 +99,5 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - SkipDryRunOnMissingResource=true
+      
+      
