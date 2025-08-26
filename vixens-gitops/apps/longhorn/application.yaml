@@ -1,3 +1,4 @@
+# application.yaml - Configuration officielle
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -13,10 +14,16 @@ spec:
     targetRevision: 1.6.0
     helm:
       values: |
-        # Configuration officielle - désactive les hooks
+        # Configuration Talos OS officielle
+        global:
+          cattle:
+            systemDefaultRegistry: ""
+        
+        # Désactiver complètement les hooks problématiques
         preUpgradeChecker:
           enabled: false
         
+        # Settings optimisés
         defaultSettings:
           createDefaultDiskLabeledNodes: true
           defaultDataPath: /var/lib/longhorn
@@ -58,11 +65,15 @@ spec:
           securityContext:
             privileged: true
         
+        # Réduction des ressources
         csi:
-          attacherReplicaCount: 2
-          provisionerReplicaCount: 2
-          resizerReplicaCount: 2
-          snapshotterReplicaCount: 2
+          attacherReplicaCount: 1
+          provisionerReplicaCount: 1
+          resizerReplicaCount: 1
+          snapshotterReplicaCount: 1
+        
+        webhook:
+          replicas: 1
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
@@ -73,3 +84,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - SkipDryRunOnMissingResource=true
+      - SkipHooks=true  # Force l'ignorance des hooks
+      
+      
+      
