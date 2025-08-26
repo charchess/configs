@@ -8,9 +8,34 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/charchess/configs
-    targetRevision: gitops
-    path: vixens-gitops/apps/longhorn
+    repoURL: https://charts.longhorn.io
+    chart: longhorn
+    targetRevision: 1.6.0
+    helm:
+      values: |
+        defaultSettings:
+          createDefaultDiskLabeledNodes: true
+          defaultDataPath: /var/lib/longhorn
+          replicaSoftAntiAffinity: false
+          storageOverProvisioningPercentage: 200
+          storageMinimalAvailablePercentage: 25
+        
+        persistence:
+          defaultClass: true
+          defaultClassReplicaCount: 3
+        
+        ingress:
+          enabled: false
+        
+        service:
+          ui:
+            type: ClusterIP
+        
+        csi:
+          attacherReplicaCount: 3
+          provisionerReplicaCount: 3
+          resizerReplicaCount: 3
+          snapshotterReplicaCount: 3
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
@@ -20,3 +45,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      
+      
