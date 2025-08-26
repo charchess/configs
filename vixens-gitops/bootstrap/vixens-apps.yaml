@@ -1,0 +1,35 @@
+# --- File: vixens-apps.yaml ---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  # Nom de notre application "racine"
+  name: root-apps-vixens
+  # Doit être dans le namespace d'ArgoCD
+  namespace: argocd
+spec:
+  project: default
+  
+  # La source est le répertoire qui contient TOUTES vos applications pour le cluster vixens
+  source:
+    repoURL: https://github.com/charchess/configs.git
+    targetRevision: gitops
+    # On pointe vers le dossier parent 'apps'
+    path: vixens-gitops/apps
+    # Option magique : demande à ArgoCD de scanner les sous-répertoires
+    directory:
+      recurse: true
+
+  # La destination est le cluster lui-même, car on y déploie des "Applications"
+  destination:
+    server: https://kubernetes.default.svc
+    # Les ressources 'Application' elles-mêmes peuvent être créées dans n'importe quel namespace,
+    # mais 'argocd' est une bonne pratique.
+    namespace: argocd
+
+  # Politique de synchronisation pour l'application racine
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
