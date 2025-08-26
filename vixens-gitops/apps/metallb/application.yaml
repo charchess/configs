@@ -1,4 +1,4 @@
-# vixens-gitops/apps/metallb/application.yaml
+# --- File: vixens-gitops/apps/metallb/application.yaml (CORRIGÉ) ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,15 +7,30 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/charchess/configs.git
-    targetRevision: gitops
-    path: vixens-gitops/apps/metallb
+    # Source du chart Helm officiel de MetalLB
+    repoURL: https://metallb.github.io/metallb
+    chart: metallb
+    targetRevision: "0.14.5" # Utilisez une version de chart stable et récente
+
+    # Référence au fichier de valeurs.
+    # Pour que cela fonctionne, ArgoCD va chercher ce fichier de valeurs
+    # dans le dépôt Git spécifié ci-dessous.
     helm:
       valueFiles:
+        # Ce chemin est interprété par rapport au 'path' ci-dessous
         - values.yaml
+  
+  # La source pour les fichiers de valeurs (values.yaml) est votre dépôt Git
+  # Cette section était implicite dans votre fichier, mais il est bon de la clarifier.
+  # En réalité, ArgoCD combine les deux. Il prend le chart de `repoURL`
+  # et applique les `valueFiles` trouvés dans la source Git.
+  # Pour éviter toute confusion, on peut déclarer les deux sources.
+  # Cependant, le modèle simple que vous aviez est suffisant si on ajoute le chart et repoURL.
+
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
+  
   syncPolicy:
     automated:
       prune: true
