@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-org/vixens-configs
-    targetRevision: HEAD
-    path: apps/longhorn
+    repoURL: https://github.com/charchess/configs
+    targetRevision: gitops
+    path: vixens-gitops/apps/longhorn
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
