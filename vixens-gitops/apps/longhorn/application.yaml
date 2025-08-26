@@ -13,9 +13,29 @@ spec:
     targetRevision: 1.6.0
     helm:
       values: |
-        global:
-          cattle:
-            systemDefaultRegistry: ""
+        # Désactiver le hook pour éviter le problème
+        preUpgradeChecker:
+          job:
+            enabled: false
+        
+        # Configuration Talos OS
+        longhornManager:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+          securityContext:
+            privileged: true
+        
+        longhornDriver:
+          tolerations:
+            - key: "node-role.kubernetes.io/control-plane"
+              operator: "Exists"
+              effect: "NoSchedule"
+          securityContext:
+            privileged: true
+        
+        # Configuration de base
         defaultSettings:
           createDefaultDiskLabeledNodes: true
           defaultDataPath: /var/lib/longhorn
@@ -34,43 +54,11 @@ spec:
           ui:
             type: ClusterIP
         
-        # Configurations pour Talos OS
-        longhornManager:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          securityContext:
-            privileged: true
-        
-        longhornDriver:
-          tolerations:
-            - key: "node-role.kubernetes.io/control-plane"
-              operator: "Exists"
-              effect: "NoSchedule"
-            - key: "node-role.kubernetes.io/master"
-              operator: "Exists"
-              effect: "NoSchedule"
-          securityContext:
-            privileged: true
-        
-        # Désactiver le hook pré-upgrade problématique
-        preUpgradeChecker:
-          job:
-            enabled: false
-        
-        # Configuration CSI
         csi:
           attacherReplicaCount: 2
           provisionerReplicaCount: 2
           resizerReplicaCount: 2
           snapshotterReplicaCount: 2
-        
-        webhook:
-          replicas: 2
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
@@ -80,4 +68,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - SkipDryRunOnMissingResource=true
+      
+      
