@@ -17,7 +17,8 @@ spec:
     helm:
       valueFiles:
         # ArgoCD va chercher ce fichier dans le dépôt Git spécifié ci-dessous
-        - $values/vixens-gitops/apps/longhorn/values.yaml
+#        - $values/vixens-gitops/apps/longhorn/values.yaml
+        - values.yaml
 
   destination:
     server: https://kubernetes.default.svc
