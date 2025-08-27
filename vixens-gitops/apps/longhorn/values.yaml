@@ -1,17 +1,14 @@
-# Active la création d'une ressource Ingress par le chart Helm
+# Active et configure l'Ingress pour l'interface utilisateur
 ingress:
   enabled: true
-  # Spécifie que cet Ingress doit être géré par Traefik
-  ingressClassName: traefik
-  # Le nom d'hôte pour l'interface utilisateur
+  ingressClassName: "traefik"
   host: longhorn.truxonline.com
-  # Les annotations nécessaires pour Traefik (TLS) et cert-manager (certificat)
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
     traefik.ingress.kubernetes.io/router.tls: "true"
 
-# Ajoute les tolérances nécessaires pour vos nœuds control-plane
-# Le chart les appliquera à tous les composants pertinents.
+# AJOUTE LES TOLÉRANCES NÉCESSAIRES POUR VOS NŒUDS CONTROL-PLANE
+# Le chart de Longhorn appliquera cette configuration à tous ses composants.
 tolerations:
   - key: "node-role.kubernetes.io/control-plane"
     operator: "Exists"
