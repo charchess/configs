@@ -1,49 +1,31 @@
-# --- File: application.yaml ---
+# vixens-gitops/apps/longhorn/application.yaml (CORRIGÉ ET FINAL)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  # Nom de l'application dans ArgoCD
   name: longhorn
-  # Toutes les applications ArgoCD doivent être dans le namespace 'argocd'
   namespace: argocd
 spec:
-  # Projet ArgoCD cible
   project: default
-
-  # Source de la configuration de l'application
   source:
-    # Le dépôt Git où se trouvent les manifestes et les fichiers de valeurs
-    repoURL: https://github.com/charchess/configs.git
-    targetRevision: gitops
-    path: vixens-gitops/apps/longhorn
+    # On définit d'abord la source du chart Helm distant
+    repoURL: https://charts.longhorn.io
+    chart: longhorn
+    targetRevision: "1.9.1" # Version à jour du chart
 
-    # Spécification du chart Helm à utiliser
+    # Ensuite, on spécifie que les fichiers de valeurs
+    # proviennent d'une source différente (notre dépôt Git).
     helm:
-      # Chart à déployer et sa source
-      chart: longhorn
-      repoURL: https://charts.longhorn.io
-      # Version à jour et stable du chart
-      targetRevision: 1.9.1
-
-      # Fichier de valeurs à utiliser, situé dans le 'path' du dépôt Git ci-dessus
       valueFiles:
-        - ./values.yaml
+        # ArgoCD va chercher ce fichier dans le dépôt Git spécifié ci-dessous
+        - $values/vixens-gitops/apps/longhorn/values.yaml
 
-  # Destination du déploiement
   destination:
-    # URL du cluster cible (cluster interne où ArgoCD est installé)
     server: https://kubernetes.default.svc
-    # Namespace cible pour le déploiement des ressources Longhorn
     namespace: longhorn-system
 
-  # Politique de synchronisation
   syncPolicy:
     automated:
-      # Supprime automatiquement les ressources qui ne sont plus dans Git
       prune: true
-      # Rétablit automatiquement l'état désiré si une dérive est détectée
       selfHeal: true
     syncOptions:
-      # Crée automatiquement le namespace de destination s'il n'existe pas
       - CreateNamespace=true
-            
