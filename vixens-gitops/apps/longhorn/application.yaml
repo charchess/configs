@@ -1,8 +1,9 @@
+# --- Contenu FINAL et DÉFINITIF pour : vixens-gitops/apps/longhorn/application.yaml ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: longhorn
-  namespace: argocd
+  namespace: argopd
 spec:
   project: default
   # On utilise le champ "sources" (au pluriel)
@@ -12,15 +13,17 @@ spec:
       chart: longhorn
       targetRevision: 1.9.1
       helm:
-        # Pointeur vers le fichier de valeurs dans la deuxième source
+        # Pointeur vers le fichier de valeurs dans la source nommée 'values'
         valueFiles:
           - $values/values.yaml
 
-    # Source N°2 : Notre dépôt Git qui fournit les fichiers de valeurs et les manifestes manuels
+    # Source N°2 : Notre dépôt Git, qui fournit les manifestes manuels ET les fichiers de valeurs
     - repoURL: https://github.com/charchess/configs.git
       targetRevision: gitops
-      # On ne spécifie pas de 'path' ici car valueFiles est absolu
-      # On nomme cette source "values" pour la référence ci-dessus
+      # --- LA CORRECTION EST ICI ---
+      # On spécifie le chemin où trouver nos manifestes manuels (ingress.yaml) et nos valeurs
+      path: vixens-gitops/apps/longhorn
+      # On nomme cette source pour la référence $values
       ref: values
 
   destination:
@@ -34,3 +37,5 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - Replace=true # On garde cette option pour plus de robustesse
+      
+      
