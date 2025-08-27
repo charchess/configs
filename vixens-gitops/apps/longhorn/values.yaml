@@ -2,12 +2,7 @@
 
 # Configuration de l'Ingress que nous avons validée
 ingress:
-  enabled: true
-  ingressClassName: "traefik"
-  host: longhorn.truxonline.com
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
-    traefik.ingress.kubernetes.io/router.tls: "true"
+  enabled: false
 
 # Désactivation du hook problématique via la méthode native du chart
 # (comme dans votre version originale)

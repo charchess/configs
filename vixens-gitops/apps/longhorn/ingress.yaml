@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: longhorn-ingress-manual
+  namespace: longhorn-system
+  # Les annotations que le chart Helm n'appliquait pas correctement
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: longhorn.truxonline.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # Pointeur vers le bon service de l'interface Longhorn
+            name: longhorn-frontend
+            port:
+              number: 80
+              
