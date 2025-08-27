@@ -1,5 +1,4 @@
 # vixens-gitops/apps/longhorn/application.yaml
-# --- Contenu final pour : vixens-gitops/apps/longhorn/application.yaml ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -13,15 +12,19 @@ spec:
     targetRevision: gitops
     path: vixens-gitops/apps/longhorn
 
-    # Dans cette source, on spécifie le chart distant à utiliser
     helm:
+      # Info sur le chart distant
       chart: longhorn
       repoURL: https://charts.longhorn.io
       targetRevision: "1.9.1" # ou la version que vous souhaitez
       
-      # Et le fichier de valeurs local à appliquer
+      # Le fichier de valeurs local à appliquer
       valueFiles:
         - values.yaml
+
+      # --- LA LIGNE CRUCIALE, RÉINTRODUITE ---
+      # Dit à ArgoCD d'ignorer tous les hooks (comme pre-upgrade).
+      noHooks: true
 
   destination:
     server: https://kubernetes.default.svc
