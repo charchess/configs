@@ -1,4 +1,4 @@
-# vixens-gitops/apps/longhorn/application.yaml (Version finale avec noHooks)
+# vixens-gitops/apps/longhorn/application.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -6,31 +6,22 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    # La source principale est notre dépôt Git
-    repoURL: https://github.com/charchess/configs.git
-    targetRevision: gitops
-    path: vixens-gitops/apps/longhorn
-
-    helm:
-      # Info sur le chart distant
+  sources:
+    # Chart distant
+    - repoURL: https://charts.longhorn.io
       chart: longhorn
-      repoURL: https://charts.longhorn.io
-      targetRevision: "1.9.1"
-      
-      # Le fichier de valeurs local à appliquer
-      valueFiles:
-        - values.yaml
-
-      # --- LA SOLUTION FINALE ---
-      # Dit à ArgoCD d'ignorer tous les hooks (comme pre-upgrade)
-      # lors de la génération des manifestes.
-      noHooks: true
-
+      targetRevision: 1.9.1
+      helm:
+        valueFiles:
+          - $values/vixens-gitops/apps/longhorn/values.yaml
+        skipCrds: false
+    # Dépôt Git contenant values.yaml + resources.yaml
+    - repoURL: https://github.com/charchess/configs.git
+      targetRevision: gitops
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
-
   syncPolicy:
     automated:
       prune: true

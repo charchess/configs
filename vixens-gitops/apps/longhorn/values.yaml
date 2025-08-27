@@ -1,31 +1,4 @@
-# --- File: values.yaml ---
-#
-# Fichier de valeurs pour le chart Helm de Longhorn
-# Personnalisé pour le déploiement sur le cluster 'vixens'
-#
-
-# 1. Tolérances pour les nœuds control-plane
-# Cette section assure que tous les composants de Longhorn peuvent
-# être schedulés sur les nœuds ayant la teinte 'control-plane'.
-tolerations:
-- key: "node-role.kubernetes.io/control-plane"
-  operator: "Exists"
-  effect: "NoSchedule"
-
-# 2. Configuration de l'Ingress pour l'interface utilisateur de Longhorn
-# Active l'accès externe à l'UI via Traefik et sécurise la connexion
-# avec un certificat Let's Encrypt géré par cert-manager.
-ingress:
-  enabled: true
-  # Le type d'Ingress est géré par Traefik via la classe d'ingress
-  ingressClassName: "traefik"
-  # Nom d'hôte pour accéder à l'UI
-  host: longhorn.truonline.com
-  # Annotations critiques pour la gestion TLS et le certificat
-  annotations:
-    # Indique à cert-manager quel ClusterIssuer utiliser
-    cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
-    # Indique à Traefik d'activer le TLS pour ce routeur
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    
-    
+# Valeurs par défaut de Longhorn
+# À adapter selon ton cluster Talos
+preUpgradeChecker:
+  jobEnabled: false
