@@ -4,61 +4,120 @@
 # Ce bloc va surcharger les permissions RBAC par défaut du chart
 # et donner au serveur ArgoCD les droits nécessaires pour fonctionner.
 
+
+redis:
+  # Demande au chart de créer un Service Account dédié pour le pod Redis
+  serviceAccount:
+    create: true
+    # Nom du Service Account qui sera créé
+    name: argocd-redis
+
+  # Nous gardons la désactivation de l'init container "volumePermissions"
+  # car c'était une autre source de problème potentielle.
+  volumePermissions:
+    enabled: false
+    
+# Force la stratégie "Recreate" pour le repo-server
+repoServer:
+  strategy:
+    type: Recreate
+
+# Force la stratégie "Recreate" pour l'applicationset-controller
+applicationSet:
+  strategy:
+    type: Recreate
+
+# (Si le notifications-controller est aussi déployé via un Deployment,
+# il faudrait aussi ajouter une section pour lui, la structure peut varier)
+
+# N'oubliez pas la configuration globale des tolerations
+global:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
 server:
-  # On s'assure que le chart a bien le droit de créer les règles RBAC
+  strategy:
+    type: Recreate
+
   rbac:
     create: true
 
-  # On définit explicitement les règles complètes pour le ClusterRole du serveur
   clusterRoleRules:
-    # Règle principale donnant un accès complet pour gérer les ressources
-    - apiGroups:
-        - "*"
-      resources:
-        - "*"
-      verbs:
-        - get
-        - list    # <-- PERMISSION QUI MANQUAIT
-        - watch   # <-- PERMISSION QUI MANQUAIT
-        - patch
-        - delete
-        - update
-        - create
+    # La clé que le template attendait. En la mettant à 'true', on active
+    # la création des règles personnalisées ci-dessous.
+    enabled: true
     
-    # Règles additionnelles pour des actions spécifiques (logs, events, etc.)
-    - apiGroups:
-        - ""
-      resources:
-        - events
-      verbs:
-        - create
-        - list
-    - apiGroups:
-        - ""
-      resources:
-        - pods
-        - pods/log
-      verbs:
-        - get
-    - apiGroups:
-        - argoproj.io
-      resources:
-        - applications
-        - applicationsets
-      verbs:
-        - get
-        - list
-        - update
-        - watch
-    - apiGroups:
-        - batch
-      resources:
-        - jobs
-      verbs:
-        - create
-    - apiGroups:
-        - argoproj.io
-      resources:
-        - workflows
-      verbs:
-        - create
+    # La liste des règles doit être indentée sous la clé 'rules'.
+    rules:
+      # Règle principale donnant un accès complet pour gérer les ressources
+      - apiGroups:
+          - "*"
+        resources:
+          - "*"
+        verbs:
+          - get
+          - list
+          - watch
+          - patch
+          - delete
+          - update
+          - create
+      
+      # Règles additionnelles pour des actions spécifiques (logs, events, etc.)
+      - apiGroups:
+          - ""
+        resources:
+          - events
+        verbs:
+          - create
+          - list
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+          - pods/log
+        verbs:
+          - get
+      - apiGroups:
+          - argoproj.io
+        resources:
+          - applications
+          - applicationsets
+        verbs:
+          - get
+          - list
+          - update
+          - watch
+      - apiGroups:
+          - batch
+        resources:
+          - jobs
+        verbs:
+          - create
+      - apiGroups:
+          - argoproj.io
+        resources:
+          - workflows
+        verbs:
+          - create
+          
+          
+# Pour le notifications-controller, la structure du chart peut être imbriquée
+notifications:
+  deployment:
+    strategy:
+      type: Recreate
+
+
+# --- Stratégie pour le StatefulSet ---
+
+controller:
+  strategy:
+    type: Recreate
+  # La configuration de la stratégie pour un StatefulSet est différente
+  statefulSet:
+    updateStrategy:
+      type: Recreate
+
