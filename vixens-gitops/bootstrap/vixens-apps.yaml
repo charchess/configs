@@ -18,6 +18,7 @@ spec:
     # Option magique : demande à ArgoCD de scanner les sous-répertoires
     directory:
       recurse: true
+      include: '**/application.yaml'
 
   # La destination est le cluster lui-même, car on y déploie des "Applications"
   destination:
