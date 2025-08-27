@@ -6,16 +6,19 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/charchess/configs.git
-    targetRevision: gitops
-    path: vixens-gitops/apps/longhorn
-    helm:
+  sources:
+    # Chart distant
+    - repoURL: https://charts.longhorn.io
       chart: longhorn
-      repoURL: https://charts.longhorn.io
-      targetRevision: "1.9.1"
-      valueFiles:
-        - values.yaml
+      targetRevision: 1.9.1
+      helm:
+        valueFiles:
+          - $values/vixens-gitops/apps/longhorn/values.yaml
+        skipCrds: false
+    # Dépôt Git contenant values.yaml + resources.yaml
+    - repoURL: https://github.com/charchess/configs.git
+      targetRevision: gitops
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system

@@ -1,4 +1,6 @@
-# Active et configure l'Ingress pour l'interface utilisateur
+# --- values.yaml : RESTAURÉ ET CORRIGÉ ---
+
+# Configuration de l'Ingress que nous avons validée
 ingress:
   enabled: true
   ingressClassName: "traefik"
@@ -7,9 +9,34 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
     traefik.ingress.kubernetes.io/router.tls: "true"
 
-# AJOUTE LES TOLÉRANCES NÉCESSAIRES POUR VOS NŒUDS CONTROL-PLANE
-# Le chart de Longhorn appliquera cette configuration à tous ses composants.
-tolerations:
-  - key: "node-role.kubernetes.io/control-plane"
-    operator: "Exists"
-    effect: "NoSchedule"
+# Désactivation du hook problématique via la méthode native du chart
+# (comme dans votre version originale)
+preUpgradeChecker:
+  jobEnabled: false
+
+# Tolérances explicites pour chaque composant, car le chart
+# ignore une configuration globale. C'est la clé de la solution.
+longhornManager:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+longhornDriver:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+longhornUI:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+# Par sécurité, nous laissons aussi la section globale au cas où de nouveaux
+# composants du chart en auraient besoin.
+global:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+      
+      
