@@ -40,10 +40,10 @@ global:
 server:
   strategy:
     type: Recreate
-
   rbac:
     create: true
-
+  extraArgs:
+    - --insecure
   clusterRoleRules:
     # La clé que le template attendait. En la mettant à 'true', on active
     # la création des règles personnalisées ci-dessous.
