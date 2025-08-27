@@ -1,27 +1,18 @@
-# Valeurs par défaut de Longhorn
-preUpgradeChecker:
-  jobEnabled: false
+# Active la création d'une ressource Ingress par le chart Helm
+ingress:
+  enabled: true
+  # Spécifie que cet Ingress doit être géré par Traefik
+  ingressClassName: traefik
+  # Le nom d'hôte pour l'interface utilisateur
+  host: longhorn.truxonline.com
+  # Les annotations nécessaires pour Traefik (TLS) et cert-manager (certificat)
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
+    traefik.ingress.kubernetes.io/router.tls: "true"
 
-global:
-  tolerations:
-    - key: "node-role.kubernetes.io/control-plane"
-      operator: "Exists"
-      effect: "NoSchedule"
-
-longhornManager:
-  tolerations:
-    - key: "node-role.kubernetes.io/control-plane"
-      operator: "Exists"
-      effect: "NoSchedule"
-
-longhornDriver:
-  tolerations:
-    - key: "node-role.kubernetes.io/control-plane"
-      operator: "Exists"
-      effect: "NoSchedule"
-
-longhornUI:
-  tolerations:
-    - key: "node-role.kubernetes.io/control-plane"
-      operator: "Exists"
-      effect: "NoSchedule"
+# Ajoute les tolérances nécessaires pour vos nœuds control-plane
+# Le chart les appliquera à tous les composants pertinents.
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
