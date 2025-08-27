@@ -1,16 +1,10 @@
-# --- values.yaml : RESTAURÉ ET CORRIGÉ ---
+# --- Contenu pour : vixens-gitops/apps/longhorn/values.yaml ---
 
-# Configuration de l'Ingress que nous avons validée
+# On dit au chart de NE PAS créer d'Ingress, car nous le gérons nous-mêmes
 ingress:
   enabled: false
 
-# Désactivation du hook problématique via la méthode native du chart
-# (comme dans votre version originale)
-preUpgradeChecker:
-  jobEnabled: false
-
-# Tolérances explicites pour chaque composant, car le chart
-# ignore une configuration globale. C'est la clé de la solution.
+# Tolérances explicites pour chaque composant
 longhornManager:
   tolerations:
     - key: "node-role.kubernetes.io/control-plane"
@@ -26,12 +20,8 @@ longhornUI:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
       effect: "NoSchedule"
-# Par sécurité, nous laissons aussi la section globale au cas où de nouveaux
-# composants du chart en auraient besoin.
 global:
   tolerations:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
       effect: "NoSchedule"
-      
-      

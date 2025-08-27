@@ -1,5 +1,3 @@
-# vixens-gitops/apps/longhorn/application.yaml
-# --- application.yaml : On passe en mode "directory" pour tout déployer ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -7,13 +5,23 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    # La source est maintenant le répertoire. ArgoCD va scanner ce dossier
-    # et appliquer TOUS les .yaml qu'il trouve (notre ingress.yaml)
-    # ET il va aussi détecter et rendre le chart Helm.
-    repoURL: https://github.com/charchess/configs.git
-    targetRevision: gitops
-    path: vixens-gitops/apps/longhorn
+  # On utilise le champ "sources" (au pluriel)
+  sources:
+    # Source N°1 : Le chart Helm distant
+    - repoURL: https://charts.longhorn.io
+      chart: longhorn
+      targetRevision: 1.9.1
+      helm:
+        # Pointeur vers le fichier de valeurs dans la deuxième source
+        valueFiles:
+          - $values/values.yaml
+
+    # Source N°2 : Notre dépôt Git qui fournit les fichiers de valeurs et les manifestes manuels
+    - repoURL: https://github.com/charchess/configs.git
+      targetRevision: gitops
+      # On ne spécifie pas de 'path' ici car valueFiles est absolu
+      # On nomme cette source "values" pour la référence ci-dessus
+      ref: values
 
   destination:
     server: https://kubernetes.default.svc
@@ -25,3 +33,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - Replace=true # On garde cette option pour plus de robustesse
