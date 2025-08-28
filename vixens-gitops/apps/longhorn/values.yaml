@@ -10,6 +10,10 @@ longhornManager:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
       effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+      
 longhornDriver:
   tolerations:
     - key: "node-role.kubernetes.io/control-plane"
@@ -28,6 +32,8 @@ global:
       
 # Tolerations appliquées à tous les composants système (managers, engine-image, etc.)
 defaultSettings:
+  systemManagedComponentsNodeSelector:
+    kubernetes.io/os: linux
   systemManagedComponentsTolerations:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
