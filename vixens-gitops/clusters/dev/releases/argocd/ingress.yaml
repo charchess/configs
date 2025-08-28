@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-server-https
+  namespace: argocd
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`argocd.truxonline.com`)
+      kind: Rule
+      services:
+        - name: argocd-server
+          port: 443                 # ← 443, pas 80
+          scheme: https             # ← précise le schéma cible
+          serversTransport:
+            insecureSkipVerify: true  # ← cert autosigné
+  tls:
+    certResolver: le

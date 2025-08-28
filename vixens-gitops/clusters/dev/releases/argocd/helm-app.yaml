@@ -10,17 +10,28 @@ spec:
   source:
     repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
-    targetRevision: 7.3.11
+    targetRevision: 8.3.1
     helm:
       valuesObject:
         global:
-          domain: argocd.dev.vixens.local
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
         configs:
           params:
             server.insecure: true
         server:
           service:
-            type: LoadBalancer
+            ports:
+              - name: http
+                port: 80
+                targetPort: 8080
+                protocol: TCP
+        redis:
+          secretInit:
+            job:
+              enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -28,3 +39,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      
+      
