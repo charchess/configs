@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/charchess/config
+    repoURL: https://github.com/charchess/configs
     targetRevision: gitops
     path: vixens-gitops/clusters/dev/releases
   destination:
