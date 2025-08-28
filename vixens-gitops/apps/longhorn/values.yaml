@@ -25,3 +25,14 @@ global:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
       effect: "NoSchedule"
+      
+# Tolerations appliquées à tous les composants système (managers, engine-image, etc.)
+defaultSettings:
+  systemManagedComponentsTolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
+      
