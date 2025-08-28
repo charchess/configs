@@ -7,24 +7,25 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    - repoURL: https://github.com/charchess/configs.git
-      targetRevision: HEAD
-      path: vixens-gitops/apps/argocd/helm-chart
+  sources:
+    # Chart Helm officiel d'Argo CD
+    - repoURL: https://github.com/argoproj/argo-helm.git
+      chart: argo-cd
+      targetRevision: 7.7.6
       helm:
         valueFiles:
           - $values/vixens-gitops/apps/argocd/helm-values.yaml
-    # Dépôt Git pour les manifestes manuels
+    # Manifestes manuels (IngressRoute, etc.)
     - repoURL: https://github.com/charchess/configs.git
       targetRevision: gitops
       path: vixens-gitops/apps/argocd/manifests
-
+      ref: values
   destination:
     server: https://kubernetes.default.svc
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      
