@@ -26,6 +26,11 @@ spec:
       # On nomme cette source pour la référence $values
       ref: values
 
+    # Dépôt Git pour les manifestes manuels
+    - repoURL: https://github.com/charchess/configs.git
+      targetRevision: gitops
+      path: vixens-gitops/apps/longhorn/manifests
+    
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system

@@ -7,8 +7,13 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-gandi-prod"
     traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure   # HTTPS
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - hubble.truxonline.com
+      secretName: hubble-truxonline-tls
   rules:
   - host: longhorn.truxonline.com
     http:
@@ -20,3 +25,5 @@ spec:
             name: longhorn-frontend
             port:
               number: 80
+
+
