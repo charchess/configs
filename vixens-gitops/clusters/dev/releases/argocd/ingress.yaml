@@ -11,9 +11,7 @@ spec:
       kind: Rule
       services:
         - name: argocd-server
-          port: 443                 # ← 443, pas 80
-          scheme: https             # ← précise le schéma cible
-          serversTransport:
-            insecureSkipVerify: true  # ← cert autosigné
+          port: 80
   tls:
     certResolver: le
+    
