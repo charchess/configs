@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   # Nom de notre application "racine"
-  name: root-apps-vixens
+  name: vixens
   # Doit être dans le namespace d'ArgoCD
   namespace: argocd
 spec:
