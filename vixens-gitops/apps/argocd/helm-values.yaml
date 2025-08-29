@@ -1,11 +1,13 @@
 global:
+global:
+  extraAnnotations:
+    gitops-test: "ok-1756479078"
   hooks:
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
         effect: "NoSchedule"
-  extraAnnotations:
-    gitops-test: "truedate-$(date +%s)"
+    gitops-test: "ok-$(date +%s)"
     
 server:
   tolerations:
