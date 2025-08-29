@@ -1,5 +1,4 @@
 global:
-global:
   extraAnnotations:
     gitops-test: "ok-1756479078"
   hooks:
@@ -47,7 +46,13 @@ redis:
     - key: "node-role.kubernetes.io/control-plane"
       operator: "Exists"
       effect: "NoSchedule"
-
+  secretInit:
+    job:
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+          
 notifications:
   tolerations:
     - key: "node-role.kubernetes.io/control-plane"
