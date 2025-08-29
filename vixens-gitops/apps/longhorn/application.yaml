@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: longhorn
-  namespace: argopd
+  namespace: argocd
 spec:
   project: default
   # On utilise le champ "sources" (au pluriel)
