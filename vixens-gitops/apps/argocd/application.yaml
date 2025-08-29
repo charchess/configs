@@ -8,14 +8,14 @@ metadata:
 spec:
   project: default
   sources:
-    # Chart Helm officiel d'Argo CD
-    - repoURL: https://github.com/argoproj/argo-helm.git
+    # Helm chart (official)
+    - repoURL: https://argoproj.github.io/argo-helm  # ← fix
       chart: argo-cd
       targetRevision: 7.7.6
       helm:
         valueFiles:
           - $values/vixens-gitops/apps/argocd/helm-values.yaml
-    # Manifestes manuels (IngressRoute, etc.)
+    # Extra manifests (IngressRoute, etc.)
     - repoURL: https://github.com/charchess/configs.git
       targetRevision: gitops
       path: vixens-gitops/apps/argocd/manifests
@@ -25,7 +25,7 @@ spec:
     namespace: argocd
   syncPolicy:
     automated:
-      prune: true
+      prune: false   # ← never prune yourself
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
