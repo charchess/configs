@@ -5,7 +5,7 @@ global:
         operator: "Exists"
         effect: "NoSchedule"
   extraAnnotations:
-    gitops-test: "true-$(date +%s)"
+    gitops-test: "truedate-$(date +%s)"
     
 server:
   tolerations:
