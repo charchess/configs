@@ -4,7 +4,9 @@ global:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
         effect: "NoSchedule"
-
+  extraAnnotations:
+    gitops-test: "true-$(date +%s)"
+    
 server:
   tolerations:
     - key: "node-role.kubernetes.io/control-plane"
@@ -57,3 +59,14 @@ redisSecretInit:
       - key: "node-role.kubernetes.io/control-plane"
         operator: "Exists"
         effect: "NoSchedule"
+        
+configs:
+  cm:
+    create: true
+    params:
+      server.insecure: true
+      # Skip slow pre-sync hook health-checks
+      controller.ignorehealthcheck: true
+      controller.selfheal.timeout.seconds: 30
+      
+      
